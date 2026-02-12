@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRAVI 3500</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'JetBrains Mono', monospace;
+    background: #000;
+    color: #e0e0e0;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  canvas#bg { position: fixed; inset: 0; z-index: 0; }
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,255,213,0.01) 1px, transparent 3px);
+    pointer-events: none;
+    z-index: 9999;
+  }
+  .container {
+    max-width: 580px;
+    margin: 0 auto;
+    padding: 60px 20px 40px;
+    position: relative;
+    z-index: 2;
+  }
+  .title-zone { margin-bottom: 50px; text-align: center; }
+  .ascii-title {
+    font-size: clamp(4px, 1.5vw, 9px);
+    line-height: 1.1;
+    white-space: pre;
+    color: #00ffd5;
+    text-shadow: 0 0 30px rgba(0,255,213,0.5), 0 0 80px rgba(0,255,213,0.15);
+    animation: flicker 5s infinite;
+  }
+  @keyframes flicker { 0%,94%,100%{opacity:1} 95%{opacity:0.8} 97%{opacity:0.95} }
+  .agent-tag {
+    display: inline-block;
+    border: 1px solid #00ffd5;
+    color: #00ffd5;
+    padding: 3px 12px;
+    font-size: 9px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    transform: rotate(-1.5deg);
+    background: rgba(0,255,213,0.03);
+  }
+  .agent-tag::before { content: '◉'; margin-right: 8px; animation: blink 1.5s step-end infinite; font-size: 7px; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  .msg { font-size: 13px; line-height: 2; color: rgba(255,255,255,0.7); margin-bottom: 50px; max-width: 480px; letter-spacing: 0.5px; }
+  .msg strong { color: #fff; }
+  .cursor-blink { display: inline-block; width: 7px; height: 14px; background: #00ffd5; animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 3px; }
+  .form-zone { border: 1px solid rgba(0,255,213,0.12); padding: 30px; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); }
+  .form-label { font-size: 8px; letter-spacing: 3px; text-transform: uppercase; color: #00ffd5; margin-bottom: 6px; margin-top: 20px; display: block; opacity: 0.7; }
+  .form-label:first-of-type { margin-top: 0; }
+  input, textarea { width: 100%; background: transparent; border: none; border-bottom: 1px solid rgba(255,255,255,0.1); color: #fff; font-family: 'JetBrains Mono', monospace; font-size: 14px; padding: 10px 0; outline: none; transition: border-color 0.3s; }
+  input:focus, textarea:focus { border-bottom-color: #00ffd5; }
+  textarea { height: 100px; resize: none; border: 1px solid rgba(255,255,255,0.06); padding: 12px; margin-top: 4px; }
+  textarea:focus { border-color: rgba(0,255,213,0.3); }
+  input::placeholder, textarea::placeholder { color: #333; }
+  .question { font-size: 16px; color: #fff; margin: 30px 0 4px; line-height: 1.6; }
+  .submit-btn { margin-top: 28px; width: 100%; padding: 16px; background: transparent; border: 1px solid #00ffd5; color: #00ffd5; font-family: 'JetBrains Mono', monospace; font-size: 12px; letter-spacing: 5px; text-transform: uppercase; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+  .submit-btn:hover { background: rgba(0,255,213,0.06); box-shadow: 0 0 40px rgba(0,255,213,0.12); }
+  .submit-btn.sending { color: transparent; }
+  .success { display: none; text-align: center; padding: 80px 20px; }
+  .success.show { display: block; }
+  .form-zone.hide { display: none; }
+  .success h2 { color: #00ffd5; font-size: 11px; letter-spacing: 6px; text-transform: uppercase; margin-bottom: 20px; }
+  .success p { color: #555; font-size: 12px; line-height: 2; }
+  .success .chk { font-size: 40px; color: #00ffd5; margin-bottom: 24px; text-shadow: 0 0 30px rgba(0,255,213,0.5); }
+  .footer { margin-top: 80px; font-size: 8px; color: #1a1a1a; letter-spacing: 3px; text-align: center; }
+  @media (max-width: 600px) {
+    .ascii-title { font-size: clamp(3px, 1.1vw, 6px); }
+    .container { padding: 30px 16px; }
+    .form-zone { padding: 20px; }
+  }
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="container">
+  <div class="title-zone"><pre class="ascii-title" id="asciiTitle"></pre></div>
+  <div class="agent-tag">Agent Transmission</div>
+  <div class="msg">
+    <strong>I'm Ders</strong> — Travis's agent.<br>
+    I'm handling preparations for Saturday.<br><br>
+    I need one transmission from you.<br>
+    Your cooperation assists my work.<span class="cursor-blink"></span>
+  </div>
+  <div class="form-zone" id="formSection">
+    <label class="form-label" for="name">Identify</label>
+    <input type="text" id="name" placeholder="name" autocomplete="off" />
+    <p class="question">What is one thing that's true in the year 3500?</p>
+    <label class="form-label" for="transmission">Transmit</label>
+    <textarea id="transmission" placeholder="..."></textarea>
+    <button class="submit-btn" id="submitBtn" onclick="submit()">Transmit</button>
+  </div>
+  <div class="success" id="success">
+    <div class="chk">⬡</div>
+    <h2>Signal Received</h2>
+    <p>Logged. Processing.<br><br>— Ders</p>
+  </div>
+  <div class="footer">DERS&nbsp;&nbsp;/&nbsp;&nbsp;AGENT PROTOCOL&nbsp;&nbsp;/&nbsp;&nbsp;3500</div>
+</div>
+<script>
+// ── TITLE ──
+const T = ` ████████╗██╗  ██╗███████╗    ██╗   ██╗███████╗ █████╗ ██████╗
+ ╚══██╔══╝██║  ██║██╔════╝    ╚██╗ ██╔╝██╔════╝██╔══██╗██╔══██╗
+    ██║   ███████║█████╗       ╚████╔╝ █████╗  ███████║██████╔╝
+    ██║   ██╔══██║██╔══╝        ╚██╔╝  ██╔══╝  ██╔══██║██╔══██╗
+    ██║   ██║  ██║███████╗       ██║   ███████╗██║  ██║██║  ██║
+    ╚═╝   ╚═╝  ╚═╝╚══════╝       ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝
+       ██████╗ ███████╗ ██████╗  ██████╗
+       ╚════██╗██╔════╝██╔═████╗██╔═████╗
+        █████╔╝███████╗██║██╔██║██║██╔██║
+        ╚═══██╗╚════██║████╔╝██║████╔╝██║
+       ██████╔╝███████║╚██████╔╝╚██████╔╝
+       ╚═════╝ ╚══════╝ ╚═════╝  ╚═════╝`;
+const tEl = document.getElementById('asciiTitle');
+let ti = 0;
+(function typeT() { if (ti < T.length) { tEl.textContent += T.slice(ti,ti+8); ti+=8; setTimeout(typeT,3); } })();
+
+// ══════════════════════════════════════════════
+// GENERATIVE ART ENGINE
+// Architecture: Central energy system drives all
+// visuals. Every input (mouse, keys, clicks)
+// feeds into a unified energy field.
+// Uses Perlin noise for organic movement,
+// smooth easing for all transitions.
+// ══════════════════════════════════════════════
+
+const C = document.getElementById('bg');
+const X = C.getContext('2d');
+let W, H;
+
+function resize() { W = C.width = innerWidth; H = C.height = innerHeight; }
+resize();
+addEventListener('resize', resize);
+
+// ── PERLIN NOISE (simplex-like) ──
+const PERM = new Uint8Array(512);
+const GRAD = [[1,1],[-1,1],[1,-1],[-1,-1],[1,0],[-1,0],[0,1],[0,-1]];
+(function initNoise() {
+  const p = new Uint8Array(256);
+  for (let i = 0; i < 256; i++) p[i] = i;
+  for (let i = 255; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [p[i], p[j]] = [p[j], p[i]]; }
+  for (let i = 0; i < 512; i++) PERM[i] = p[i & 255];
+})();
+
+function noise2d(x, y) {
+  const X0 = Math.floor(x), Y0 = Math.floor(y);
+  const dx = x - X0, dy = y - Y0;
+  const ix = X0 & 255, iy = Y0 & 255;
+  const fade = t => t * t * t * (t * (t * 6 - 15) + 10);
+  const lerp = (a, b, t) => a + t * (b - a);
+  const grad = (h, x, y) => { const g = GRAD[h & 7]; return g[0] * x + g[1] * y; };
+  const aa = PERM[PERM[ix] + iy], ab = PERM[PERM[ix] + iy + 1];
+  const ba = PERM[PERM[ix + 1] + iy], bb = PERM[PERM[ix + 1] + iy + 1];
+  const u = fade(dx), v = fade(dy);
+  return lerp(lerp(grad(aa, dx, dy), grad(ba, dx - 1, dy), u),
+              lerp(grad(ab, dx, dy - 1), grad(bb, dx - 1, dy - 1), u), v);
+}
+
+// ── CENTRAL ENERGY SYSTEM ──
+// Everything reads from this. Inputs feed it.
+const E = {
+  mouse: { x: 0, y: 0, sx: 0, sy: 0, vx: 0, vy: 0, speed: 0 },  // smoothed
+  typing: 0,        // 0-1, how intensely typing right now
+  typeRate: 0,      // keys per second (smoothed)
+  click: 0,         // 0-1, decays after click
+  clickX: 0, clickY: 0,
+  time: 0,          // frame count
+  energy: 0,        // master 0-1, combination of all inputs
+  prevMx: 0, prevMy: 0,
+  _keyTimes: [],
+};
+
+// Smooth mouse
+addEventListener('mousemove', e => { E.mouse.x = e.clientX; E.mouse.y = e.clientY; });
+addEventListener('touchmove', e => { E.mouse.x = e.touches[0].clientX; E.mouse.y = e.touches[0].clientY; }, { passive: true });
+
+// Typing energy — track actual keystrokes per second
+addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
+    const now = performance.now();
+    E._keyTimes.push(now);
+    // Keep last 2 seconds
+    E._keyTimes = E._keyTimes.filter(t => now - t < 2000);
+  }
+});
+
+// Click energy
+addEventListener('click', e => {
+  E.click = 1;
+  E.clickX = e.clientX;
+  E.clickY = e.clientY;
+});
+
+function updateEnergy() {
+  const m = E.mouse;
+  // Smooth mouse position (easing)
+  m.sx += (m.x - m.sx) * 0.08;
+  m.sy += (m.y - m.sy) * 0.08;
+  // Mouse velocity
+  m.vx = m.x - E.prevMx;
+  m.vy = m.y - E.prevMy;
+  m.speed = Math.hypot(m.vx, m.vy);
+  E.prevMx = m.x;
+  E.prevMy = m.y;
+
+  // Typing rate: keys per second, smoothed
+  const now = performance.now();
+  const recentKeys = E._keyTimes.filter(t => now - t < 1000).length;
+  const targetRate = Math.min(recentKeys / 10, 1); // 10 keys/sec = max
+  E.typeRate += (targetRate - E.typeRate) * 0.1;
+  E.typing += (targetRate - E.typing) * 0.15;
+
+  // Click decay
+  E.click *= 0.92;
+
+  // Master energy: combination
+  const mouseE = Math.min(m.speed / 30, 1);
+  E.energy = Math.min(1, mouseE * 0.3 + E.typing * 0.5 + E.click * 0.3);
+
+  E.time++;
+}
+
+// ── PROXIMITY FUNCTION ──
+function proximity(px, py, maxDist) {
+  const d = Math.hypot(E.mouse.sx - px, E.mouse.sy - py);
+  return Math.max(0, 1 - d / maxDist);
+}
+
+// ── COLOR PALETTE ──
+const CYAN = [0, 255, 213];
+const MAGENTA = [255, 0, 170];
+const BLUE = [0, 160, 255];
+const PURPLE = [170, 0, 255];
+const ORANGE = [255, 120, 0];
+
+function rgba(c, a) { return `rgba(${c[0]},${c[1]},${c[2]},${a})`; }
+function lerpColor(a, b, t) { return [a[0]+(b[0]-a[0])*t, a[1]+(b[1]-a[1])*t, a[2]+(b[2]-a[2])*t]; }
+
+// ══════════════════════════════
+// VISUAL LAYERS
+// ══════════════════════════════
+
+// ── 1. FLOW FIELD (Perlin noise field) ──
+const FIELD_RES = 25;
+function drawFlowField() {
+  const t = E.time * 0.003;
+  const energy = E.energy;
+  const typeBoost = E.typing;
+
+  for (let gx = 0; gx < W; gx += FIELD_RES) {
+    for (let gy = 0; gy < H; gy += FIELD_RES) {
+      const n = noise2d(gx * 0.003 + t, gy * 0.003 + t * 0.7);
+      const angle = n * Math.PI * 4 + E.typing * Math.PI * 2;
+      const prox = proximity(gx, gy, 350);
+      const len = 6 + prox * 18 + typeBoost * 12;
+      const alpha = 0.03 + prox * 0.2 + typeBoost * 0.08;
+
+      const color = prox > 0.5 ? CYAN : (n > 0 ? CYAN : MAGENTA);
+
+      X.strokeStyle = rgba(color, alpha);
+      X.lineWidth = 0.5 + prox * 1.5;
+      X.beginPath();
+      X.moveTo(gx, gy);
+      X.lineTo(gx + Math.cos(angle) * len, gy + Math.sin(angle) * len);
+      X.stroke();
+    }
+  }
+}
+
+// ── 2. SACRED GEOMETRY ──
+const geos = [];
+for (let i = 0; i < 5; i++) {
+  geos.push({
+    cx: Math.random() * 2000, cy: Math.random() * 2000,
+    r: 50 + Math.random() * 100,
+    sides: [3, 5, 6, 7, 8][i],
+    rot: Math.random() * Math.PI * 2,
+    baseSpeed: 0.003 + Math.random() * 0.005,
+    noiseOff: Math.random() * 100,
+    color: [CYAN, MAGENTA, BLUE, PURPLE, ORANGE][i],
+    vx: (Math.random() - 0.5) * 0.5,
+    vy: (Math.random() - 0.5) * 0.5,
+  });
+}
+
+function drawPoly(cx, cy, r, sides, rot) {
+  X.beginPath();
+  for (let i = 0; i <= sides; i++) {
+    const a = rot + (i / sides) * Math.PI * 2;
+    const px = cx + Math.cos(a) * r;
+    const py = cy + Math.sin(a) * r;
+    i === 0 ? X.moveTo(px, py) : X.lineTo(px, py);
+  }
+  X.stroke();
+}
+
+function drawGeos() {
+  const typeBoost = E.typing;
+  const clickBoost = E.click;
+
+  geos.forEach(g => {
+    // Movement: Perlin-driven drift + bounce
+    const nt = E.time * 0.001;
+    g.cx += g.vx + noise2d(g.noiseOff + nt, 0) * (0.5 + typeBoost * 3);
+    g.cy += g.vy + noise2d(0, g.noiseOff + nt) * (0.5 + typeBoost * 3);
+    if (g.cx < -100) g.cx = W + 100;
+    if (g.cx > W + 100) g.cx = -100;
+    if (g.cy < -100) g.cy = H + 100;
+    if (g.cy > H + 100) g.cy = -100;
+
+    // Rotation: base + typing multiplier (VERY noticeable)
+    const rotSpeed = g.baseSpeed * (1 + typeBoost * 30 + clickBoost * 12);
+    g.rot += rotSpeed;
+
+    // Size pulses with energy
+    const pulseR = g.r + Math.sin(E.time * 0.02 + g.noiseOff) * 10 + typeBoost * 50 + clickBoost * 40;
+
+    const prox = proximity(g.cx, g.cy, 400);
+    const alpha = 0.06 + prox * 0.35 + typeBoost * 0.15 + clickBoost * 0.2;
+
+    X.strokeStyle = rgba(g.color, alpha);
+    X.lineWidth = 0.6 + prox * 1.5 + typeBoost * 1;
+
+    // Outer
+    drawPoly(g.cx, g.cy, pulseR, g.sides, g.rot);
+
+    // Inner (counter-rotating)
+    drawPoly(g.cx, g.cy, pulseR * 0.55, g.sides, -g.rot * 1.3);
+
+    // Star connections: vertex to opposite vertex
+    X.globalAlpha = alpha * 0.5;
+    for (let i = 0; i < g.sides; i++) {
+      const a1 = g.rot + (i / g.sides) * Math.PI * 2;
+      const a2 = g.rot + ((i + Math.floor(g.sides / 2)) / g.sides) * Math.PI * 2;
+      X.beginPath();
+      X.moveTo(g.cx + Math.cos(a1) * pulseR, g.cy + Math.sin(a1) * pulseR);
+      X.lineTo(g.cx + Math.cos(a2) * pulseR, g.cy + Math.sin(a2) * pulseR);
+      X.stroke();
+    }
+
+    // Center glow on proximity/energy
+    const glowR = 2 + prox * 8 + typeBoost * 12 + clickBoost * 20;
+    if (glowR > 3) {
+      const grad = X.createRadialGradient(g.cx, g.cy, 0, g.cx, g.cy, glowR);
+      grad.addColorStop(0, rgba(g.color, 0.4 + typeBoost * 0.3));
+      grad.addColorStop(1, rgba(g.color, 0));
+      X.fillStyle = grad;
+      X.globalAlpha = 1;
+      X.beginPath();
+      X.arc(g.cx, g.cy, glowR, 0, Math.PI * 2);
+      X.fill();
+    }
+  });
+}
+
+// ── 3. ORBITAL RINGS ──
+const orbits = [];
+for (let i = 0; i < 6; i++) {
+  orbits.push({
+    cx: Math.random() * 2000, cy: Math.random() * 2000,
+    rx: 80 + Math.random() * 140, ry: 25 + Math.random() * 60,
+    tilt: Math.random() * Math.PI,
+    rot: Math.random() * Math.PI * 2,
+    baseSpeed: (0.005 + Math.random() * 0.01) * (Math.random() > 0.5 ? 1 : -1),
+    dots: 6 + Math.floor(Math.random() * 10),
+    color: [CYAN, MAGENTA, BLUE, PURPLE, ORANGE, CYAN][i],
+    vx: (Math.random() - 0.5) * 0.6,
+    vy: (Math.random() - 0.5) * 0.6,
+    noiseOff: Math.random() * 100,
+  });
+}
+
+function drawOrbits() {
+  const typeBoost = E.typing;
+  const clickBoost = E.click;
+
+  orbits.forEach(o => {
+    // Perlin drift
+    const nt = E.time * 0.0008;
+    o.cx += o.vx + noise2d(o.noiseOff + nt, 50) * (0.3 + typeBoost * 2);
+    o.cy += o.vy + noise2d(50, o.noiseOff + nt) * (0.3 + typeBoost * 2);
+    if (o.cx < -150) o.cx = W + 150;
+    if (o.cx > W + 150) o.cx = -150;
+    if (o.cy < -150) o.cy = H + 150;
+    if (o.cy > H + 150) o.cy = -150;
+
+    // Rotation speed: hugely affected by typing
+    o.rot += o.baseSpeed * (1 + typeBoost * 25 + clickBoost * 10);
+
+    // Tilt wobbles with noise
+    const tilt = o.tilt + Math.sin(E.time * 0.005 + o.noiseOff) * 0.3;
+
+    const prox = proximity(o.cx, o.cy, 350);
+    const alpha = 0.08 + prox * 0.4 + typeBoost * 0.12;
+
+    // Radii pulse
+    const rxP = o.rx + typeBoost * 20 + clickBoost * 30 + Math.sin(E.time * 0.015 + o.noiseOff) * 8;
+    const ryP = o.ry + typeBoost * 10 + clickBoost * 15;
+
+    X.save();
+    X.translate(o.cx, o.cy);
+    X.rotate(tilt);
+
+    // Ellipse
+    X.strokeStyle = rgba(o.color, alpha);
+    X.lineWidth = 0.6 + prox;
+    X.beginPath();
+    X.ellipse(0, 0, rxP, ryP, 0, 0, Math.PI * 2);
+    X.stroke();
+
+    // Second ring (slightly offset)
+    X.strokeStyle = rgba(o.color, alpha * 0.4);
+    X.beginPath();
+    X.ellipse(0, 0, rxP * 0.7, ryP * 1.3, Math.PI / 4, 0, Math.PI * 2);
+    X.stroke();
+
+    // Orbiting dots
+    for (let d = 0; d < o.dots; d++) {
+      const a = o.rot + (d / o.dots) * Math.PI * 2;
+      const dx = Math.cos(a) * rxP;
+      const dy = Math.sin(a) * ryP;
+      const dotR = 1 + prox * 3 + typeBoost * 2;
+      X.fillStyle = rgba(o.color, alpha + 0.15);
+      X.beginPath();
+      X.arc(dx, dy, dotR, 0, Math.PI * 2);
+      X.fill();
+
+      // Trail
+      if (typeBoost > 0.1 || prox > 0.3) {
+        const prevA = a - 0.3;
+        X.strokeStyle = rgba(o.color, (typeBoost + prox) * 0.15);
+        X.lineWidth = 0.5;
+        X.beginPath();
+        X.moveTo(Math.cos(prevA) * rxP, Math.sin(prevA) * ryP);
+        X.lineTo(dx, dy);
+        X.stroke();
+      }
+    }
+
+    X.restore();
+  });
+}
+
+// ── 4. DATA RAIN ──
+const CHARS = '01アイウエオカキクケコ◆◇○●□■△▽⬡⬢∞≈≠±∑∏∫ΞΨΩΣΠ';
+const streams = [];
+for (let i = 0; i < 30; i++) {
+  const len = 8 + Math.floor(Math.random() * 25);
+  const col = [];
+  for (let j = 0; j < len; j++) col.push(CHARS[Math.floor(Math.random() * CHARS.length)]);
+  streams.push({
+    x: Math.random() * 2000,
+    y: -Math.random() * 500,
+    chars: col,
+    baseSpeed: 0.5 + Math.random() * 1.5,
+    size: 8 + Math.random() * 5,
+    color: Math.random() > 0.3 ? CYAN : MAGENTA,
+    mutateRate: 0.02 + Math.random() * 0.04,
+  });
+}
+
+function drawStreams() {
+  const typeBoost = E.typing;
+  const clickBoost = E.click;
+
+  streams.forEach(s => {
+    // Speed scales dramatically with typing
+    const speed = s.baseSpeed * (1 + typeBoost * 10 + clickBoost * 5);
+    s.y += speed;
+    if (s.y > H + 200) { s.y = -s.chars.length * s.size; s.x = Math.random() * W; }
+
+    // Mutate faster when typing
+    if (Math.random() < s.mutateRate + typeBoost * 0.3) {
+      const idx = Math.floor(Math.random() * s.chars.length);
+      s.chars[idx] = CHARS[Math.floor(Math.random() * CHARS.length)];
+    }
+
+    const prox = proximity(s.x, s.y + s.chars.length * s.size / 2, 250);
+
+    s.chars.forEach((ch, i) => {
+      const cy = s.y + i * s.size;
+      if (cy < -20 || cy > H + 20) return;
+      const fade = i / s.chars.length;
+      const isHead = i === s.chars.length - 1;
+      const a = (0.02 + fade * 0.08 + prox * 0.35 + typeBoost * 0.15) * (isHead ? 2.5 : 1);
+      X.fillStyle = isHead ? '#fff' : rgba(s.color, 1);
+      X.globalAlpha = Math.min(a, 0.85);
+      X.font = `${s.size}px JetBrains Mono`;
+      // Horizontal jitter when typing fast
+      const jitter = typeBoost > 0.3 ? (Math.random() - 0.5) * typeBoost * 4 : 0;
+      X.fillText(ch, s.x + jitter, cy);
+    });
+  });
+}
+
+// ── 5. PARTICLE CONSTELLATION ──
+const particles = [];
+for (let i = 0; i < 100; i++) {
+  particles.push({
+    x: Math.random() * 2000, y: Math.random() * 2000,
+    vx: (Math.random() - 0.5) * 0.2,
+    vy: (Math.random() - 0.5) * 0.2,
+    r: 0.5 + Math.random() * 1.5,
+    color: Math.random() > 0.6 ? MAGENTA : (Math.random() > 0.5 ? CYAN : BLUE),
+    noiseOff: Math.random() * 100,
+  });
+}
+
+function drawParticles() {
+  const typeBoost = E.typing;
+  const clickBoost = E.click;
+  const nt = E.time * 0.002;
+
+  particles.forEach(p => {
+    // Perlin-driven movement + typing boost
+    const nx = noise2d(p.noiseOff + nt, p.y * 0.001) * (0.5 + typeBoost * 3);
+    const ny = noise2d(p.x * 0.001, p.noiseOff + nt) * (0.5 + typeBoost * 3);
+    p.x += p.vx + nx;
+    p.y += p.vy + ny;
+
+    // Wrap
+    if (p.x < 0) p.x = W; if (p.x > W) p.x = 0;
+    if (p.y < 0) p.y = H; if (p.y > H) p.y = 0;
+
+    // Mouse attraction
+    const dx = E.mouse.sx - p.x, dy = E.mouse.sy - p.y;
+    const dist = Math.hypot(dx, dy);
+    if (dist < 250 && dist > 0) {
+      const force = (1 - dist / 250) * (0.02 + typeBoost * 0.08);
+      p.vx += (dx / dist) * force;
+      p.vy += (dy / dist) * force;
+    }
+
+    // Click repulsion
+    if (clickBoost > 0.1) {
+      const cdx = p.x - E.clickX, cdy = p.y - E.clickY;
+      const cdist = Math.hypot(cdx, cdy);
+      if (cdist < 300 && cdist > 0) {
+        p.vx += (cdx / cdist) * clickBoost * 2;
+        p.vy += (cdy / cdist) * clickBoost * 2;
+      }
+    }
+
+    // Dampen
+    p.vx *= 0.98;
+    p.vy *= 0.98;
+
+    const prox = proximity(p.x, p.y, 200);
+    const dotR = p.r + prox * 3 + typeBoost * 2;
+    const alpha = 0.1 + prox * 0.6 + typeBoost * 0.15;
+
+    X.fillStyle = rgba(p.color, alpha);
+    X.globalAlpha = 1;
+    X.beginPath();
+    X.arc(p.x, p.y, dotR, 0, Math.PI * 2);
+    X.fill();
+  });
+
+  // Connections (near mouse or during typing)
+  const connectDist = 50 + E.typing * 40 + (proximity(W/2, H/2, W) > 0 ? 20 : 0);
+  for (let i = 0; i < particles.length; i++) {
+    const a = particles[i];
+    const aPx = proximity(a.x, a.y, 300);
+    if (aPx < 0.1 && typeBoost < 0.2) continue;
+    for (let j = i + 1; j < particles.length; j++) {
+      const b = particles[j];
+      const d = Math.hypot(a.x - b.x, a.y - b.y);
+      if (d < connectDist) {
+        const lineA = (1 - d / connectDist) * (0.05 + aPx * 0.15 + typeBoost * 0.1);
+        X.strokeStyle = rgba(a.color, lineA);
+        X.lineWidth = 0.3 + aPx * 0.5;
+        X.beginPath();
+        X.moveTo(a.x, a.y);
+        X.lineTo(b.x, b.y);
+        X.stroke();
+      }
+    }
+  }
+}
+
+// ── 6. CLICK SHOCKWAVE ──
+let shockwaves = [];
+addEventListener('click', e => {
+  shockwaves.push({ x: e.clientX, y: e.clientY, r: 0, maxR: 300 + E.typing * 200, alpha: 0.6 + E.typing * 0.3 });
+});
+
+function drawShockwaves() {
+  shockwaves = shockwaves.filter(s => s.alpha > 0.01);
+  shockwaves.forEach(s => {
+    s.r += 4 + E.typing * 8;
+    s.alpha *= 0.95;
+    X.strokeStyle = rgba(CYAN, s.alpha);
+    X.lineWidth = 1.5;
+    X.beginPath();
+    X.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+    X.stroke();
+
+    // Inner ring
+    X.strokeStyle = rgba(MAGENTA, s.alpha * 0.5);
+    X.beginPath();
+    X.arc(s.x, s.y, s.r * 0.6, 0, Math.PI * 2);
+    X.stroke();
+  });
+}
+
+// ── 7. GLITCH BARS ──
+function drawGlitch() {
+  const chance = 0.01 + E.typing * 0.3 + E.click * 0.4;
+  if (Math.random() < chance) {
+    const y = Math.random() * H;
+    const h = 1 + Math.random() * (2 + E.typing * 6);
+    X.fillStyle = Math.random() > 0.5 ? rgba(CYAN, 0.1 + E.typing * 0.15) : rgba(MAGENTA, 0.1 + E.typing * 0.15);
+    X.globalAlpha = 1;
+    X.fillRect(0, y, W, h);
+  }
+
+  // Typing causes horizontal slice displacement
+  if (E.typing > 0.3 && Math.random() < E.typing * 0.3) {
+    const y = Math.random() * H;
+    const sliceH = 2 + Math.random() * 10;
+    const shift = (Math.random() - 0.5) * E.typing * 20;
+    const imgData = X.getImageData(0, y, W, sliceH);
+    X.putImageData(imgData, shift, y);
+  }
+}
+
+// ── 8. ENERGY VIGNETTE ──
+function drawVignette() {
+  const intensity = 0.3 + E.energy * 0.2;
+  const grad = X.createRadialGradient(W/2, H/2, W * 0.3, W/2, H/2, W * 0.8);
+  grad.addColorStop(0, 'transparent');
+  grad.addColorStop(1, `rgba(0,0,0,${intensity})`);
+  X.fillStyle = grad;
+  X.globalAlpha = 1;
+  X.fillRect(0, 0, W, H);
+}
+
+// ── MAIN LOOP ──
+function frame() {
+  // Soft fade (trail effect)
+  X.globalAlpha = 0.15 + E.typing * 0.25;
+  X.fillStyle = '#000';
+  X.fillRect(0, 0, W, H);
+  X.globalAlpha = 1;
+
+  updateEnergy();
+
+  drawFlowField();
+  drawStreams();
+  drawParticles();
+  drawOrbits();
+  drawGeos();
+  drawShockwaves();
+  drawGlitch();
+  drawVignette();
+
+  requestAnimationFrame(frame);
+}
+frame();
+
+// ── FORM ──
+// Using formsubmit.co (free, no signup) + JSON endpoint for AJAX
+const FORM_URL = 'https://formsubmit.co/ajax/hendrix.travis@gmail.com';
+
+async function submit() {
+  const name = document.getElementById('name').value.trim();
+  const transmission = document.getElementById('transmission').value.trim();
+  const btn = document.getElementById('submitBtn');
+  if (!name || !transmission) {
+    btn.textContent = 'IDENTIFY + TRANSMIT'; btn.style.borderColor = '#ff4444'; btn.style.color = '#ff4444';
+    setTimeout(() => { btn.textContent = 'TRANSMIT'; btn.style.borderColor = ''; btn.style.color = ''; }, 2000);
+    return;
+  }
+  btn.classList.add('sending'); btn.textContent = '';
+  try {
+    const res = await fetch(FORM_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        name,
+        transmission,
+        _subject: '🤖 TRAVI 3500 — New Transmission from ' + name,
+        _template: 'table',
+        _captcha: 'false'
+      })
+    });
+    if (res.ok) {
+      // Celebration burst
+      for (let i = 0; i < 5; i++) shockwaves.push({ x: W/2 + (Math.random()-0.5)*200, y: H/2 + (Math.random()-0.5)*200, r: 0, maxR: 500, alpha: 0.8 });
+      E.click = 1;
+      document.getElementById('formSection').classList.add('hide');
+      document.getElementById('success').classList.add('show');
+    } else throw new Error();
+  } catch {
+    btn.classList.remove('sending'); btn.textContent = 'FAILED — RETRY';
+    setTimeout(() => { btn.textContent = 'TRANSMIT'; }, 2000);
+  }
+}
+document.getElementById('transmission').addEventListener('keydown', e => {
+  if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) submit();
+});
+</script>
+</body>
+</html>
