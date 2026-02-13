@@ -373,7 +373,7 @@ function render() {
   document.getElementById('badge').style.color = creator.type === 'previous' ? 'var(--success)' : 'var(--warning)';
   
   const message = getMessage(creator);
-  document.getElementById('messageText').textContent = message;
+  document.getElementById('messageText').innerHTML = message.replace(/\n/g, '<br>');
   
   // Update progress
   const progress = ((currentIndex + 1) / CREATORS.length) * 100;
@@ -400,7 +400,7 @@ function showEmpty() {
 
 // Copy with fallback for HTTP
 function copyMessage() {
-  const text = document.getElementById('messageText').textContent;
+  const text = document.getElementById('messageText').innerText;
   
   if (navigator.clipboard && window.isSecureContext) {
     navigator.clipboard.writeText(text).then(showCopySuccess).catch(() => fallbackCopy(text));
