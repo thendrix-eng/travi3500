@@ -329,31 +329,85 @@ let currentTemplate = 0;
 function getMessage(creator) {
   
   if (creator.type === 'previous') {
-    // Previous participants - reference their past work
     const templates = [
-      `gm! We loved your work last time and wanted to personally invite you to participate in our new bounty🔥 There's a $350 prize pool, make anything about the beta, post it, win. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ cheers 💎`,
-      
-      `hey! your content from last bounty was fire 🔥 wanted to personally invite you to the new one — $350 prize pool, make something about the beta, post it, win. easy. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ go get it 💎`,
-      
-      `yo! loved what you made last time — wanted to personally invite you to the new bounty 🚀 $350 prize pool. make anything about the beta, post it, win. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ lmk if you have questions 💎`,
-      
-      `gm! your work on the last bounty stood out — wanted to personally invite you to the new one 💎 $350 prize pool, make anything about the beta, post it, win. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ cheers!`,
-      
-      `hey! 👋 remembered your great content from last time — personally inviting you to our new bounty🔥 $350 prize pool, make something about the beta, post it, win. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ go find some gems 💎`
+      `hey! loved your last bounty entry 🔥
+
+new one is live — $350 USDC, 7 winners.
+make anything about the beta and post it.
+
+beta: https://tokengems.ai
+enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/
+
+ends feb 22 💎`,
+
+      `yo 👋 your work last round was solid.
+
+$350 TokenGems bounty is live.
+create content about the beta, post it, win.
+
+beta: https://tokengems.ai
+enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/
+
+deadline: feb 22 💎`,
+
+      `gm! new TokenGems bounty — $350 pool, 7 winners.
+
+just make something about the beta and post it.
+video, thread, meme — whatever works.
+
+beta: https://tokengems.ai
+enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/
+
+ends feb 22 💎`,
+
+      `hey! $350 TokenGems bounty is live 🔥
+
+create + post content about the beta. 7 winners.
+
+beta: https://tokengems.ai
+enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/
+
+deadline: feb 22 💎`
     ];
     return templates[Math.floor(Math.random() * templates.length)];
   } else {
-    // New creators - no reference to past work
     const templates = [
-      `gm! 👋 We're running a new TokenGems Content Bounty and wanted to personally invite you 🔥 $350 prize pool, make anything about the beta, post it, win. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ cheers 💎`,
-      
-      `hey! 🚀 Wanted to personally invite you to our new bounty — $350 prize pool, make something about the beta, post it, win. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ go get it 💎`,
-      
-      `yo! 👋 TokenGems Content Bounty is live and wanted to personally invite you 💎 $350 prize pool, make anything about the beta, post it, win. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ lmk if you have questions!`,
-      
-      `gm! 🔥 Wanted to personally invite you to participate in our new bounty — $350 prize pool, make something about the beta, post it, win. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ cheers 💎`,
-      
-      `hey! 👋 Inviting you personally to our new TokenGems bounty 🚀 $350 prize pool, make anything about the beta, post it, win. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ go find some gems 💎`
+      `hey 👋 TokenGems bounty is live — $350 USDC, 7 winners.
+
+make anything about the beta and post it.
+video, thread, meme — whatever works.
+
+beta: https://tokengems.ai
+enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/
+
+ends feb 22 💎`,
+
+      `gm! $350 TokenGems Content Bounty is live 🔥
+
+create content about the beta, post it, win.
+
+beta: https://tokengems.ai
+enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/
+
+deadline: feb 22 💎`,
+
+      `yo! wanted to invite you to our TokenGems bounty 👋
+
+$350 pool, 7 winners. make something about the beta and post it.
+
+beta: https://tokengems.ai
+enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/
+
+ends feb 22 💎`,
+
+      `hey! $350 bounty running right now 🔥
+
+create + post content about tokengems.ai. 7 winners.
+
+beta: https://tokengems.ai
+enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/
+
+deadline: feb 22 💎`
     ];
     return templates[Math.floor(Math.random() * templates.length)];
   }
