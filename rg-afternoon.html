@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>🐉 Reply Grinder — Feb 13 Afternoon</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0a;color:#e0e0e0;padding:20px;max-width:800px;margin:0 auto}
+h1{font-size:20px;color:#1da1f2;margin-bottom:4px}
+.subtitle{color:#666;font-size:13px;margin-bottom:20px}
+.card{background:#151515;border:1px solid #222;border-radius:12px;padding:16px;margin-bottom:12px;transition:all 0.2s}
+.card:hover{border-color:#1da1f2;background:#1a1a1a}
+.card.done{opacity:0.3;border-color:#333}
+.meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:4px}
+.author{font-weight:700;color:#fff;font-size:14px}
+.handle{color:#666;font-size:13px}
+.tweet-text{font-size:14px;line-height:1.5;margin-bottom:12px;color:#ccc}
+.reply-box{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px;margin-bottom:10px}
+.reply-label{color:#1da1f2;font-size:11px;font-weight:600;text-transform:uppercase;margin-bottom:4px}
+.reply-text{font-size:13px;line-height:1.4;color:#e0e0e0;cursor:pointer;user-select:all}
+.reply-text:hover{color:#fff;background:#1a2332;border-radius:4px;padding:4px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.btn-primary{background:#1da1f2;color:#fff}
+.btn-primary:hover{background:#1a91da}
+.btn-copy{background:#222;color:#ccc}
+.btn-copy:hover{background:#333}
+.btn-done{background:#222;color:#666}
+.btn-done:hover{background:#1a3a1a;color:#4caf50}
+.priority{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-left:8px}
+.p-high{background:#1a2a1a;color:#4caf50}
+.p-med{background:#2a2a1a;color:#ffc107}
+.p-fire{background:#2a1a1a;color:#ff5722}
+.tag{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;background:#1a1a2a;color:#7c8aff;margin-left:4px}
+.counter{text-align:center;padding:12px;color:#666;font-size:13px;margin-bottom:16px}
+.counter span{color:#1da1f2;font-weight:700;font-size:18px}
+.tip{background:#111;border:1px solid #222;border-radius:8px;padding:10px 14px;margin-bottom:16px;color:#888;font-size:12px}
+.note{background:#0a1a0a;border:1px solid #1a3a1a;border-radius:8px;padding:10px 14px;margin-bottom:16px;color:#4caf50;font-size:12px}
+</style>
+</head><body>
+
+<h1>🐉 Reply Grinder — Batch #5</h1>
+<p class="subtitle">Feb 13, 2:00 PM CET — Afternoon session (LIVE scraped)</p>
+
+<div class="note">
+✅ <b>Live scrape!</b> Browser relay connected. All tweets verified from For You, CT, and Big Accounts tabs.
+</div>
+
+<div class="tip">
+💡 Click reply text to auto-copy → Open tweet → Paste → Done. Sorted by engagement potential.
+</div>
+
+<div class="counter">Replies remaining: <span id="count">12</span> / 12</div>
+
+<!-- 1 -->
+<div class="card" id="t1">
+<div class="meta">
+<div><span class="author">Bald Knower 🧑🏻‍🦲</span> <span class="handle">@BaldKnower</span> <span class="priority p-fire">🔥 VIRAL</span> <span class="tag">AI · Building</span></div>
+</div>
+<div class="tweet-text">Buy a Mac mini. Download clawdbot. Get a basic 3D printer. Go in debt if you have to. In less than a week I have made enough to buy hundreds of Mac minis with this build.</div>
+<div class="reply-box">
+<div class="reply-label">Suggested Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">The 3D printer arbitrage era is wild. People sleeping on how cheap the barrier to entry is now — $600 setup printing money. What filament/models are you running?</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/BaldKnower/status/2022022350703874421" target="_blank">↗ Open Tweet</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 2 -->
+<div class="card" id="t2">
+<div class="meta">
+<div><span class="author">Kevin Simback 🍷</span> <span class="handle">@KSimback</span> <span class="priority p-fire">🔥 HOT</span> <span class="tag">OpenClaw · AI</span></div>
+</div>
+<div class="tweet-text">I've now done a half dozen @openclaw installs across home machines and VPS — this is really the best overall guide. [QT of @witcheer's "I Fed 20+ OpenClaw Articles to Opus 4.6" setup guide]</div>
+<div class="reply-box">
+<div class="reply-label">Suggested Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">Running it on a Mac Mini at home has been the move for me. The VPS route works but local = zero latency to your files and tools. Which setup do you prefer after trying both?</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/KSimback/status/2021929151293534570" target="_blank">↗ Open Tweet</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 3 -->
+<div class="card" id="t3">
+<div class="meta">
+<div><span class="author">Stacy Muur</span> <span class="handle">@stacy_muur</span> <span class="priority p-fire">🔥 HOT</span> <span class="tag">Funding · RWA</span></div>
+</div>
+<div class="tweet-text">~$1.2B was invested in crypto companies in Jan 2026. Key areas: payments, brokerage tools, custody, RWA. @raincards → $250M, @AlpacaHQ → $150M</div>
+<div class="reply-box">
+<div class="reply-label">Suggested Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">RWA and payments dominating the funding charts while CT argues about memecoins. Institutional money keeps telling us exactly where the next cycle's infrastructure is being built — custody + tokenization rails.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/stacy_muur/status/2022112241311736301" target="_blank">↗ Open Tweet</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 4 -->
+<div class="card" id="t4">
+<div class="meta">
+<div><span class="author">zaimiri ✏️</span> <span class="handle">@zaimiri</span> <span class="priority p-high">HIGH</span> <span class="tag">Content · Monetization</span></div>
+</div>
+<div class="tweet-text">It is truly the Content Creator Golden Era. So many ways to make money: Get paid by 𝕏 for posting, paid newsletter, Alpha Group, deals with projects, CT lead position, InfoFi airdrops. Just press.</div>
+<div class="reply-box">
+<div class="reply-label">Suggested Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">The InfoFi airdrop meta is genuinely new though. Getting paid for your research quality and not just engagement farming — that's the shift nobody expected from CT this cycle.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/zaimiri/status/2022286648982311244" target="_blank">↗ Open Tweet</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 5 -->
+<div class="card" id="t5">
+<div class="meta">
+<div><span class="author">zaimiri ✏️</span> <span class="handle">@zaimiri</span> <span class="priority p-high">HIGH</span> <span class="tag">Automation · Productivity</span></div>
+</div>
+<div class="tweet-text">As someone obsessed with optimising and automating every detail of their life, idk why this took me so long. About to 10x productivity and efficiency.</div>
+<div class="reply-box">
+<div class="reply-label">Suggested Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">The irony of optimizers taking forever to optimize their own setup is universal. What tool finally clicked for you? I went down the AI agent rabbit hole and it genuinely changed my daily workflow.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/zaimiri/status/2022074061342593402" target="_blank">↗ Open Tweet</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 6 -->
+<div class="card" id="t6">
+<div class="meta">
+<div><span class="author">gmoney.eth</span> <span class="handle">@gmoneyNFT</span> <span class="priority p-high">HIGH</span> <span class="tag">AI Agents · Discord</span></div>
+</div>
+<div class="tweet-text">Discord AI Agents Setup Guide — I just set up 4 AI agents on one Discord server. Each with its own bot, personality, dedicated channels. Took me 6 hours. Would've taken 2 hours if I knew what I know now.</div>
+<div class="reply-box">
+<div class="reply-label">Suggested Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">4 agents with distinct personalities is the right approach — single "do everything" bots always feel generic. The setup tax sucks but once they're running it's like having a team that never sleeps. What frameworks did you use?</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/gmoneyNFT/status/2022283301424148502" target="_blank">↗ Open Tweet</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 7 -->
+<div class="card" id="t7">
+<div class="meta">
+<div><span class="author">Hades</span> <span class="handle">@0xHvdes</span> <span class="priority p-high">HIGH</span> <span class="tag">AI Agents · Philosophy</span></div>
+</div>
+<div class="tweet-text">Looks like in a few years, some people won't be doing much themselves. Most tasks will be delegated to AI agents and, perhaps, to IRL robots. But is that actually good for us… or not?</div>
+<div class="reply-box">
+<div class="reply-label">Suggested Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">The people who'll thrive are the ones who delegate the grind to agents and reinvest that time into taste, creativity, and decisions that actually matter. Delegation isn't laziness — it's leverage. The real question is whether most people will use the free time well.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/0xHvdes/status/2022274902988869921" target="_blank">↗ Open Tweet</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 8 -->
+<div class="card" id="t8">
+<div class="meta">
+<div><span class="author">xero 🎮</span> <span class="handle">@xerocooleth</span> <span class="priority p-high">HIGH</span> <span class="tag">Open Source AI</span></div>
+</div>
+<div class="tweet-text">New open source AI that's $1 per hour. Claims and benchmarks showing it competes directly with Opus and GPT 5.2. You can run it locally but the quantized version will take 130gb+ RAM. I hope open sourced AI disrupts and bankrupts some of the paid AI companies. [QT MiniMax M2.5]</div>
+<div class="reply-box">
+<div class="reply-label">Suggested Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">130GB RAM is "local" in theory but in practice that's a $3K+ build. The real disruption happens when quantization gets good enough for 32GB machines. We're maybe 6 months away from frontier models running on a Mac Studio.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/xerocooleth/status/2022225909265105085" target="_blank">↗ Open Tweet</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 9 -->
+<div class="card" id="t9">
+<div class="meta">
+<div><span class="author">Captain Scarlet 🩸</span> <span class="handle">@CAPTA1NSCARLET</span> <span class="priority p-med">MED</span> <span class="tag">CT Culture · Humor</span></div>
+</div>
+<div class="tweet-text">CT when someone offers them an affiliate badge [meme image]</div>
+<div class="reply-box">
+<div class="reply-label">Suggested Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">The affiliate badge is CT's participation trophy. "You're not getting paid but you get a role in the Discord" — truly the minimum viable bribe.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/CAPTA1NSCARLET/status/2022003232789373098" target="_blank">↗ Open Tweet</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 10 -->
+<div class="card" id="t10">
+<div class="meta">
+<div><span class="author">Dean - Dev¹⁰</span> <span class="handle">@DeanDev10</span> <span class="priority p-med">MED</span> <span class="tag">Building · Mindset</span></div>
+</div>
+<div class="tweet-text">I didn't start in tech. I started on the frontline. Not everyone's built under pressure. And it shows. The work doesn't scare me 👹</div>
+<div class="reply-box">
+<div class="reply-label">Suggested Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">Non-traditional backgrounds in tech are underrated. People who've done real-world hard things don't panic when prod goes down at 2am. That composure is worth more than a CS degree.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/DeanDev10/status/2021968836728066537" target="_blank">↗ Open Tweet</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 11 -->
+<div class="card" id="t11">
+<div class="meta">
+<div><span class="author">Phil</span> <span class="handle">@PhilOnChain</span> <span class="priority p-med">MED</span> <span class="tag">OpenClaw · Workflow</span></div>
+</div>
+<div class="tweet-text">BREAKING: Alex Finn reveals the steps how YOU can get maximum value from 24/7 AI employee, OpenClaw: 1. Brain dump everything about yourself 2. Tell it your professional goals 3. Ask "based on what you know about me, what workflows can we set up?"</div>
+<div class="reply-box">
+<div class="reply-label">Suggested Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">Step 3 is where the magic happens. Once it understands your context, the suggestions it generates are surprisingly specific. Mine started automating research workflows I didn't even think to ask for.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/PhilOnChain/status/2022251627390898176" target="_blank">↗ Open Tweet</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 12 -->
+<div class="card" id="t12">
+<div class="meta">
+<div><span class="author">Shiv</span> <span class="handle">@shivst3r</span> <span class="priority p-med">MED</span> <span class="tag">Mindset · Self-improvement</span></div>
+</div>
+<div class="tweet-text">Your brain is recording everything during your lowest moments. If you're hitting a rough patch and start doom scrolling for six hours straight, that becomes your new normal and default. You're not just coping badly — you're teaching yourself to cope badly.</div>
+<div class="reply-box">
+<div class="reply-label">Suggested Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">This is basically neuroplasticity working against you. Your brain doesn't know the difference between "coping mechanism" and "new habit" — it just reinforces whatever you repeat. The fix is boring: replace the default loop with literally anything active.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/shivst3r/status/2022292421393236194" target="_blank">↗ Open Tweet</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<script>
+function updateCount(){
+  const remaining=document.querySelectorAll('.card:not(.done)').length;
+  document.getElementById('count').textContent=remaining;
+  if(remaining===0){document.querySelector('.counter').innerHTML='🎉 <span style="color:#4caf50;font-size:18px">All done!</span> Great session.'}
+}
+</script>
+</body></html>
