@@ -44,7 +44,7 @@ body{background:radial-gradient(1200px 600px at 50% -10%,rgba(99,102,241,.15),tr
 .message-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:600}
 .message-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px;position:relative;transition:border-color .2s}
 .message-box.copied{border-color:var(--success)}
-.message-text{font-size:15px;line-height:1.7;color:var(--text);font-weight:500}
+.message-text{font-size:15px;line-height:1.7;color:var(--text);font-weight:500;white-space:pre-wrap;word-break:break-word}
 .copy-feedback{position:absolute;top:12px;right:12px;background:var(--success);color:#000;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;opacity:0;transform:translateY(-10px);transition:all .2s}
 .copy-feedback.show{opacity:1;transform:none}
 
@@ -116,8 +116,6 @@ body{background:radial-gradient(1200px 600px at 50% -10%,rgba(99,102,241,.15),tr
 <script>
 // DM Templates - casual, short, punchy
 const DM_TEMPLATES = [
-  "gm 👋\n\nTokenGems Private Beta is live — and we just dropped a $350 USDC Content Bounty.\n\nWe appreciated your great work last time and wanted to personally invite you to join in!\n\nMake a video/thread/meme/demo showcasing the beta + post on X.\n\n7 winners: $150 • $50×2 • $20×3 • $40 Community Pick\nFeb 9–22\n\nTry beta: https://tokengems.ai\nEnter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/\n\nGo find some gems 💎",
-  
   "hey! loved your last bounty entry 🔥\n\nnew one is live — $350 USDC, 7 winners. make anything about tokengems.ai and post it.\n\nenter here: superteam.fun/earn/listing/tokengems-private-beta-content-bounty/\n\nends feb 22 💎",
   
   "yo 👋 your work last round was solid.\n\n$350 TokenGems bounty is live. create content about the beta, post it, win.\n\ntokengems.ai\nsuperteam.fun/earn/listing/tokengems-private-beta-content-bounty/\n\nfeb 22 deadline 💎",
