@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Outreach Mode — BD Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e17;
+  --bg2:#111827;
+  --card:rgba(19,26,43,0.95);
+  --border:#1e293b;
+  --text:#e0e7ff;
+  --muted:#8892b0;
+  --accent:#6366f1;
+  --accent2:#818cf8;
+  --success:#34d399;
+  --warning:#fb923c;
+  --danger:#f87171;
+  --info:#60a5fa;
+  --purple:#a78bfa;
+  --teal:#2dd4bf;
+  --radius:20px;
+  --shadow:0 25px 80px rgba(0,0,0,.5);
+}
+* { box-sizing:border-box;margin:0;padding:0 }
+html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+body{background:radial-gradient(1200px 600px at 50% -10%,rgba(99,102,241,.15),transparent 60%),radial-gradient(800px 400px at 80% 100%,rgba(52,211,153,.08),transparent 50%),var(--bg)}
+
+/* Layout */
+.container{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;position:relative}
+
+/* Progress Bar */
+.progress-bar{position:fixed;top:0;left:0;right:0;height:4px;background:var(--border);z-index:100}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s ease}
+.progress-text{position:fixed;top:12px;right:20px;font-size:12px;color:var(--muted);font-weight:600;z-index:100}
+
+/* Main Card */
+.card{width:100%;max-width:720px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:40px;backdrop-filter:blur(20px);box-shadow:var(--shadow);transition:all .3s ease;position:relative}
+.card.slide-out{transform:translateX(-100px);opacity:0}
+.card.slide-in{animation:slideIn .4s ease}
+@keyframes slideIn{from{transform:translateX(100px);opacity:0}to{transform:none;opacity:1}}
+
+/* Header */
+.card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;gap:16px}
+.company-section{flex:1}
+.company-name{font-size:32px;font-weight:800;letter-spacing:-.5px;margin-bottom:4px;background:linear-gradient(135deg,var(--text),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.contact-info{font-size:15px;color:var(--muted);line-height:1.5}
+.contact-info strong{color:var(--text);font-weight:600}
+
+/* Stage Badge */
+.stage-badge{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:999px;font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border:1px solid}
+.stage-prospect{color:var(--muted);border-color:var(--muted);background:rgba(136,146,176,.1)}
+.stage-connection-sent{color:var(--info);border-color:var(--info);background:rgba(96,165,250,.1)}
+.stage-connected{color:var(--success);border-color:var(--success);background:rgba(52,211,153,.1)}
+.stage-replied{color:var(--warning);border-color:var(--warning);background:rgba(251,146,60,.1)}
+.stage-meeting-booked{color:var(--purple);border-color:var(--purple);background:rgba(167,139,250,.1)}
+.stage-closed-won{color:var(--teal);border-color:var(--teal);background:rgba(45,212,191,.1)}
+.stage-closed-lost{color:var(--danger);border-color:var(--danger);background:rgba(248,113,113,.1)}
+
+/* Connection Request Box */
+.request-section{margin:28px 0}
+.request-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:600}
+.request-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:24px;position:relative;transition:border-color .2s}
+.request-box.copied{border-color:var(--success)}
+.request-text{font-size:16px;line-height:1.7;color:var(--text);font-weight:500}
+.copy-feedback{position:absolute;top:12px;right:12px;background:var(--success);color:#000;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;opacity:0;transform:translateY(-10px);transition:all .2s}
+.copy-feedback.show{opacity:1;transform:none}
+
+/* Intel Section */
+.intel-section{margin-top:20px;padding-top:20px;border-top:1px solid var(--border)}
+.intel-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:600}
+.intel-text{font-size:13px;color:var(--muted);line-height:1.6}
+.intel-text strong{color:var(--warning);font-weight:600}
+
+/* Action Buttons */
+.actions{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:12px;margin-top:32px}
+.btn{padding:18px 24px;border-radius:14px;border:none;font-size:15px;font-weight:700;cursor:pointer;transition:all .15s ease;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0)}
+
+.btn-copy{background:var(--bg2);color:var(--text);border:1px solid var(--border)}
+.btn-copy:hover{background:var(--border);border-color:var(--muted)}
+.btn-copy.copied{background:var(--success);color:#000;border-color:var(--success)}
+
+.btn-linkedin{background:linear-gradient(135deg,#0077b5,#005885);color:#fff}
+.btn-linkedin:hover{box-shadow:0 8px 24px rgba(0,119,181,.4)}
+
+.btn-next{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-next:hover{box-shadow:0 8px 30px rgba(99,102,241,.4)}
+
+/* Keyboard Shortcuts Hint */
+.shortcuts{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:24px;font-size:12px;color:var(--muted)}
+.shortcut{display:flex;align-items:center;gap:6px}
+.key{background:var(--bg2);border:1px solid var(--border);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;color:var(--text);font-family:monospace}
+
+/* Stage Selector */
+.stage-selector{position:fixed;top:20px;left:20px;display:flex;flex-direction:column;gap:8px}
+.stage-btn{padding:10px 16px;border-radius:10px;border:1px solid var(--border);background:var(--bg2);color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;text-align:left;display:flex;align-items:center;gap:8px}
+.stage-btn:hover{background:var(--border);color:var(--text)}
+.stage-btn.active{color:#fff;border-color:var(--accent);background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.stage-btn .count{font-size:10px;opacity:.8;background:rgba(255,255,255,.15);padding:2px 8px;border-radius:10px}
+
+/* Empty State */
+.empty{text-align:center;padding:60px 20px}
+.empty-icon{font-size:64px;margin-bottom:20px}
+.empty h2{font-size:28px;margin-bottom:12px}
+.empty p{color:var(--muted);font-size:16px}
+
+/* Toast */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--success);color:#000;padding:14px 28px;border-radius:12px;font-weight:700;opacity:0;transition:all .3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* Filter indicator */
+.filter-active{position:fixed;top:20px;left:50%;transform:translateX(-50%);background:var(--accent);color:#fff;padding:8px 20px;border-radius:999px;font-size:12px;font-weight:700}
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="progress-text" id="progressText">Contact 1 of 37</div>
+
+<div class="stage-selector" id="stageSelector">
+  <div class="stage-btn active" data-filter="all"><span>🎯 All Active</span><span class="count" id="countAll">0</span></div>
+  <div class="stage-btn" data-filter="prospect"><span>⚪ Prospect</span><span class="count" id="countProspect">0</span></div>
+  <div class="stage-btn" data-filter="connection-sent"><span>🔵 Connection Sent</span><span class="count" id="countSent">0</span></div>
+  <div class="stage-btn" data-filter="connected"><span>🟢 Connected</span><span class="count" id="countConnected">0</span></div>
+</div>
+
+<div class="container">
+  <div class="card" id="mainCard">
+    <div class="card-header">
+      <div class="company-section">
+        <div class="company-name" id="companyName">Loading...</div>
+        <div class="contact-info" id="contactInfo">Loading contact info...</div>
+      </div>
+      <div class="stage-badge stage-prospect" id="stageBadge">Prospect</div>
+    </div>
+    
+    <div class="request-section">
+      <div class="request-label">💬 Connection Request</div>
+      <div class="request-box" id="requestBox">
+        <div class="request-text" id="requestText">Loading...</div>
+        <div class="copy-feedback" id="copyFeedback">✓ Copied!</div>
+      </div>
+    </div>
+    
+    <div class="intel-section" id="intelSection">
+      <div class="intel-label">🎯 Why This Matters</div>
+      <div class="intel-text" id="intelText">Loading intel...</div>
+    </div>
+    
+    <div class="actions">
+      <button class="btn btn-copy" id="copyBtn" title="Copy connection request (C)">
+        📋 Copy
+      </button>
+      <button class="btn btn-linkedin" id="linkedinBtn" title="Open LinkedIn (L)">
+        💼 LinkedIn
+      </button>
+      <button class="btn btn-next" id="nextBtn" title="Next contact (Space)">
+        Next →
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="shortcuts">
+  <div class="shortcut"><span class="key">C</span> Copy</div>
+  <div class="shortcut"><span class="key">L</span> LinkedIn</div>
+  <div class="shortcut"><span class="key">← →</span> Navigate</div>
+  <div class="shortcut"><span class="key">Space</span> Next</div>
+</div>
+
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+// All targets from BD Command Center + today's hot intel
+const TARGETS = [
+  {company:'Phantom',contact:'Chris Kalani',title:'CPO',tier:1,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Chris%20Kalani%20Phantom',intel:'#1 Solana wallet; multi-chain expansion + finance platform narrative. 15M users.',connectRequest:"Hi Chris — Phantom's multi-chain UX is best-in-class. Token creation as a native feature could keep your 15M users in-app instead of going to external launchers. Worth exploring?"},
+  {company:'MetaMask',contact:'Benjamin Lavergne',title:'Business Development',tier:1,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Benjamin%20Lavergne%20MetaMask',intel:'30M+ users, default Web3 entry point. Portfolio already aggregates DeFi — token creation is the natural next feature.',connectRequest:"Hi Benjamin — MetaMask's 30M users currently leave to create tokens on external launchers. A native 'Create' feature (powered by our audited APIs) keeps them in-app + opens a new fee stream. Worth a 10-min exploration?"},
+  {company:'Coinbase Wallet',contact:'Coinbase Wallet BD Team',title:'Business Development / Product',tier:1,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Coinbase%20Wallet%20business%20development',intel:'Self-custody wallet + Base L2 growth. 10M+ users. Smart wallet momentum.',connectRequest:"Hi there — Base ecosystem growth is impressive, and Coinbase Wallet is becoming the default smart wallet for mainstream users. Native token creation could accelerate Base adoption further. We build the issuance APIs for exactly this. Worth exploring?"},
+  {company:'BitGo',contact:'VP Growth / BD',title:'VP Growth',tier:1,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=BitGo%20VP%20Growth',intel:'🚨 HOT: InvestiFi partnership (Feb 10) + Polymesh RWA tokenization support. Token creation pipeline expanding.',connectRequest:'BitGo — InvestiFi partnership (Feb 10) + Polymesh RWA support signals real expansion in token issuance. We build MiCA-compliant creation APIs that could accelerate your RWA tokenization roadmap. Worth a quick sync?'},
+  {company:'Copper',contact:'BD Team',title:'Business Development',tier:1,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Copper%20crypto%20business%20development',intel:'🚨 HOT: IPO talks with Goldman/Citi/Deutsche Bank (Feb 11). Enterprise token custody leader.',connectRequest:'Copper — IPO talks with major banks signal major growth. Your institutional custody clients increasingly need token creation, not just custody. We provide the compliant issuance layer. Quick exploration?'},
+  {company:'Fireblocks',contact:'Adam Levine',title:'VP Business Development',tier:1,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Adam%20Levine%20Fireblocks',intel:'Institutional OS narrative; tokenization demand from enterprise clients.',connectRequest:"Hi Adam — Fireblocks' tokenization platform serves 1800+ institutions. Bitbond's MiCA-compliant issuance templates could complement your offering for EU clients. Quick sync?"},
+  {company:'Kraken',contact:'Joel S.',title:'VP BD & Corp Dev',tier:1,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Joel%20S%20Kraken',intel:'Payward shared-infrastructure strategy aligns with API model.',connectRequest:'Joel — the Payward rebrand and shared infra strategy is smart. I lead BD at Bitbond (token creation API). One integration serving multiple Payward platforms seems aligned. Open to connect?'},
+  {company:'Trust Wallet',contact:'Head of Product',title:'Product Leadership',tier:1,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Trust%20Wallet%20Head%20of%20Product',intel:'130M+ users across 100+ chains.',connectRequest:"Hi there — Trust Wallet's 130M+ user reach across 100+ chains is unmatched. Native token creation could keep users in-app. We build exactly that infra. Quick chat?"},
+  {company:'Safe',contact:'Lukas Schor',title:'Co-founder',tier:1,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Lukas%20Schor%20Safe%20global',intel:'Secures $100B+ for DAOs and institutions.',connectRequest:'Hi Lukas — Safe secures $100B+ for organizations that often need to create tokens too. Audited issuance as a Safe module could be powerful. Worth a chat?'},
+  {company:'Ledger',contact:'Ledger BD Team',title:'VP Partnerships / Head of Ledger Live',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Ledger%20VP%20Business%20Development',intel:'Security-first brand can uniquely own safe token creation.',connectRequest:"Hi there — Ledger's security standard is the gold standard. Token creation with hardware signing from day one could serve your institutional users well. Quick exploration?"},
+  {company:'Rabby Wallet',contact:'Hongbo Tang',title:'Co-founder, DeBank',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Hongbo%20Tang%20DeBank',intel:'Power-user wallet; token creators are core audience.',connectRequest:"Hi Hongbo — Rabby's security-first wallet approach is best-in-class. Secure token creation (audited + simulated) could be a natural extension. Interested in exploring?"},
+  {company:'Keplr Wallet',contact:'Josh Lee',title:'Co-founder, Chainapsis',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Josh%20Lee%20Chainapsis%20Keplr',intel:'Cosmos ecosystem fit; IBC-native issuance workflows.',connectRequest:'Hi — Keplr has become the gateway to Cosmos users. I lead BD at Bitbond (token creation API). Curious to explore IBC-friendly token creation capabilities inside Keplr. Would be great to connect.'},
+  {company:'Dynamic',contact:'Itai Turbahn',title:'CEO (now part of Fireblocks)',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Dynamic.xyz%20founder',intel:'Embedded wallet infra + stablecoin account momentum.',connectRequest:"Itai — I've been following Dynamic's stablecoin account push. I lead BD at Bitbond (token creation API). There's a natural fit in giving Dynamic customers wallet + auth + issuance in one stack. Open to connect?"},
+  {company:'Revolut',contact:'Head of Crypto / VP Product Wealth',title:'Product Leadership',tier:1,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Revolut%20Head%20of%20Crypto',intel:'Global neobank distribution; tokenized loyalty/partner assets fit.',connectRequest:"Hi Josh — Revolut's crypto + stock token offering is strong. Exploring how regulated token *creation* APIs could extend it further. Quick chat worth it?"},
+  {company:'Robinhood',contact:'GM Crypto / VP Product Crypto',title:'Crypto Product Lead',tier:1,stage:'connection-sent',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Robinhood%20GM%20Crypto',intel:'Simplifies retail finance; token campaign rails could drive engagement.',connectRequest:"Hi there — Robinhood's crypto expansion is impressive. Curious if token *creation* (not just trading) is on the roadmap? We power that infra for apps like yours."},
+  {company:'PayPal / Venmo',contact:'VP Product Consumer Payments/Crypto',title:'Payments Product Leadership',tier:1,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=PayPal%20VP%20Product%20Crypto',intel:'Mainstream consumer payments and crypto rails.',connectRequest:"Hi there — PYUSD showed PayPal's tokenization vision. Exploring how merchant/creator token creation APIs could be the next step. Worth 15 min?"},
+  {company:'Cash App',contact:'Head of Product Crypto/Commerce',title:'Product Lead',tier:1,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Cash%20App%20Head%20of%20Product%20Crypto',intel:'Strong engagement loops; tokenized rewards/creator mechanics are adjacent.',connectRequest:"Hi there — Cash App's BTC experience is best-in-class. Wondering if creator/community token launching is on your radar. We build the infra for exactly that."},
+  {company:'Nubank',contact:'Head of Crypto / VP Product',title:'Crypto/Product Leadership',tier:1,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Nubank%20Head%20of%20Crypto',intel:'LATAM scale + tokenized loyalty pilots fit naturally.',connectRequest:"Hi there — Nubank + Nucripto serving 100M users is incredible. Token creation APIs could be the next unlock for LATAM. Quick product fit chat?"},
+  {company:'Crypto.com',contact:'Crypto.com Wallet Team',title:'Head of Wallet Product / VP DeFi',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Crypto.com%20Wallet%20Product',intel:'Super-app strategy; token creation could complete ecosystem loop.',connectRequest:"Hi — I've been following Crypto.com's super-app execution. I lead BD at Bitbond, where we power token creation APIs for wallets/platforms. Think there may be strong fit around rewards + creator token rails. Open to connect?"},
+  {company:'Rainbow',contact:'Mike Demarais',title:'Co-founder & CEO',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Mike%20Demarais%20Rainbow%20wallet',intel:'Design-first wallet for crypto-native users.',connectRequest:"Hi Mike — Rainbow's design-first approach to crypto is refreshing. Token creation with that same UX polish could be a game-changer. Worth exploring together?"},
+  {company:'Zerion',contact:'Evgeny Yurtaev',title:'CEO & Co-founder',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Evgeny%20Yurtaev%20Zerion',intel:'DeFi-native users; DNA identity layer.',connectRequest:'Hi Evgeny — Zerion\'s DeFi-native users are prime token creators. Adding issuance to your DNA identity layer could be powerful. Quick product exploration?'},
+  {company:'Argent',contact:'Itamar Lesuisse',title:'CEO & Co-founder',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Itamar%20Lesuisse%20Argent',intel:'StarkNet smart wallet leading UX innovation.',connectRequest:"Hi Itamar — Argent's StarkNet smart wallet is leading UX innovation. Native token creation for StarkNet could position Argent as the builder wallet. Quick chat?"},
+  {company:'Exodus',contact:'JP Richardson',title:'CEO & Co-founder',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=JP%20Richardson%20Exodus%20wallet',intel:'Built-in exchange shows users want in-app crypto actions.',connectRequest:"Hi JP — Exodus's built-in exchange shows your users want in-app crypto actions. Token creation could be the next monetizable feature. Quick product fit chat?"},
+  {company:'Uniswap',contact:'Hayden Adams',title:'Founder',tier:1,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Hayden%20Adams%20Uniswap',intel:'$2T+ traded but tokens created elsewhere first.',connectRequest:'Hi Hayden — Uniswap traded $2T+ but tokens are always created elsewhere first. "Create & List" powered by Bitbond APIs could capture the full lifecycle. Interested?'},
+  {company:'1inch',contact:'Sergej Kunz',title:'Co-founder',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Sergej%20Kunz%201inch',intel:'Developer Portal powers trading for other apps.',connectRequest:'Hi Sergej — 1inch\'s Developer Portal already powers trading for other apps. Token creation APIs could extend that to full lifecycle infra. Quick product chat?'},
+  {company:'Immutable',contact:'VP Partnerships / Head of Ecosystem',title:'Partnerships Leadership',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Immutable%20VP%20Partnerships',intel:'Gateway for mainstream Web3 game studios.',connectRequest:"Hi there — Immutable's 300+ game studio ecosystem is impressive. We build token creation APIs that could help your partners launch reward/utility tokens faster. Interested?"},
+  {company:'LINE NEXT',contact:'Head of Web3 Product / BD',title:'Web3 Product Leader',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=LINE%20NEXT%20Head%20of%20Product%20Web3',intel:'Mini-app distribution + brand/creator campaign potential in Asia.',connectRequest:"Hi there — LINE NEXT's mini-app ecosystem + DOSI is fascinating. We build token creation APIs that could help your publishers launch faster. Quick chat?"},
+  {company:'Telegram / TON Apps',contact:'Platform Partnerships / TON BD',title:'Ecosystem Partnerships',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Telegram%20TON%20partnerships',intel:'Mini-app distribution and TON ecosystem growth.',connectRequest:"Hi there — TON mini-app ecosystem growth is explosive. We provide standardized token creation APIs that could help publishers launch faster + safer. Interested?"},
+  {company:'Farcaster',contact:'Co-founder / Head of Ecosystem',title:'Ecosystem Lead',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Farcaster%20Head%20of%20Ecosystem',intel:'Crypto-native social graph; creator/community token primitives fit.',connectRequest:"Hi there — Frames are changing what's possible in social. Token creation as a Frame primitive could unlock creator monetization. Worth exploring together?"},
+  {company:'Zora',contact:'Head of Product / Ecosystem',title:'Product Leadership',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Zora%20Head%20of%20Product',intel:'Creator platform; memberships/rewards token primitives are adjacent.',connectRequest:"Hi there — Zora's creator platform is best-in-class for media. Adding fungible token creation (memberships, utility) could expand the creator toolkit. Quick chat?"},
+  {company:'Discord',contact:'Product Lead Communities/Monetization',title:'Product Lead',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Discord%20product%20lead%20monetization',intel:'Community + gaming hub; tokenized memberships/rewards are a fit.',connectRequest:"Hi there — Discord's creator monetization is growing fast. Tokenized memberships/rewards could be the next layer. We build the issuance infra. Quick exploration?"},
+  {company:'Epic Games',contact:'VP Platform / Creator Economy',title:'Platform Leadership',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Epic%20Games%20VP%20Creator%20Economy',intel:'Large creator economy; programmable reward assets are adjacent.',connectRequest:"Hi there — Epic's Creator Economy 2.0 is leading gaming. Token infrastructure for creator rewards/brand assets could be the next evolution. Interested in an architecture review?"},
+  {company:'Roblox',contact:'Head of Economy / Product Monetization',title:'Economy Leadership',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Roblox%20Head%20of%20Economy',intel:'Massive UGC economy; cross-experience loyalty programs fit.',connectRequest:"Hi there — Roblox's economy is world-class. Token infrastructure for creator incentives and cross-experience loyalty could extend it further. Quick fit conversation?"},
+  {company:'Bitget Wallet',contact:'Head of Product',title:'Product Leadership',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Bitget%20Wallet%20product',intel:'Launchpad features show strong demand.',connectRequest:"Hi there — Bitget Wallet's launchpad features show strong demand. Enterprise-grade token creation APIs could level up the launch experience. Worth exploring?"},
+  {company:'OKX Wallet',contact:'Head of Web3 Product',title:'Web3 Product Lead',tier:2,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=OKX%20Web3%20product',intel:'80+ chain DeFi suite is comprehensive.',connectRequest:"Hi there — OKX Wallet's 80+ chain DeFi suite is comprehensive. Token creation would complete the stack and keep users in-ecosystem. Quick chat?"},
+  {company:'World App',contact:'Head of Product Partnerships',title:'Partnerships Lead',tier:3,stage:'prospect',linkedin:'https://www.linkedin.com/search/results/people/?keywords=World%20App%20Head%20of%20Partnerships',intel:'Identity + onboarding stack; verified-user distribution angle.',connectRequest:"Hi there — World App's verified-human distribution is unique. Token creation APIs with anti-sybil guarantees could be powerful for your ecosystem. Worth exploring?"}
+];
+
+// State
+let currentIndex = 0;
+let filteredTargets = [];
+let currentFilter = 'all';
+
+// Stage config
+const STAGES = {
+  'prospect': { label: 'Prospect', class: 'stage-prospect', color: '#8892b0' },
+  'connection-sent': { label: 'Connection Sent', class: 'stage-connection-sent', color: '#60a5fa' },
+  'connected': { label: 'Connected', class: 'stage-connected', color: '#34d399' },
+  'replied': { label: 'Replied', class: 'stage-replied', color: '#fb923c' },
+  'meeting-booked': { label: 'Meeting Booked', class: 'stage-meeting-booked', color: '#a78bfa' },
+  'closed-won': { label: 'Closed Won', class: 'stage-closed-won', color: '#2dd4bf' },
+  'closed-lost': { label: 'Closed Lost', class: 'stage-closed-lost', color: '#f87171' }
+};
+
+// Filter targets
+function filterTargets(filter) {
+  if (filter === 'all') {
+    return TARGETS.filter(t => t.stage === 'prospect' || t.stage === 'connection-sent');
+  }
+  return TARGETS.filter(t => t.stage === filter);
+}
+
+// Update counts
+function updateCounts() {
+  const all = TARGETS.filter(t => t.stage === 'prospect' || t.stage === 'connection-sent').length;
+  const prospect = TARGETS.filter(t => t.stage === 'prospect').length;
+  const sent = TARGETS.filter(t => t.stage === 'connection-sent').length;
+  const connected = TARGETS.filter(t => t.stage === 'connected').length;
+  
+  document.getElementById('countAll').textContent = all;
+  document.getElementById('countProspect').textContent = prospect;
+  document.getElementById('countSent').textContent = sent;
+  document.getElementById('countConnected').textContent = connected;
+}
+
+// Render current target
+function render() {
+  const target = filteredTargets[currentIndex];
+  if (!target) {
+    showEmpty();
+    return;
+  }
+  
+  const stage = STAGES[target.stage] || STAGES['prospect'];
+  
+  document.getElementById('companyName').textContent = target.company;
+  document.getElementById('contactInfo').innerHTML = `<strong>${target.contact}</strong><br>${target.title}`;
+  document.getElementById('requestText').textContent = target.connectRequest;
+  document.getElementById('intelText').innerHTML = target.intel ? target.intel.replace(/🚨 HOT:/g, '<strong>🚨 HOT:</strong>') : 'No intel available';
+  
+  const badge = document.getElementById('stageBadge');
+  badge.textContent = stage.label;
+  badge.className = `stage-badge ${stage.class}`;
+  
+  // Update progress
+  const progress = ((currentIndex + 1) / filteredTargets.length) * 100;
+  document.getElementById('progressFill').style.width = `${progress}%`;
+  document.getElementById('progressText').textContent = `Contact ${currentIndex + 1} of ${filteredTargets.length}`;
+  
+  // Reset copy state
+  document.getElementById('requestBox').classList.remove('copied');
+  document.getElementById('copyBtn').classList.remove('copied');
+  document.getElementById('copyBtn').textContent = '📋 Copy';
+}
+
+function showEmpty() {
+  document.getElementById('mainCard').innerHTML = `
+    <div class="empty">
+      <div class="empty-icon">🎉</div>
+      <h2>All caught up!</h2>
+      <p>No more contacts in this filter. Switch to another stage or check back later.</p>
+    </div>
+  `;
+  document.getElementById('progressText').textContent = 'Done!';
+  document.getElementById('progressFill').style.width = '100%';
+}
+
+// Copy to clipboard - fallback for HTTP contexts
+function copyToClipboard() {
+  const target = filteredTargets[currentIndex];
+  if (!target) return;
+  
+  const text = target.connectRequest;
+  
+  // Try modern API first
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(() => showCopySuccess()).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.position = 'fixed';
+  textarea.style.left = '-9999px';
+  textarea.style.top = '0';
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+  
+  try {
+    document.execCommand('copy');
+    showCopySuccess();
+  } catch (err) {
+    showToast('Copy failed — please select and copy manually');
+  }
+  
+  document.body.removeChild(textarea);
+}
+
+function showCopySuccess() {
+  document.getElementById('requestBox').classList.add('copied');
+  document.getElementById('copyBtn').classList.add('copied');
+  document.getElementById('copyBtn').textContent = '✓ Copied!';
+  
+  const feedback = document.getElementById('copyFeedback');
+  feedback.classList.add('show');
+  setTimeout(() => feedback.classList.remove('show'), 2000);
+  
+  showToast('Copied to clipboard!');
+}
+
+// Open LinkedIn
+function openLinkedIn() {
+  const target = filteredTargets[currentIndex];
+  if (!target) return;
+  window.open(target.linkedin, '_blank');
+}
+
+// Navigate
+function next() {
+  if (currentIndex < filteredTargets.length - 1) {
+    const card = document.getElementById('mainCard');
+    card.classList.add('slide-out');
+    setTimeout(() => {
+      currentIndex++;
+      render();
+      card.classList.remove('slide-out');
+      card.classList.add('slide-in');
+      setTimeout(() => card.classList.remove('slide-in'), 400);
+    }, 200);
+  }
+}
+
+function prev() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    render();
+  }
+}
+
+// Toast
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// Stage filter buttons
+document.getElementById('stageSelector').addEventListener('click', (e) => {
+  const btn = e.target.closest('.stage-btn');
+  if (!btn) return;
+  
+  document.querySelectorAll('.stage-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  
+  currentFilter = btn.dataset.filter;
+  filteredTargets = filterTargets(currentFilter);
+  currentIndex = 0;
+  render();
+});
+
+// Button events
+document.getElementById('copyBtn').addEventListener('click', copyToClipboard);
+document.getElementById('linkedinBtn').addEventListener('click', openLinkedIn);
+document.getElementById('nextBtn').addEventListener('click', next);
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT') return;
+  
+  switch(e.key.toLowerCase()) {
+    case 'c':
+      e.preventDefault();
+      copyToClipboard();
+      break;
+    case 'l':
+      e.preventDefault();
+      openLinkedIn();
+      break;
+    case ' ':
+    case 'arrowright':
+      e.preventDefault();
+      next();
+      break;
+    case 'arrowleft':
+      e.preventDefault();
+      prev();
+      break;
+  }
+});
+
+// Init
+updateCounts();
+filteredTargets = filterTargets('all');
+render();
+</script>
+</body>
+</html>

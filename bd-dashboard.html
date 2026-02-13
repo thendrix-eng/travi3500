@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BD Command Center — 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #080b12;
+      --bg-soft: #101625;
+      --panel: rgba(15, 23, 42, 0.56);
+      --panel-strong: rgba(15, 23, 42, 0.82);
+      --line: rgba(148, 163, 184, 0.2);
+      --text: #e5ecff;
+      --muted: #9eacc8;
+      --accent: #7c9cff;
+      --accent-2: #3dd9c5;
+      --danger: #ff7c99;
+      --ok: #43d67d;
+      --radius: 16px;
+      --shadow: 0 16px 40px rgba(0,0,0,.34);
+      --speed: 200ms cubic-bezier(.2,.8,.2,1);
+    }
+    [data-theme="light"] {
+      --bg: #f6f8fc;
+      --bg-soft: #edf2fa;
+      --panel: rgba(255,255,255,0.76);
+      --panel-strong: rgba(255,255,255,0.92);
+      --line: rgba(23, 43, 77, 0.15);
+      --text: #0f1a33;
+      --muted: #58637c;
+      --accent: #315efb;
+      --accent-2: #089981;
+      --danger: #d73767;
+      --ok: #1f9c59;
+      --shadow: 0 14px 36px rgba(16,24,40,.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(1200px 420px at 10% -10%, rgba(124,156,255,.22), transparent 60%),
+        radial-gradient(1000px 380px at 85% -5%, rgba(61,217,197,.18), transparent 60%),
+        var(--bg);
+      min-height: 100vh;
+    }
+    .wrap { max-width: 1260px; margin: 0 auto; padding: 20px 16px 80px; }
+    .glass {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(16px) saturate(140%);
+      -webkit-backdrop-filter: blur(16px) saturate(140%);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .topbar {
+      position: sticky; top: 10px; z-index: 40;
+      display: grid; grid-template-columns: 1fr 1.2fr auto auto; gap: 10px;
+      align-items: center; padding: 12px;
+    }
+    .tab-switcher {
+      margin-top: 10px;
+      padding: 6px;
+      display: inline-flex;
+      gap: 6px;
+    }
+    .tab-btn {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 700;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: all var(--speed);
+    }
+    .tab-btn.active {
+      color: #fff;
+      border-color: transparent;
+      background: linear-gradient(120deg, var(--accent), #6590ff);
+    }
+    .brand b { font-size: 14px; letter-spacing: .2px; }
+    .brand p { margin: 4px 0 0; font-size: 12px; color: var(--muted); }
+    .search input, select {
+      width: 100%; background: transparent; border: 1px solid var(--line); color: var(--text);
+      border-radius: 12px; padding: 10px 12px; font-size: 13px; outline: none;
+    }
+    .search input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(124,156,255,.18); }
+    .toggle, .btn {
+      border: 1px solid var(--line); background: var(--panel-strong); color: var(--text);
+      border-radius: 12px; padding: 9px 12px; cursor: pointer; transition: transform var(--speed), border-color var(--speed), background var(--speed);
+      font-weight: 600; font-size: 12px;
+    }
+    .btn.primary { background: linear-gradient(120deg, var(--accent), #6590ff); color: #fff; border-color: transparent; }
+    .toggle:hover, .btn:hover { transform: translateY(-1px); border-color: rgba(124,156,255,.5); }
+
+    .grid { margin-top: 14px; display: grid; gap: 12px; grid-template-columns: repeat(12, 1fr); }
+    .kpi { grid-column: span 3; padding: 14px; }
+    .kpi .n { font-size: 30px; font-weight: 800; letter-spacing: -.5px; margin-top: 6px; }
+    .kpi .l { font-size: 12px; color: var(--muted); }
+    .kpi .d { font-size: 11px; color: var(--accent-2); margin-top: 6px; }
+
+    .panel { padding: 14px; }
+    .chart { grid-column: span 6; }
+    .campaign { grid-column: span 6; }
+
+    .section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; gap: 10px; }
+    .section-head h3 { margin: 0; font-size: 14px; }
+    .section-head small { color: var(--muted); font-size: 11px; }
+
+    .stages { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip {
+      border: 1px solid var(--line); border-radius: 999px; padding: 6px 10px; font-size: 11px;
+      color: var(--muted); background: rgba(255,255,255,0.02);
+    }
+    .chip b { color: var(--text); }
+
+    .main { margin-top: 14px; display: grid; gap: 12px; grid-template-columns: 1.25fr .75fr; align-items: start; }
+    .targets { padding: 12px; container-type: inline-size; }
+    .filters { display: grid; grid-template-columns: 1fr 140px 150px; gap: 8px; margin-bottom: 10px; }
+
+    .list { display: grid; gap: 8px; }
+    .card {
+      border: 1px solid var(--line); border-radius: 14px; padding: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.01));
+      transition: transform var(--speed), border-color var(--speed), box-shadow var(--speed);
+    }
+    .card:hover { transform: translateY(-2px); border-color: rgba(124,156,255,.45); }
+    .row { display: grid; grid-template-columns: 1fr auto; gap: 10px; align-items: start; }
+    .name { font-size: 17px; font-weight: 700; }
+    .meta { color: var(--muted); font-size: 12px; margin-top: 4px; }
+    .tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+    .tag { font-size: 10px; border: 1px solid var(--line); border-radius: 999px; padding: 4px 7px; }
+    .status { cursor: pointer; }
+    .actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .mini-btn { font-size: 11px; padding: 7px 9px; border-radius: 10px; }
+    .expand { display: none; border-top: 1px solid var(--line); margin-top: 10px; padding-top: 10px; font-size: 12px; }
+    .card.open .expand { display: block; animation: up .18s ease; }
+    @keyframes up { from { opacity: 0; transform: translateY(5px);} to { opacity:1; transform:none; } }
+
+    .side { display: grid; gap: 12px; }
+    .templates, .resources { padding: 12px; }
+    .template-list { display: grid; gap: 8px; max-height: 320px; overflow: auto; }
+    .template-item { border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+    .template-item h4 { margin: 0 0 6px; font-size: 12px; }
+    .template-item p { margin: 0; font-size: 11px; color: var(--muted); line-height: 1.5; white-space: pre-wrap; }
+
+    .resource-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    body[data-project="tokengems"] {
+      background:
+        radial-gradient(1200px 420px at 10% -10%, rgba(245, 158, 11,.22), transparent 60%),
+        radial-gradient(1000px 380px at 85% -5%, rgba(251, 191, 36,.18), transparent 60%),
+        var(--bg);
+    }
+    body[data-project="tokengems"] {
+      --accent: #f59e0b;
+      --accent-2: #fbbf24;
+    }
+    body[data-project="tokengems"] .tab-btn.active {
+      background: linear-gradient(120deg, #f59e0b, #f97316);
+    }
+
+    .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(3,6,12,.74); z-index: 90; }
+    .modal.show { display: flex; }
+    .modal-card { width: min(980px, 92vw); max-height: 84vh; overflow: auto; padding: 16px; }
+    .md p, .md li { color: var(--muted); }
+    .empty { text-align: center; color: var(--muted); font-size: 12px; padding: 20px; }
+
+    @container (max-width: 820px) {
+      .row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 1080px) {
+      .kpi { grid-column: span 6; }
+      .chart, .campaign { grid-column: span 12; }
+      .main { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 760px) {
+      .topbar { grid-template-columns: 1fr; }
+      .filters { grid-template-columns: 1fr; }
+      .kpi { grid-column: span 12; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar glass">
+    <div class="brand">
+      <b id="brandTitle">BD Command Center</b>
+      <p id="brandSubtitle">Daily operating cockpit · Bitbond partnerships · 2026</p>
+    </div>
+    <div class="search"><input id="globalSearch" placeholder="Search company, contact, note, message… (⌘/Ctrl+K)" /></div>
+    <button class="toggle" id="themeBtn">☾ Dark</button>
+    <button class="btn" id="resourcesBtn">Resources</button>
+  </div>
+
+  <div class="tab-switcher glass" id="tabSwitcher">
+    <button class="tab-btn active" data-tab="bitbond">Bitbond BD</button>
+    <button class="tab-btn" data-tab="tokengems">TokenGems Outreach</button>
+  </div>
+
+  <div class="grid" id="kpis"></div>
+
+  <div class="grid">
+    <div class="panel chart glass">
+      <div class="section-head"><h3>Pipeline & Outreach Health</h3><small>Live from tracked targets</small></div>
+      <canvas id="pipelineChart" height="120"></canvas>
+      <canvas id="statusChart" height="110" style="margin-top:10px"></canvas>
+    </div>
+    <div class="panel campaign glass">
+      <div class="section-head"><h3>Campaign Snapshot</h3><small>4-week cadence</small></div>
+      <div class="stages" id="stageRollup"></div>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="targets glass">
+      <div class="section-head"><h3>Outreach Targets</h3><small id="countLabel"></small></div>
+      <div class="filters">
+        <input id="search" placeholder="Filter targets..." />
+        <select id="tierFilter"><option>All Tiers</option><option>Tier 1</option><option>Tier 2</option><option>Tier 3</option></select>
+        <select id="stageFilter"><option>All Stages</option></select>
+      </div>
+      <div class="list" id="targetList"></div>
+    </div>
+
+    <div class="side">
+      <div class="templates glass">
+        <div class="section-head"><h3>Message Templates</h3><small>Copy-ready</small></div>
+        <div class="template-list" id="templateList"></div>
+      </div>
+      <div class="resources glass">
+        <div class="section-head"><h3>Knowledge Base</h3><small>Battlecards + objections</small></div>
+        <div class="resource-buttons" id="resourceButtons"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal" id="resourceModal">
+  <div class="modal-card glass">
+    <div class="section-head"><h3 id="resourceTitle">Resource</h3><button class="btn mini-btn" id="closeModal">Close</button></div>
+    <div class="md" id="resourceBody"></div>
+  </div>
+</div>
+
+<script>
+const STORAGE_KEY = 'bd_command_center_2026';
+const THEME_KEY = 'bd_theme_2026';
+const STAGES = ['Prospect','Connection Sent','Connected','Replied','Meeting Booked','In Discussion','Closed Won','Closed Lost'];
+
+const TARGETS = [
+  {company:'Phantom',contact:'Chris Kalani',title:'CPO',tier:1,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Chris%20Kalani%20Phantom',intel:'#1 Solana wallet; multi-chain expansion + finance platform narrative.',connectRequest:'Hi Chris — Phantom\'s multi-chain UX is best-in-class. Token creation as a native feature could keep your 15M users in-app instead of going to external launchers. Worth exploring?',message:`Phantom's 15M+ users can swap, stake, and collect across Solana, Ethereum, and Polygon. But when they want to launch a token, they leave Phantom entirely — pump.fun, token launchers, external dApps. That's engagement and fees walking out the door.
+
+Bitbond's token creation API integrates directly into wallet UX. "Create Token" becomes a native Phantom feature — your users stay in-app, you capture issuance fees, and the experience matches Phantom's signature UX polish. We handle smart contracts, audits, and multi-chain deployment.
+
+Travis Hendrix
+Bitbond`},
+  {company:'MetaMask',contact:'Consensys BD Team',title:'Business Development',tier:1,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=MetaMask%20Consensys%20business%20development',intel:'Snaps + institutional momentum via Consensys.',connectRequest:'Hi Patrick — MetaMask Snaps opened up amazing extensibility. Token creation as a Snap/Portfolio feature could be powerful for your 30M+ users. Quick product fit chat?',message:`MetaMask's 30M+ users and Snaps extensibility make it the default Web3 entry point. MetaMask Portfolio already aggregates DeFi actions. Token creation is the natural next Snap — the most-requested capability for wallet-native builders.
+
+Bitbond could power a "Create Token" Snap or Portfolio feature. Your developer ecosystem gets issuance APIs; MetaMask gets a new product surface and fee stream. We handle the contract templates, audits, and chain coverage — your team controls the UX and developer experience.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Coinbase Wallet',contact:'Rishi Dean',title:'VP Product',tier:1,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Rishi%20Dean%20Coinbase',intel:'Self-custody + Base growth = strong fit.',connectRequest:'Hi Rishi — Base ecosystem growth is impressive. Native token creation in Coinbase Wallet could accelerate it further. We build the issuance APIs for exactly this. Interested?',message:`Coinbase Wallet + Base L2 is becoming the gateway for mainstream crypto users. Base is attracting massive builder activity, but token creation still requires external tools and smart contract knowledge.
+
+Bitbond could power native token creation in Coinbase Wallet — especially on Base. Imagine a "Launch on Base" button that handles everything: contract deployment, verification, liquidity setup. This accelerates Base ecosystem growth while giving Coinbase Wallet a unique feature no competitor offers.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Fireblocks',contact:'Adam Levine',title:'VP Business Development',tier:1,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Adam%20Levine%20Fireblocks',intel:'Institutional OS narrative; tokenization demand from enterprise clients.',connectRequest:'Hi Adam — Fireblocks\' tokenization platform serves 1800+ institutions. Bitbond\'s MiCA-compliant issuance templates could complement your offering for EU clients. Quick sync?',message:`Fireblocks already serves 1800+ institutions with MPC custody and has a tokenization platform. The opportunity isn't competing — it's complementing. Bitbond's pre-audited token creation templates and regulatory compliance modules could extend Fireblocks' tokenization offering.
+
+Specifically, Bitbond brings asset-specific issuance templates (security tokens, utility tokens, loyalty tokens) with built-in compliance for EU/MiCA regulations. This gives Fireblocks' institutional clients more out-of-the-box options while maintaining your security and policy engine standards.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Kraken',contact:'Joel S.',title:'VP BD & Corp Dev',tier:1,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Joel%20S%20Kraken',intel:'Payward shared-infrastructure strategy aligns with API model.',connectRequest:'Joel — the Payward rebrand and shared infra strategy is smart. I lead BD at Bitbond (token creation API). One integration serving multiple Payward platforms seems aligned. Open to connect?',message:`Hi Joel,
+
+The Payward infrastructure direction is smart — build once, serve many products.
+
+Bitbond can add a regulated token creation layer at the platform level (BaFin-regulated, MiCA-ready, audited smart contracts), so multiple product lines can benefit from one integration.
+
+Worth a brief discussion?
+
+Travis Hendrix
+Bitbond`},
+  {company:'Crypto.com',contact:'Crypto.com Wallet Team',title:'Head of Wallet Product / VP DeFi',tier:2,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Crypto.com%20Wallet%20Product',intel:'Super-app strategy; token creation could complete ecosystem loop.',connectRequest:'Hi — I’ve been following Crypto.com’s super-app execution. I lead BD at Bitbond, where we power token creation APIs for wallets/platforms. Think there may be strong fit around rewards + creator token rails. Open to connect?',message:`Hi there,
+
+Crypto.com’s super-app direction is clear: complete crypto finance in one ecosystem.
+
+Bitbond can add audited token creation rails for rewards, partner campaigns, and creator-led assets without diverting core engineering capacity.
+
+Would you be open to a short product-fit conversation?
+
+Travis Hendrix
+Bitbond`},
+  {company:'Ledger',contact:'Ledger BD Team',title:'VP Partnerships / Head of Ledger Live',tier:2,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Ledger%20VP%20Business%20Development',intel:'Security-first brand can uniquely own safe token creation.',connectRequest:'Hi there — Ledger\'s security standard is the gold standard. Token creation with hardware signing from day one could serve your institutional users well. Quick exploration?',message:`Ledger protects billions in crypto with hardware-level security. Your institutional and high-net-worth users are increasingly involved in token creation — but they sign issuance transactions on less secure platforms before moving assets to Ledger.
+
+Bitbond's APIs integrated into Ledger Live would enable token creation with hardware wallet signing from the start. Create tokens with the same security standard used to protect them. This is especially compelling for Ledger Enterprise clients launching institutional-grade tokens.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Rabby Wallet',contact:'Hongbo Tang',title:'Co-founder, DeBank',tier:2,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Hongbo%20Tang%20DeBank',intel:'Power-user wallet; token creators are core audience.',connectRequest:'Hi Hongbo — Rabby\'s security-first wallet approach is best-in-class. Secure token creation (audited + simulated) could be a natural extension. Interested in exploring?',message:`Rabby's security-first approach (transaction simulation, risk alerts, pre-sign checks) has earned trust among sophisticated DeFi users. Token creation is one of the riskiest onchain actions — and Rabby is perfectly positioned to make it safe.
+
+Bitbond + Rabby = the most secure token creation experience in crypto. Audited contracts, combined with Rabby's simulation and risk checks, means users can create tokens with confidence. This is a unique positioning that no other wallet can match.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Keplr Wallet',contact:'Josh Lee',title:'Co-founder, Chainapsis',tier:2,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Josh%20Lee%20Chainapsis%20Keplr',intel:'Cosmos ecosystem fit; IBC-native issuance workflows.',connectRequest:'Hi — Keplr has become the gateway to Cosmos users. I lead BD at Bitbond (token creation API). Curious to explore IBC-friendly token creation capabilities inside Keplr. Would be great to connect.',message:`Hi there,
+
+Keplr sits at the center of Cosmos user activity.
+
+Bitbond can provide token creation infrastructure that enables projects and communities to launch assets without leaving Keplr flows. Audited contracts, white-label UX, and faster time to market.
+
+Would you be open to exploring fit?
+
+Travis Hendrix
+Bitbond`},
+  {company:'Dynamic',contact:'Itai Turbahn',title:'CEO (now part of Fireblocks)',tier:2,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Dynamic.xyz%20founder',intel:'Embedded wallet infra + stablecoin account momentum.',connectRequest:'Itai — I’ve been following Dynamic’s stablecoin account push. I lead BD at Bitbond (token creation API). There’s a natural fit in giving Dynamic customers wallet + auth + issuance in one stack. Open to connect?',message:`Hi Itai,
+
+Dynamic is building compelling wallet + auth infrastructure for global money apps.
+
+Bitbond can complement that with audited token creation APIs, so your customers can ship issuance features without contract ops overhead. One integration unlocks token rails for many apps.
+
+Open to a quick architecture conversation?
+
+Travis Hendrix
+Bitbond`},
+  {company:'Revolut',contact:'Head of Crypto / VP Product Wealth',title:'Product Leadership',tier:1,source:'Consumer apps',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Revolut%20Head%20of%20Crypto',intel:'Global neobank distribution; tokenized loyalty/partner assets fit.',connectRequest:'Hi Josh — Revolut\'s crypto + stock token offering is strong. Exploring how regulated token *creation* APIs could extend it further. Quick chat worth it?',message:`Revolut already lets 50M+ users trade crypto and stock tokens across Europe. The missing piece? Letting those same users *create* tokens — for loyalty programs, community projects, or branded assets — without leaving Revolut.
+
+Bitbond provides audited token creation APIs that plug into existing fintech stacks. Your team controls UX and policy; we handle smart contracts, audits, and multi-chain deployment. Given Revolut's MiCA licensing, this positions you as the first regulated super-app with compliant token issuance built in.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Robinhood',contact:'GM Crypto / VP Product Crypto',title:'Crypto Product Lead',tier:1,source:'Consumer apps',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Robinhood%20GM%20Crypto',intel:'Simplifies retail finance; token campaign rails could drive engagement.',connectRequest:'Hi there — Robinhood\'s crypto expansion is impressive. Curious if token *creation* (not just trading) is on the roadmap? We power that infra for apps like yours.',message:`Robinhood EU's stock tokens and 65+ crypto assets show your users want sophisticated digital asset access. But right now they can only trade what exists — they can't originate.
+
+Bitbond's token creation API would let Robinhood users launch community tokens, creator assets, or tokenized project shares directly in-app. It's a new revenue stream (issuance fees) and a natural extension of "democratize finance." API integration, not months of smart contract work.
+
+Travis Hendrix
+Bitbond`},
+  {company:'PayPal / Venmo',contact:'VP Product Consumer Payments/Crypto',title:'Payments Product Leadership',tier:1,source:'Consumer apps',linkedin:'https://www.linkedin.com/search/results/people/?keywords=PayPal%20VP%20Product%20Crypto',intel:'Mainstream consumer payments and crypto rails.',connectRequest:'Hi there — PYUSD showed PayPal\'s tokenization vision. Exploring how merchant/creator token creation APIs could be the next step. Worth 15 min?',message:`PYUSD proved PayPal takes tokenization seriously. The next unlock is enabling your 400M+ users and merchants to create their *own* tokens — branded loyalty, community rewards, or event access passes — with the same compliance rigor behind PYUSD.
+
+Bitbond provides the issuance infrastructure so PayPal's product team can offer merchant token creation without building smart contract ops internally. Think "Shopify for tokens" embedded in PayPal's merchant dashboard. Compliant, audited, API-first.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Cash App',contact:'Head of Product Crypto/Commerce',title:'Product Lead',tier:1,source:'Consumer apps',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Cash%20App%20Head%20of%20Product%20Crypto',intel:'Strong engagement loops; tokenized rewards/creator mechanics are adjacent.',connectRequest:'Hi there — Cash App\'s BTC experience is best-in-class. Wondering if creator/community token launching is on your radar. We build the infra for exactly that.',message:`Cash App built the most frictionless Bitcoin buying experience for 57M+ users. But Bitcoin is just the entry point — your younger, creator-focused demographic is already launching tokens on other platforms.
+
+Bitbond's API would bring token creation into Cash App: artist tokens, community currencies, branded drops. Your users stay in Cash App instead of leaving for pump.fun or other launchers. You capture issuance fees and deepen engagement with creator economy use cases that match Cash App's demographic perfectly.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Nubank',contact:'Head of Crypto / VP Product',title:'Crypto/Product Leadership',tier:1,source:'Consumer apps',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Nubank%20Head%20of%20Crypto',intel:'LATAM scale + tokenized loyalty pilots fit naturally.',connectRequest:'Hi there — Nubank + Nucripto serving 100M users is incredible. Token creation APIs could be the next unlock for LATAM. Quick product fit chat?',message:`Nubank's 100M customers make it the largest digital bank in LATAM, and Nucripto shows the appetite for crypto. But token creation is where the real differentiation lies — imagine Nubank users launching community tokens, local business rewards, or creator assets natively.
+
+Bitbond's APIs handle compliant issuance across chains so Nubank's team can focus on UX. Being first to offer regulated token creation in LATAM would be a significant competitive moat. The infrastructure is proven — we just need to map it to your product.
+
+Travis Hendrix
+Bitbond`},
+  {company:'LINE NEXT',contact:'Head of Web3 Product / BD',title:'Web3 Product Leader',tier:2,source:'Consumer apps',linkedin:'https://www.linkedin.com/search/results/people/?keywords=LINE%20NEXT%20Head%20of%20Product%20Web3',intel:'Mini-app distribution + brand/creator campaign potential in Asia.',connectRequest:'Hi there — LINE NEXT\'s mini-app ecosystem + DOSI is fascinating. We build token creation APIs that could help your publishers launch faster. Quick chat?',message:`LINE NEXT is building the bridge between LINE's 200M+ users and Web3 through DOSI and the Finschia ecosystem. The mini-app distribution is unmatched in Asia for consumer crypto onboarding.
+
+Bitbond can provide scalable, policy-controlled token creation for LINE's creator and brand partners. Instead of each mini-app publisher reinventing token contracts, they get audited issuance APIs — faster launches, consistent compliance, and LINE maintains ecosystem quality standards. This is infrastructure that scales with your partner network.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Telegram / TON Apps',contact:'Platform Partnerships / TON BD',title:'Ecosystem Partnerships',tier:2,source:'Consumer apps',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Telegram%20TON%20partnerships',intel:'Mini-app distribution and TON ecosystem growth.',connectRequest:'Hi there — TON mini-app ecosystem growth is explosive. We provide standardized token creation APIs that could help publishers launch faster + safer. Interested?',message:`Telegram's mini-app ecosystem is the fastest consumer crypto onboarding channel globally — 950M+ users with a built-in TON wallet. But every mini-app publisher currently reinvents token smart contracts independently, creating inconsistent quality and compliance risk.
+
+Bitbond could provide a standardized issuance layer for the TON ecosystem — audited token creation APIs that any mini-app publisher can plug into. This raises ecosystem quality, reduces publisher dev time, and gives Telegram a governance layer over token launches happening in its distribution channels.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Farcaster',contact:'Co-founder / Head of Ecosystem',title:'Ecosystem Lead',tier:2,source:'Consumer apps',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Farcaster%20Head%20of%20Ecosystem',intel:'Crypto-native social graph; creator/community token primitives fit.',connectRequest:'Hi there — Frames are changing what\'s possible in social. Token creation as a Frame primitive could unlock creator monetization. Worth exploring together?',message:`Farcaster's Frames already let creators build interactive onchain experiences directly in the social feed. The natural extension is making token creation a first-class Frame primitive — creator tokens, channel memberships, tipping currencies.
+
+Bitbond's APIs would let any Farcaster creator launch audited tokens through a Frame interaction. No separate dApp, no leaving the social feed. This could power the monetization layer that turns Farcaster from social network into creator economy platform. API-first, so your protocol team maintains control.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Zora',contact:'Head of Product / Ecosystem',title:'Product Leadership',tier:2,source:'Consumer apps',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Zora%20Head%20of%20Product',intel:'Creator platform; memberships/rewards token primitives are adjacent.',connectRequest:'Hi there — Zora\'s creator platform is best-in-class for media. Adding fungible token creation (memberships, utility) could expand the creator toolkit. Quick chat?',message:`Zora has become the default surface for onchain creator media with 1M+ creators minting on your L2. The creator reward model is elegant. But creators want more than collectibles — they want fungible tokens for memberships, fan utilities, and community governance.
+
+Bitbond can extend Zora's creator toolkit with audited fungible token creation: membership tokens, access passes, community currencies. This keeps creators on Zora instead of going elsewhere for token launches. API integration that complements your existing minting UX rather than competing with it.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Reddit',contact:'Director Product Monetization',title:'Community/Product Monetization',tier:2,source:'Consumer apps',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Reddit%20Director%20Product%20Monetization',intel:'Massive communities with prior token experiments.',connectRequest:'Hi there — Community Points showed huge demand. We build managed token issuance infra that handles the compliance/ops complexity. Worth a scoped pilot discussion?',message:`Reddit's Community Points experiment proved massive demand — millions of users engaged with tokenized rewards. The shutdown was about infrastructure complexity and compliance risk, not lack of interest.
+
+Bitbond solves exactly those problems. Our managed issuance APIs handle the smart contract ops, audits, and compliance controls that made Community Points unsustainable to maintain internally. Reddit could relaunch community tokens with Bitbond handling the hard parts — your team focuses on product and community moderation, we handle issuance infrastructure.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Discord',contact:'Product Lead Communities/Monetization',title:'Product Lead',tier:2,source:'Consumer apps',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Discord%20product%20lead%20monetization',intel:'Community + gaming hub; tokenized memberships/rewards are a fit.',connectRequest:'Hi there — Discord\'s creator monetization is growing fast. Tokenized memberships/rewards could be the next layer. We build the issuance infra. Quick exploration?',message:`Discord's Server Subscriptions show strong creator monetization momentum. But tokenized memberships could unlock transferable access, secondary markets, and cross-server interoperability — things fiat subscriptions can't do.
+
+Bitbond's APIs would let server owners create membership tokens, reward currencies, and event access passes without Discord owning smart contract complexity. Start as a premium feature for top servers, scale from there. We handle issuance and compliance; Discord maintains platform governance.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Epic Games',contact:'VP Platform / Creator Economy',title:'Platform Leadership',tier:2,source:'Consumer apps',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Epic%20Games%20VP%20Creator%20Economy',intel:'Large creator economy; programmable reward assets are adjacent.',connectRequest:'Hi there — Epic\'s Creator Economy 2.0 is leading gaming. Token infrastructure for creator rewards/brand assets could be the next evolution. Interested in an architecture review?',message:`Fortnite's Creator Economy 2.0 already distributes real revenue to creators. The next evolution is tokenized creator assets — tradeable items, reward tokens, and brand collaboration tokens that live beyond a single game session.
+
+Bitbond provides enterprise-grade token issuance APIs with the governance controls Epic needs. Centralized policy management, audit trails, and compliance features that work for a platform serving 350M+ accounts. Start with a creator reward pilot, then expand to brand partnerships and cross-game assets.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Roblox',contact:'Head of Economy / Product Monetization',title:'Economy Leadership',tier:2,source:'Consumer apps',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Roblox%20Head%20of%20Economy',intel:'Massive UGC economy; cross-experience loyalty programs fit.',connectRequest:'Hi there — Roblox\'s economy is world-class. Token infrastructure for creator incentives and cross-experience loyalty could extend it further. Quick fit conversation?',message:`Roblox's creator economy is among the largest in gaming — 80M+ daily users and a mature Robux economy. Regional pricing for passes shows sophisticated economic thinking. But Robux is a single centralized currency.
+
+Bitbond could enable tokenized creator incentives and cross-experience loyalty assets on top of Roblox's existing economy. Creators could issue reward tokens, experience-specific currencies, or loyalty NFTs with Bitbond handling issuance and Roblox maintaining economic governance. This extends your economy without replacing Robux.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Immutable',contact:'VP Partnerships / Head of Ecosystem',title:'Partnerships Leadership',tier:2,source:'Consumer apps',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Immutable%20VP%20Partnerships',intel:'Gateway for mainstream Web3 game studios.',connectRequest:'Hi there — Immutable\'s 300+ game studio ecosystem is impressive. We build token creation APIs that could help your partners launch reward/utility tokens faster. Interested?',message:`Immutable powers 300+ game studios with NFT infrastructure and zero-gas L2. Your Passport wallet simplifies Web3 onboarding. But partner studios launching utility tokens or reward tokens still need to handle smart contract development independently.
+
+Bitbond's white-label issuance APIs could be the missing piece — partner studios get audited token creation out of the box, faster time-to-market, and Immutable maintains ecosystem standards. This is infrastructure that scales with your partner network, not custom work for each studio.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Parallel Studios',contact:'COO / Head of Ecosystem',title:'Ecosystem Leadership',tier:3,source:'Consumer apps',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Parallel%20Studios%20ecosystem',intel:'Tokenized game economy; lifecycle tooling need.',connectRequest:'Hi there — Parallel\'s PRIME ecosystem across multiple games is compelling. Token lifecycle/issuance tooling could help scale new game economies faster. Quick chat?',message:`Parallel's multi-game ecosystem around PRIME shows sophisticated tokenomics thinking. As you expand into Colony and AI-driven games, each title may need its own economic primitives — reward tokens, season passes, faction currencies.
+
+Bitbond can provide the issuance and lifecycle management tooling so your team focuses on game design and retention mechanics rather than smart contract operations for each new economic primitive. Audited, API-first, with governance controls that keep PRIME's ecosystem coherent.
+
+Travis Hendrix
+Bitbond`},
+  {company:'World App',contact:'Head of Product Partnerships',title:'Partnerships Lead',tier:3,source:'Consumer apps',linkedin:'https://www.linkedin.com/search/results/people/?keywords=World%20App%20Head%20of%20Partnerships',intel:'Identity + onboarding stack; verified-user distribution angle.',connectRequest:'Hi there — World App\'s verified-human distribution is unique. Token creation APIs with anti-sybil guarantees could be powerful for your ecosystem. Worth exploring?',message:`World App's unique positioning — 10M+ verified humans with World ID — makes it the highest-trust distribution channel for token launches. No sybil attacks, real people, verified onchain.
+
+Bitbond's APIs could enable World App ecosystem partners to launch tokens with anti-sybil distribution built in by default. This is uniquely valuable for community tokens, governance experiments, and reward programs where one-person-one-allocation matters. Verified distribution + compliant issuance = a moat no other platform can replicate.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Venice.ai',contact:'Founder / Head of Product',title:'Product Leadership',tier:3,source:'Consumer apps',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Venice.ai%20founder',intel:'AI-native app; tokenized credit/incentive mechanics.',connectRequest:'Hi there — Venice.ai\'s crypto-native AI approach is ahead of the curve. Token creation APIs could help scale your economic experiments (agent credits, creator rewards). Quick chat?',message:`Venice.ai is pioneering the intersection of privacy-first AI and crypto-native economics. VCE for API access shows you understand token utility. As the platform scales, there'll be demand for more granular economic primitives — per-model credits, creator reward tokens, reputation stakes.
+
+Bitbond can provide the issuance infrastructure for expanding Venice's token economy beyond VCE. Audited sub-token creation for specific use cases, governance tools, and compliance controls — so your team can experiment with AI economics without building token infra from scratch each time.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Sleepless AI',contact:'CEO / Head of Growth',title:'Growth/Product Leadership',tier:3,source:'Consumer apps',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Sleepless%20AI%20CEO',intel:'Consumer AI + token ecosystem; governance maturity opportunity.',connectRequest:'Hi there — Sleepless AI\'s AI companion + token model is innovative. Professional issuance/governance tooling could help scale sustainably. Worth a fit check?',message:`Sleepless AI is proving consumer demand for AI-native digital relationships with real tokenized engagement. As your user base grows, the challenge shifts from token hype to sustainable utility — governance, controlled issuance, and compliance become critical.
+
+Bitbond provides the professional issuance and governance infrastructure to help SLP's economy mature. Controlled minting schedules, audit trails, and compliance tooling that signal institutional quality to partners and regulators. This is how token ecosystems transition from growth to sustainability.
+
+Travis Hendrix
+Bitbond`}
+,
+  {company:'Trust Wallet',contact:'Head of Product',title:'Product Leadership',tier:1,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Trust%20Wallet%20Head%20of%20Product',intel:'',connectRequest:'Hi there — Trust Wallet\'s 130M+ user reach across 100+ chains is unmatched. Native token creation could keep users in-app. We build exactly that infra. Quick chat?',message:`Trust Wallet's 130M+ downloads across 100+ chains make it the widest-reach mobile wallet in crypto. Your DApp browser drives significant traffic to external token launchers — but that's users leaving Trust Wallet's ecosystem.
+
+Bitbond's API would make token creation a native Trust Wallet feature. Across 100+ chains, with Binance-grade security standards. Your users create tokens in-app, you capture engagement and potential fees, and the multi-chain coverage matches Trust Wallet's "every chain" positioning perfectly.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Rainbow',contact:'Mike Demarais',title:'Co-founder & CEO',tier:2,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Mike%20Demarais%20Rainbow%20wallet',intel:'',connectRequest:'Hi Mike — Rainbow\'s design-first approach to crypto is refreshing. Token creation with that same UX polish could be a game-changer. Worth exploring together?',message:`Rainbow has the best-designed consumer wallet in crypto — clean, intuitive, delightful. Your users are crypto-native and design-conscious. Token creation with Rainbow's UX standards would be the most elegant launch experience in the market.
+
+Bitbond provides the backend APIs; Rainbow provides the beautiful frontend. Together, it's a "Create Token" flow that matches Rainbow's design philosophy — simple, polished, and just works. This differentiates Rainbow beyond asset management into asset origination.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Zerion',contact:'Evgeny Yurtaev',title:'CEO & Co-founder',tier:2,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Evgeny%20Yurtaev%20Zerion',intel:'',connectRequest:'Hi Evgeny — Zerion\'s DeFi-native users are prime token creators. Adding issuance to your DNA identity layer could be powerful. Quick product exploration?',message:`Zerion's portfolio-first approach and DeFi aggregation serve the most active onchain users. These are exactly the people who create tokens — and currently leave Zerion to do it. Your Zero network and DNA identity layer make native token creation even more compelling.
+
+Bitbond's APIs would let Zerion users create tokens with their DNA identity attached — provenance and creator reputation built in. This extends Zerion from "manage your DeFi" to "build your DeFi" and captures a new user segment: creators, not just traders.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Safe',contact:'Lukas Schor',title:'Co-founder',tier:1,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Lukas%20Schor%20Safe%20global',intel:'',connectRequest:'Hi Lukas — Safe secures $100B+ for organizations that often need to create tokens too. Audited issuance as a Safe module could be powerful. Worth a chat?',message:`Safe secures \$100B+ in assets for DAOs, treasuries, and institutions. Your users are the exact organizations that *need* to create tokens — governance tokens, treasury diversification, grant program tokens — but currently use fragmented tools to do it.
+
+Bitbond's APIs as a Safe module would bring audited token creation into the multi-sig workflow. Create tokens with the same governance controls that protect your treasury. Multi-sig approval for token launches, audit trails, compliance features. This is enterprise-grade issuance that matches Safe's institutional positioning.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Argent',contact:'Itamar Lesuisse',title:'CEO & Co-founder',tier:2,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Itamar%20Lesuisse%20Argent',intel:'',connectRequest:'Hi Itamar — Argent\'s StarkNet smart wallet is leading UX innovation. Native token creation for StarkNet could position Argent as the builder wallet. Quick chat?',message:`Argent's "no seed phrase" approach and StarkNet integration make it the most accessible smart wallet in crypto. Your users are onboarding to StarkNet for the first time — and many will want to create tokens as the ecosystem grows.
+
+Bitbond could provide token creation APIs optimized for StarkNet's unique architecture (Cairo contracts, account abstraction). Being the first wallet to offer native StarkNet token creation positions Argent as *the* builder wallet for the ecosystem, not just a consumer wallet.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Exodus',contact:'JP Richardson',title:'CEO & Co-founder',tier:2,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=JP%20Richardson%20Exodus%20wallet',intel:'',connectRequest:'Hi JP — Exodus\'s built-in exchange shows your users want in-app crypto actions. Token creation could be the next monetizable feature. Quick product fit chat?',message:`Exodus already has a built-in exchange — your users trade without leaving the wallet. Token creation is the natural next step: your users could *launch* tokens without leaving Exodus either.
+
+As a publicly traded company, Exodus has unique opportunities to position token creation as a revenue-generating premium feature. Bitbond's APIs handle the compliance and smart contract complexity, while Exodus captures issuance fees. Institutional-quality infrastructure for a publicly-traded wallet company.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Bitget Wallet',contact:'Head of Product',title:'Product Leadership',tier:2,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Bitget%20Wallet%20product',intel:'',connectRequest:'Hi there — Bitget Wallet\'s launchpad features show strong demand. Enterprise-grade token creation APIs could level up the launch experience. Worth exploring?',message:`Bitget Wallet's multi-chain coverage and integrated DEX create a strong foundation for token launches. Your existing launchpad features show user demand. Bitbond's APIs would add enterprise-grade issuance — audited contracts, multi-chain deployment, and compliance controls — to level up your launch experience.
+
+This positions Bitget Wallet as the professional-grade token launch platform, not just a wallet with basic launch features. Higher quality launches mean better user trust and more repeat usage.
+
+Travis Hendrix
+Bitbond`},
+  {company:'OKX Wallet',contact:'Head of Web3 Product',title:'Web3 Product Lead',tier:2,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=OKX%20Web3%20product',intel:'',connectRequest:'Hi there — OKX Wallet\'s 80+ chain DeFi suite is comprehensive. Token creation would complete the stack and keep users in-ecosystem. Quick chat?',message:`OKX Wallet offers one of the most complete DeFi suites — DEX aggregation, NFT marketplace, Earn, across 80+ chains. The one missing piece is token creation. Your users currently leave the OKX ecosystem to launch tokens.
+
+Bitbond's multi-chain issuance APIs would complete OKX Wallet's DeFi stack. Create tokens on any of your 80+ supported chains, with audited contracts and compliance controls. This keeps users in the OKX ecosystem for their entire token lifecycle — from creation to trading.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Uniswap',contact:'Hayden Adams',title:'Founder',tier:1,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Hayden%20Adams%20Uniswap',intel:'',connectRequest:'Hi Hayden — Uniswap traded $2T+ but tokens are always created elsewhere first. "Create & List" powered by Bitbond APIs could capture the full lifecycle. Interested?',message:`Uniswap processed \$2T+ in trading volume — every token traded on Uniswap had to be created somewhere else first. That's the biggest gap in the Uniswap experience: you're the marketplace but not the factory.
+
+Bitbond's APIs could power "Create & List on Uniswap" — a seamless flow from token creation to liquidity pool setup. With v4 hooks, you could even embed issuance directly into pool creation. This captures the entire token lifecycle instead of just the trading phase.
+
+Travis Hendrix
+Bitbond`},
+  {company:'1inch',contact:'Sergej Kunz',title:'Co-founder',tier:2,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Sergej%20Kunz%201inch',intel:'',connectRequest:'Hi Sergej — 1inch\'s Developer Portal already powers trading for other apps. Token creation APIs could extend that to full lifecycle infra. Quick product chat?',message:`1inch's aggregation layer and Developer Portal serve some of the most sophisticated DeFi users and builders. Your API-first approach already powers other apps' trading features. Token creation is the natural API extension.
+
+Bitbond's issuance APIs could be offered through 1inch's Developer Portal — giving your B2B partners token creation capabilities alongside trading. This expands 1inch's value proposition from "trade infrastructure" to "full token lifecycle infrastructure."
+
+Travis Hendrix
+Bitbond`},
+  {company:'Frame',contact:'Jordan Muir',title:'Creator',tier:3,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Jordan%20Muir%20Frame%20ethereum',intel:'',connectRequest:'Hi Jordan — Frame\'s system-level Web3 approach serves power users who create tokens via separate tools. Native issuance integration could complete the toolkit. Interested?',message:`Frame's system-level Web3 integration and privacy focus serve the most technically sophisticated crypto users — exactly the people who create tokens. But they currently use separate tools for issuance.
+
+Bitbond's APIs as a Frame integration would bring audited token creation into the system-level wallet experience. Create tokens from any dApp through Frame, with hardware wallet signing for security. This positions Frame as the power-user's complete Web3 toolkit.
+
+Travis Hendrix
+Bitbond`},
+  {company:'Trezor',contact:'Matej Zak',title:'CEO, SatoshiLabs',tier:2,source:'Wallet campaign',linkedin:'https://www.linkedin.com/search/results/people/?keywords=Matej%20Zak%20SatoshiLabs',intel:'',connectRequest:'Hi Matej — Trezor\'s open-source + privacy values align well with transparent token creation. Audited issuance with hardware signing could be unique. Worth exploring?',message:`Trezor's open-source philosophy and CoinJoin privacy features attract users who care deeply about transparency and self-sovereignty. Token creation aligns perfectly — your users want to create assets with the same transparency and security standards.
+
+Bitbond's open, audited smart contracts + Trezor's hardware signing = the most transparent and secure token creation workflow available. Open-source issuance templates that Trezor's community can audit. This resonates with your user base's values while adding a powerful new capability.
+
+Travis Hendrix
+Bitbond`}
+];
+
+const templates = [
+  {title:'Connection request (low-pressure)', text:'Hi [Name] — not a sales pitch, just genuinely impressed by [specific company move]. I work on tokenization at Bitbond in Berlin and follow your space closely. Would enjoy being connected.'},
+  {title:'Follow-up Day 3', text:'Quick bump — thought of you after [relevant company update]. Wallets adding native token creation are seeing meaningful power-user retention gains. Happy to share benchmark data if useful.'},
+  {title:'Follow-up Day 7', text:'Worth exploring a 15-min chat? Bitbond can enable token creation in 4-6 weeks (audited, white-label, multi-chain, BaFin-regulated).'},
+  {title:'Follow-up Day 14', text:'Closing the loop for now. If token creation lands on roadmap, I’d love to be your first call. Happy to share integration and compliance brief anytime.'}
+];
+
+const resources = [
+  {label:'Battle Card', file:'md/battlecard.md'},
+  {label:'Objection Handling', file:'md/objections.md'},
+  {label:'Competitive Intel', file:'md/competitive.md'},
+  {label:'Campaign Plan', file:'md/campaign.md'},
+  {label:'Connection Templates', file:'md/connection.md'},
+  {label:'Follow-Ups', file:'md/followup.md'},
+  {label:'Contact Corrections', file:'md/corrections.md'},
+  {label:'Tier 2 Targets', file:'md/tier2.md'}
+];
+
+const TG_LEADS = [{"name": "Ignas | DeFi", "category": "Crypto Twitter", "tier": 1, "platform": "X", "followers": "~200K", "focus": "DeFi research, protocol deep-dives, yield strategies", "whyFit": "Data-driven analyst who already tracks sentiment + on-chain. Would benefit from TokenGems score & discovery tools", "links": "https://x.com/DefiIgnas", "outreachMessage": "Hey Ignas — love how you combine on-chain data with market sentiment in your threads. We built TokenGems specifically for that approach (free beta, built by Bitbond). Worth a look if you want to streamline your research flow."}, {"name": "Stacy Muur", "category": "Crypto Twitter", "tier": 1, "platform": "X", "followers": "~100K", "focus": "DeFi/crypto research threads, data analytics, narrative tracking", "whyFit": "Research-heavy creator who combines social sentiment with market analysis — perfect power user", "links": "https://x.com/staborobot", "outreachMessage": "Stacy — your threads on sentiment + price action are some of the best in the space. Built a tool that does exactly that (TokenGems — free beta). Would love to hear if it saves you time on your research."}, {"name": "DeFi Cheetah", "category": "Crypto Twitter", "tier": 1, "platform": "X", "followers": "~40K", "focus": "Tokenomics, DEX profitability, AI agents, macro analysis (ex-Binance Research/VC background)", "whyFit": "VC/research background means they'd appreciate institutional-grade analytics", "links": "https://x.com/DeFi_Cheetah", "outreachMessage": "Your background at Binance Research shows — the depth in your analysis is different. Built TokenGems with that institutional lens: sentiment + on-chain metrics, TokenGems Score for ranking. Free beta if you're curious."}, {"name": "Deebs DeFi", "category": "Crypto Twitter", "tier": 1, "platform": "X", "followers": "~50K", "focus": "On-chain data dashboards, liquidity analysis, market patterns", "whyFit": "Already creates on-chain analytics content — natural ambassador", "links": "https://x.com/Deebs_DeFi", "outreachMessage": ""}, {"name": "Ali Martinez", "category": "Crypto Twitter", "tier": 1, "platform": "X", "followers": "~135K", "focus": "Technical analysis, price action, chart-driven trading", "whyFit": "High-signal analyst whose audience craves data tools", "links": "https://x.com/ali_charts", "outreachMessage": ""}, {"name": "Ronin (DeRonin_)", "category": "Crypto Twitter", "tier": 1, "platform": "X", "followers": "~85K", "focus": "Multi-chain yield strategies, DeFi infrastructure, tokenomics", "whyFit": "Research-focused with cross-chain perspective — ideal for testing discovery features", "links": "https://x.com/DeRonin_", "outreachMessage": ""}, {"name": "Hercules | DeFi", "category": "Crypto Twitter", "tier": 1, "platform": "X", "followers": "~58K", "focus": "DeFi portfolio building, yield optimization, RWA integrations", "whyFit": "Methodical approach aligns with TokenGems scoring system", "links": "https://x.com/Hercules_Defi", "outreachMessage": ""}, {"name": "RiddlerDeFi", "category": "Crypto Twitter", "tier": 1, "platform": "X", "followers": "~56K", "focus": "Early plays, fresh yield farms, emerging protocols", "whyFit": "Alpha hunter who'd love TokenGems discovery & early signal features", "links": "https://x.com/RiddlerDeFi", "outreachMessage": "You're always early — that's the hardest part to systematize. TokenGems (free beta) was built specifically for finding early plays: sentiment spikes + on-chain accumulation before the crowd catches on. Worth a look?"}, {"name": "The Smart Ape", "category": "Crypto Twitter", "tier": 1, "platform": "X", "followers": "~57K", "focus": "Step-by-step DeFi strategies, delta-neutral plays, Pendle looping", "whyFit": "Hands-on strategist whose audience are active DeFi users", "links": "https://x.com/the_smart_ape", "outreachMessage": ""}, {"name": "Eli5DeFi", "category": "Crypto Twitter", "tier": 1, "platform": "X", "followers": "~39K", "focus": "Visual DeFi breakdowns, smart money flows, ecosystem plays", "whyFit": "Educational creator — could explain TokenGems features to beginners", "links": "https://x.com/eli5_defi", "outreachMessage": ""}, {"name": "Michaël van de Poppe", "category": "Crypto Twitter", "tier": 2, "platform": "X", "followers": "~783K", "focus": "Technical analysis, macro insights, altcoin picks", "whyFit": "Massive reach, data-driven approach, frequently cited in industry media", "links": "https://x.com/CryptoMichNL", "outreachMessage": ""}, {"name": "Koroush AK", "category": "Crypto Twitter", "tier": 2, "platform": "X", "followers": "~375K", "focus": "\"Zero Complexity Trading\" philosophy, 8+ years experience", "whyFit": "Educator with trading community — could integrate TokenGems into workflows", "links": "https://x.com/KoroushAK", "outreachMessage": ""}, {"name": "il Capo Of Crypto", "category": "Crypto Twitter", "tier": 2, "platform": "X", "followers": "~952K", "focus": "Contrarian swing trading, cycle analysis, bold calls", "whyFit": "Huge audience of active traders who need analytics tools", "links": "https://x.com/CryptoCapo_", "outreachMessage": ""}, {"name": "Ash Crypto", "category": "Crypto Twitter", "tier": 2, "platform": "X", "followers": "~1.7M", "focus": "Market forecasts, whale movements, institutional trends", "whyFit": "Massive reach, covers whale/sentiment data that TokenGems tracks", "links": "https://x.com/Ashcryptoreal", "outreachMessage": ""}, {"name": "Crypto Rover", "category": "Crypto Twitter", "tier": 2, "platform": "X", "followers": "~1.1M", "focus": "Bitcoin/altcoin price trends, technical analysis, breaking news", "whyFit": "High-energy market commentator with huge trader audience", "links": "https://x.com/rovercrc", "outreachMessage": ""}, {"name": "ChrisOG", "category": "Crypto Twitter", "tier": 3, "platform": "X", "followers": "~27K", "focus": "Web3 KOL, DeFi alpha, airdrops, creative direction", "whyFit": "Active in crypto tool discovery, early adopter mentality", "links": "https://x.com/ChrisOGcrypto", "outreachMessage": ""}, {"name": "Next 100X GEMS", "category": "Crypto Twitter", "tier": 3, "platform": "X", "followers": "~256K", "focus": "Altcoin gems, Binance partner, data-driven project discovery", "whyFit": "Name literally aligns with TokenGems brand — discovers gems", "links": "https://x.com/next100xgems", "outreachMessage": ""}, {"name": "ERVA", "category": "Crypto Twitter", "tier": 3, "platform": "X", "followers": "~61K", "focus": "Trading, HODLing, Binance Square Creator, airdrops", "whyFit": "Community-driven, covers platforms like PulseSocialFi — open to new tools", "links": "https://x.com/eraboricua", "outreachMessage": ""}, {"name": "Edgy — The DeFi Edge", "category": "Crypto Twitter", "tier": 3, "platform": "X", "followers": "~200K+", "focus": "DeFi edge strategies, narrative analysis, actionable insights", "whyFit": "Top-tier DeFi educator whose audience needs discovery tools", "links": "https://x.com/thedefiedge", "outreachMessage": ""}, {"name": "andrew.moh", "category": "Crypto Twitter", "tier": 3, "platform": "X", "followers": "~62K", "focus": "Scaling solutions, protocol mechanics, market narratives", "whyFit": "Connects technical design to market potential — data-hungry audience", "links": "https://x.com/0xAndrewMoh", "outreachMessage": ""}, {"name": "Crypto Casey", "category": "YouTube", "tier": 1, "platform": "YouTube", "followers": "~582K", "focus": "Blockchain education, investment strategies, market analysis", "whyFit": "Educational content creator — could demo TokenGems to beginner/intermediate audience", "links": "https://youtube.com/@CryptoCasey", "outreachMessage": "Casey — your \"how to\" tutorials are the gold standard for actually learning this stuff. TokenGems (free beta) combines sentiment + on-chain discovery — would love to see you break it down for your community if it clicks."}, {"name": "Crypto Kirby Trading", "category": "YouTube", "tier": 1, "platform": "YouTube", "followers": "~152K", "focus": "Daily Bitcoin/altcoin analysis, trading signals, market sentiment", "whyFit": "Trading-focused audience that needs analytics tools daily", "links": "https://youtube.com/channel/UCOaew10hdmtfa0MinTjOBqg", "outreachMessage": ""}, {"name": "Boxmining (Michael Gu)", "category": "YouTube", "tier": 1, "platform": "YouTube", "followers": "~549K", "focus": "Crypto news, project reviews, tech analysis", "whyFit": "Reviews new crypto tools/platforms — could feature TokenGems", "links": "https://youtube.com/@Boxmining", "outreachMessage": "Michael — your platform reviews always cut through the noise. Built TokenGems (free beta) to combine social sentiment + on-chain data for research and discovery. Think your audience would find it useful. Demo access?"}, {"name": "Altcoin Buzz", "category": "YouTube", "tier": 1, "platform": "YouTube", "followers": "~300K+", "focus": "Altcoin deep-dives, project reviews, market analysis (team of analysts)", "whyFit": "Team-based channel — multiple reviewers could cover TokenGems from different angles", "links": "https://youtube.com/@AltcoinBuzz", "outreachMessage": "Love how Altcoin Buzz covers tools from every angle — trading, research, portfolio tracking. TokenGems (free beta) crosses all those: sentiment + on-chain analytics, scoring, discovery. Worth a review for your audience?"}, {"name": "Coinbound (Ty Smith)", "category": "YouTube", "tier": 1, "platform": "YouTube", "followers": "~11K", "focus": "Web3 marketing, crypto SEO, influencer marketing tutorials", "whyFit": "Crypto marketing focus — could position TokenGems as marketing/analytics tool", "links": "https://youtube.com/@coinbound", "outreachMessage": ""}, {"name": "Blocmates", "category": "YouTube", "tier": 1, "platform": "YouTube + Blog", "followers": "~25K+", "focus": "DeFi protocol reviews, yield strategies, project breakdowns", "whyFit": "Deep DeFi education — audience needs discovery & analytics tools", "links": "https://youtube.com/@blocmates / https://blocmates.com", "outreachMessage": ""}, {"name": "Crypto Banter (Ran Neuner)", "category": "YouTube", "tier": 2, "platform": "YouTube", "followers": "~795K", "focus": "Live crypto streaming, breaking news, altcoin trends, interviews", "whyFit": "Live streaming format — could demo TokenGems on stream", "links": "https://youtube.com/@CryptoBanterGroup", "outreachMessage": ""}, {"name": "Altcoin Daily (Aaron & Austin Arnold)", "category": "YouTube", "tier": 2, "platform": "YouTube", "followers": "~1.47M", "focus": "Daily crypto updates, Bitcoin analysis, altcoin opportunities", "whyFit": "Massive daily audience of active crypto investors", "links": "https://youtube.com/@AltcoinDaily", "outreachMessage": ""}, {"name": "Discover Crypto", "category": "YouTube", "tier": 2, "platform": "YouTube", "followers": "~1.4M", "focus": "Live streams on altseasons, meme coins, crypto trends", "whyFit": "Gem discovery focus aligns perfectly with TokenGems brand", "links": "https://youtube.com/@DiscoverCrypto", "outreachMessage": ""}, {"name": "Coin Bureau", "category": "YouTube", "tier": 2, "platform": "YouTube", "followers": "~2.5M+", "focus": "In-depth crypto education, unbiased reviews, market analysis", "whyFit": "Gold standard for crypto tool reviews — massive credibility boost", "links": "https://youtube.com/@CoinBureau", "outreachMessage": ""}, {"name": "Benjamin Cowen", "category": "YouTube", "tier": 2, "platform": "YouTube", "followers": "~800K+", "focus": "Technical analysis, macro crypto cycles, data-driven approach", "whyFit": "Data-focused audience that values analytics tools", "links": "https://youtube.com/@intothecryptoverse", "outreachMessage": ""}, {"name": "BitBoy (Ben Armstrong)", "category": "YouTube", "tier": 2, "platform": "YouTube", "followers": "~117K (new channel)", "focus": "Market predictions, altcoin reviews, AI + crypto", "whyFit": "Covers AI x crypto intersection — relevant to TokenGems AI features", "links": "https://youtube.com/@BitBoyCryptoV2", "outreachMessage": ""}, {"name": "CryptosRUs (George)", "category": "YouTube", "tier": 3, "platform": "YouTube", "followers": "~200K+", "focus": "Daily market updates, price predictions, altcoin picks", "whyFit": "Consistent daily content — could integrate TokenGems into routine analysis", "links": "https://youtube.com/@CryptosRUs", "outreachMessage": ""}, {"name": "Crypto Zombie", "category": "YouTube", "tier": 3, "platform": "YouTube", "followers": "~200K+", "focus": "Bitcoin analysis, altcoin news, crypto trends", "whyFit": "Daily format with engaged community", "links": "https://youtube.com/@CryptoZombie", "outreachMessage": ""}, {"name": "DataDash (Nicholas Merten)", "category": "YouTube", "tier": 3, "platform": "YouTube", "followers": "~500K+", "focus": "Technical analysis, portfolio management, market cycles", "whyFit": "Data-heavy approach aligns with TokenGems analytics", "links": "https://youtube.com/@DataDash", "outreachMessage": ""}, {"name": "AlΞx Wacy", "category": "Traders", "tier": 1, "platform": "X", "followers": "~150K+", "focus": "DeFi strategies, on-chain analysis, portfolio management", "whyFit": "Active DeFi strategist who combines on-chain data with sentiment — perfect power user", "links": "https://x.com/waboricua", "outreachMessage": ""}, {"name": "Aylo", "category": "Traders", "tier": 1, "platform": "X", "followers": "~100K+", "focus": "DeFi yield farming, protocol analysis, ecosystem plays", "whyFit": "Hands-on DeFi user who tests protocols — would provide quality feedback", "links": "https://x.com/aylointheverse", "outreachMessage": ""}, {"name": "hitesh.eth", "category": "Traders", "tier": 1, "platform": "X", "followers": "~80K+", "focus": "Ethereum DeFi, smart contract analysis, yield optimization", "whyFit": "Technical trader who'd appreciate TokenGems scoring methodology", "links": "https://x.com/hitesh_eth", "outreachMessage": ""}, {"name": "DeFi Minty", "category": "Traders", "tier": 1, "platform": "X", "followers": "~50K+", "focus": "Yield farming, delta-neutral strategies, DeFi education", "whyFit": "Strategy-focused — audience actively uses analytics tools", "links": "https://x.com/DeFi_Minty", "outreachMessage": ""}, {"name": "DeFi Warhol", "category": "Traders", "tier": 1, "platform": "X", "followers": "~42K", "focus": "Protocol rankings, tier lists, narrative breakdowns (since 2017)", "whyFit": "Already creates ranking/scoring content — natural fit for TokenGems Score", "links": "https://x.com/Defi_Warhol", "outreachMessage": ""}, {"name": "Tindorr", "category": "Traders", "tier": 1, "platform": "X", "followers": "~45K", "focus": "DeFi guides for beginners, accessible explanations", "whyFit": "Bridges expert knowledge to beginners — perfect for onboarding content", "links": "https://x.com/0xTindorr", "outreachMessage": ""}, {"name": "Milk Road Newsletter", "category": "Traders", "tier": 2, "platform": "Newsletter + X", "followers": "~250K+ newsletter subscribers", "focus": "Daily crypto news digest, simple explanations, market trends", "whyFit": "Massive engaged readership of crypto-curious users", "links": "https://milkroad.com / https://x.com/milaboricua", "outreachMessage": "Milk Road crew — you find the tools worth knowing about before they blow up. TokenGems (free beta) does the same for tokens: sentiment + on-chain signals, early discovery. Worth a mention for your readers?"}, {"name": "The DeFi Edge (Edgy)", "category": "Traders", "tier": 2, "platform": "X", "followers": "~200K+", "focus": "DeFi strategies, narrative analysis, actionable edge", "whyFit": "Top DeFi educator with massive reach — audience needs discovery tools", "links": "https://x.com/thedefiedge", "outreachMessage": "Love the edge you're giving your community on token discovery. We just launched TokenGems (free beta) — combines sentiment + on-chain with a scoring system for finding alpha early. Think your audience would eat this up."}, {"name": "Santiment Team", "category": "Traders", "tier": 2, "platform": "X + santiment.net", "followers": "N/A", "focus": "On-chain + social analytics platform", "whyFit": "Direct competitor users — could be swayed by TokenGems' differentiated approach", "links": "https://x.com/santaboricua", "outreachMessage": ""}, {"name": "Sorsa (formerly Tweetscout)", "category": "Traders", "tier": 2, "platform": "sorsa.io + X", "followers": "N/A", "focus": "Crypto Twitter intelligence, account analysis, connection mapping", "whyFit": "Similar social analytics space — their users are natural TokenGems prospects", "links": "https://sorsa.io", "outreachMessage": ""}, {"name": "CryptoQuant Community", "category": "Traders", "tier": 2, "platform": "cryptoquant.com + X", "followers": "N/A", "focus": "On-chain analytics for institutions and professional investors", "whyFit": "Users already value on-chain data — TokenGems adds social sentiment layer", "links": "https://x.com/cryptoquant_com", "outreachMessage": ""}, {"name": "Crypto Banter Community", "category": "Traders", "tier": 3, "platform": "Discord + Telegram", "followers": "100K+ across platforms", "focus": "Live trading, altcoin analysis, community calls", "whyFit": "Active trading community that needs real-time analytics tools", "links": "Via @CryptoBanterGroup", "outreachMessage": ""}, {"name": "DexCheck AI Community", "category": "Traders", "tier": 3, "platform": "dexcheck.ai", "followers": "N/A", "focus": "AI-powered DEX analytics, whale tracking, leaderboards", "whyFit": "Users already engaged with AI-powered crypto analytics", "links": "https://dexcheck.ai", "outreachMessage": ""}, {"name": "hoeem", "category": "Traders", "tier": 3, "platform": "X", "followers": "~60K+", "focus": "DeFi strategies, yield optimization, cross-chain plays", "whyFit": "Active DeFi practitioner with engaged following", "links": "https://x.com/hoeem_", "outreachMessage": ""}, {"name": "Finish 🏁", "category": "Traders", "tier": 3, "platform": "X", "followers": "~50K+", "focus": "DeFi research, protocol updates, market opportunities", "whyFit": "Research-focused audience — natural analytics tool users", "links": "https://x.com/Finish_DeFi", "outreachMessage": ""}, {"name": "LunarCrush Users", "category": "Competitors", "tier": 1, "platform": "LunarCrush (social sentiment + market data)", "followers": "N/A", "focus": "Most direct competitor — social sentiment analytics", "whyFit": "TokenGems adds on-chain metrics + gamified scoring that LunarCrush lacks", "links": "https://lunarcrush.com", "outreachMessage": ""}, {"name": "Kaito AI Users", "category": "Competitors", "tier": 1, "platform": "Kaito AI (crypto mindshare tracking)", "followers": "N/A", "focus": "Mindshare/attention analytics", "whyFit": "TokenGems combines mindshare with on-chain data + community features (Dragon ranks)", "links": "https://kaito.ai", "outreachMessage": ""}, {"name": "Nansen Power Users", "category": "Competitors", "tier": 1, "platform": "Nansen (on-chain analytics, wallet labeling)", "followers": "N/A", "focus": "On-chain analytics for token discovery", "whyFit": "TokenGems adds social sentiment layer that Nansen lacks — free tier for discovery", "links": "https://nansen.ai", "outreachMessage": ""}, {"name": "Arkham Intelligence Users", "category": "Competitors", "tier": 1, "platform": "Arkham (blockchain intelligence, entity labeling)", "followers": "N/A", "focus": "Token/wallet analysis", "whyFit": "TokenGems focuses on token discovery + community, not just wallet tracking", "links": "https://arkham.ai", "outreachMessage": ""}, {"name": "CryptoNinjas", "category": "Competitors", "tier": 2, "platform": "cryptoninjas.net + YouTube", "followers": "N/A", "focus": "Crypto tool reviews, \"20 Best\" lists, platform comparisons", "whyFit": "Published \"20 Best Crypto YouTube Channels\" — reviews tools regularly", "links": "https://cryptoninjas.net", "outreachMessage": "Your \"Best Crypto Tools\" lists are my go-to. TokenGems (free beta) — combines sentiment + on-chain analytics with scoring + gamification. Built by Bitbond. Worth considering for your next research tools roundup?"}, {"name": "Make Tech Easier", "category": "Competitors", "tier": 2, "platform": "maketecheasier.com", "followers": "N/A", "focus": "Tech tutorials including crypto screener reviews", "whyFit": "Published \"5 Best Crypto Screener Websites\" — reviews analytics tools", "links": "https://maketecheasier.com", "outreachMessage": ""}, {"name": "ChainLeads", "category": "Competitors", "tier": 2, "platform": "chainleads.io (crypto marketing agency)", "followers": "N/A", "focus": "Crypto influencer lists, marketing guides", "whyFit": "Published \"Top 10 Crypto Twitter Influencers\" — understands the KOL space", "links": "https://chainleads.io", "outreachMessage": ""}, {"name": "NinjaPromo", "category": "Competitors", "tier": 2, "platform": "ninjapromo.io (crypto marketing agency)", "followers": "N/A", "focus": "Top crypto influencer lists, marketing strategies", "whyFit": "Published \"Top 19 Crypto Influencers\" — connected to KOL networks", "links": "https://ninjapromo.io", "outreachMessage": ""}, {"name": "DexScreener Power Users", "category": "Competitors", "tier": 3, "platform": "DexScreener (real-time DEX analytics)", "followers": "Millions of active traders", "focus": "", "whyFit": "DexScreener users want token discovery — TokenGems adds social sentiment layer", "links": "https://dexscreener.com", "outreachMessage": ""}, {"name": "DefiLlama Community", "category": "Competitors", "tier": 3, "platform": "DefiLlama (TVL tracking, DeFi dashboard)", "followers": "Most-used free DeFi analytics", "focus": "", "whyFit": "DefiLlama is TVL-focused — TokenGems adds social/sentiment dimension", "links": "https://defillama.com", "outreachMessage": ""}, {"name": "Token Terminal Users", "category": "Competitors", "tier": 3, "platform": "Token Terminal (financial metrics for crypto)", "followers": "Professional traders and analysts", "focus": "", "whyFit": "Token Terminal is financials-focused — TokenGems adds social layer + gamification", "links": "https://tokenterminal.com", "outreachMessage": ""}, {"name": "Sorsa/Tweetscout Users", "category": "Competitors", "tier": 3, "platform": "Sorsa (crypto Twitter intelligence)", "followers": "KOLs and marketers tracking social performance", "focus": "", "whyFit": "TokenGems combines Twitter intel with on-chain data + community features", "links": "https://sorsa.io", "outreachMessage": ""}, {"name": "CryptoCompare Community", "category": "Competitors", "tier": 3, "platform": "cryptocompare.com", "followers": "N/A", "focus": "Crypto data, portfolio tracking, exchange reviews", "whyFit": "Established analytics platform — users may want more social/sentiment features", "links": "https://cryptocompare.com", "outreachMessage": ""}];
+const TG_TEMPLATES = TG_LEADS.filter(x=>x.outreachMessage).map(x=>({title:x.name, text:x.outreachMessage}));
+const TG_RESOURCES = [
+  {label:'Crypto Twitter Leads', file:'../../tokengems/leads-crypto-twitter.md'},
+  {label:'YouTube Leads', file:'../../tokengems/leads-youtube-streamers.md'},
+  {label:'Traders & DeFi Leads', file:'../../tokengems/leads-traders-defi.md'},
+  {label:'Competitor Users', file:'../../tokengems/leads-competitors-users.md'},
+  {label:'Outreach Templates', file:'../../tokengems/outreach-templates.md'}
+];
+
+let persisted = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+let appData = TARGETS.map(t => ({...t, stage: persisted[t.company]?.stage || 'Prospect'}));
+let ui = { tab:'bitbond', search:'', tier:'All Tiers', stage:'All Stages', open:null };
+
+function save(){ const payload = {}; appData.forEach(t => payload[t.company] = { stage:t.stage }); localStorage.setItem(STORAGE_KEY, JSON.stringify(payload)); }
+function copyText(t){ navigator.clipboard.writeText(t || ''); }
+function copyEncoded(v){ copyText(decodeURIComponent(v)); }
+function cycleStage(company){ if(ui.tab!=='bitbond') return; const row = appData.find(x=>x.company===company); if(!row) return; const idx = STAGES.indexOf(row.stage); row.stage = STAGES[(idx + 1) % STAGES.length]; save(); render(); }
+
+function currentRows(){
+  if(ui.tab === 'bitbond'){
+    return appData.filter(t => {
+      const q = ui.search.trim().toLowerCase();
+      const hit = !q || `${t.company} ${t.contact} ${t.title} ${t.intel} ${t.connectRequest} ${t.message}`.toLowerCase().includes(q);
+      const tier = ui.tier==='All Tiers' || `Tier ${t.tier}`===ui.tier;
+      const stage = ui.stage==='All Stages' || t.stage===ui.stage;
+      return hit && tier && stage;
+    });
+  }
+  return TG_LEADS.filter(t => {
+    const q = ui.search.trim().toLowerCase();
+    const hit = !q || `${t.name} ${t.platform} ${t.focus} ${t.whyFit} ${t.links}`.toLowerCase().includes(q);
+    const tier = ui.tier==='All Tiers' || `Tier ${t.tier}`===ui.tier;
+    const cat = ui.stage==='All Categories' || t.category===ui.stage;
+    return hit && tier && cat;
+  });
+}
+
+function renderKPIs(){
+  let kpi;
+  if(ui.tab === 'bitbond'){
+    const total = appData.length;
+    const meetings = appData.filter(x=>['Meeting Booked','In Discussion','Closed Won'].includes(x.stage)).length;
+    const active = appData.filter(x=>!['Prospect','Closed Lost','Closed Won'].includes(x.stage)).length;
+    const wallet = appData.filter(x=>x.source==='Wallet campaign').length;
+    const consumer = appData.filter(x=>x.source==='Consumer apps').length;
+    kpi = [
+      ['Total Targets', total, `${wallet} wallet + ${consumer} consumer`],
+      ['Active Pipeline', active, 'connection sent or later'],
+      ['Meetings/In Discussion', meetings, 'success indicator'],
+      ['Connection Requests Ready', total, 'copy with one click']
+    ];
+  } else {
+    const total = TG_LEADS.length;
+    const cat = ['Crypto Twitter','YouTube','Traders','Competitors'].map(c=>TG_LEADS.filter(x=>x.category===c).length);
+    const t1 = TG_LEADS.filter(x=>x.tier===1).length;
+    const t2 = TG_LEADS.filter(x=>x.tier===2).length;
+    const t3 = TG_LEADS.filter(x=>x.tier===3).length;
+    kpi = [
+      ['Total Leads', total, `${cat[0]} CT · ${cat[1]} YouTube`],
+      ['Traders + Competitors', cat[2]+cat[3], `${cat[2]} traders · ${cat[3]} competitors`],
+      ['Tier 1 Priority', t1, 'highest-conviction targets'],
+      ['Tier Distribution', `${t1}/${t2}/${t3}`, 'Tier 1 / Tier 2 / Tier 3']
+    ];
+  }
+  document.getElementById('kpis').innerHTML = kpi.map(x=>`<div class="kpi glass"><div class="l">${x[0]}</div><div class="n">${x[1]}</div><div class="d">${x[2]}</div></div>`).join('');
+}
+
+let chartA, chartB;
+function renderCharts(){
+  if(chartA) chartA.destroy(); if(chartB) chartB.destroy();
+  const muted = getComputedStyle(document.body).getPropertyValue('--muted');
+  const campaign = document.querySelector('.campaign');
+  campaign.querySelector('.panel-copy')?.remove();
+  if(ui.tab === 'bitbond'){
+    const stageCounts = STAGES.map(s => appData.filter(x=>x.stage===s).length);
+    const tierCounts = [1,2,3].map(t => appData.filter(x=>x.tier===t).length);
+    chartA = new Chart(document.getElementById('pipelineChart'), { type:'bar', data:{ labels:STAGES, datasets:[{ data:stageCounts, borderRadius:8, backgroundColor:['#6e7fff','#5d8dff','#4d9bfd','#3ea7f2','#2fb3e5','#23bfce','#38cc8f','#e56a8a'] }] }, options:{ plugins:{legend:{display:false}}, scales:{x:{ticks:{color:muted}}, y:{ticks:{color:muted}, grid:{color:'rgba(148,163,184,.12)'}}} } });
+    chartB = new Chart(document.getElementById('statusChart'), { type:'doughnut', data:{ labels:['Tier 1','Tier 2','Tier 3'], datasets:[{ data:tierCounts, backgroundColor:['#8ea6ff','#49c7dd','#93e289'], borderWidth:0 }] }, options:{ plugins:{legend:{position:'bottom', labels:{color:muted}}} } });
+    document.getElementById('stageRollup').innerHTML = STAGES.map((s,i)=>`<div class="chip">${s} <b>${stageCounts[i]}</b></div>`).join('');
+    document.querySelector('.chart .section-head h3').textContent = 'Pipeline & Outreach Health';
+    document.querySelector('.chart .section-head small').textContent = 'Live from tracked targets';
+    document.querySelector('.campaign .section-head h3').textContent = 'Campaign Snapshot';
+    document.querySelector('.campaign .section-head small').textContent = '4-week cadence';
+    campaign.insertAdjacentHTML('beforeend','<div class="panel-copy" style="margin-top:12px;font-size:12px;color:var(--muted);line-height:1.6">Goal: <b style="color:var(--text)">3-5 partnership conversations</b> · Target: <b style="color:var(--text)">15 connection requests</b><br>SLA: follow-up at Day 3 / 7 / 14 · Max 3 new requests/week</div>');
+  } else {
+    const categories = ['Crypto Twitter','YouTube','Traders','Competitors'];
+    const catCounts = categories.map(c => TG_LEADS.filter(x=>x.category===c).length);
+    const tierCounts = [1,2,3].map(t => TG_LEADS.filter(x=>x.tier===t).length);
+    chartA = new Chart(document.getElementById('pipelineChart'), { type:'bar', data:{ labels:categories, datasets:[{ data:catCounts, borderRadius:8, backgroundColor:['#f59e0b','#f97316','#fbbf24','#fb923c'] }] }, options:{ plugins:{legend:{display:false}}, scales:{x:{ticks:{color:muted}}, y:{ticks:{color:muted}, grid:{color:'rgba(148,163,184,.12)'}}} } });
+    chartB = new Chart(document.getElementById('statusChart'), { type:'doughnut', data:{ labels:['Tier 1','Tier 2','Tier 3'], datasets:[{ data:tierCounts, backgroundColor:['#f59e0b','#fbbf24','#fdba74'], borderWidth:0 }] }, options:{ plugins:{legend:{position:'bottom', labels:{color:muted}}} } });
+    document.getElementById('stageRollup').innerHTML = categories.map((s,i)=>`<div class="chip">${s} <b>${catCounts[i]}</b></div>`).join('');
+    document.querySelector('.chart .section-head h3').textContent = 'Lead Mix & Coverage';
+    document.querySelector('.chart .section-head small').textContent = 'TokenGems outreach dataset';
+    document.querySelector('.campaign .section-head h3').textContent = 'Outreach Priority Snapshot';
+    document.querySelector('.campaign .section-head small').textContent = 'Category and tier concentration';
+    campaign.insertAdjacentHTML('beforeend','<div class="panel-copy" style="margin-top:12px;font-size:12px;color:var(--muted);line-height:1.6">Focus: <b style="color:var(--text)">Tier 1 first-touch in week 1</b> · Expansion: <b style="color:var(--text)">Tier 2 in week 2</b><br>Cadence: personalized DM first, value-add follow-up on Day 7.</div>');
+  }
+}
+
+function cardBitbond(t){
+  const open = ui.open===t.company;
+  return `<div class="card ${open?'open':''}"><div class="row"><div onclick="toggleCard('${escape(t.company)}')" style="cursor:pointer"><div class="name">${escape(t.company)}</div><div class="meta">${escape(t.contact)} · ${escape(t.title)}</div><div class="tags"><span class="tag">Tier ${t.tier}</span><span class="tag">${escape(t.source)}</span><span class="tag status" onclick="event.stopPropagation();cycleStage('${escape(t.company)}')">${escape(t.stage)}</span></div></div><div class="actions"><button class="btn mini-btn" onclick="copyEncoded('${encodeURIComponent(t.connectRequest)}')">Copy Connect Request</button><button class="btn mini-btn primary" onclick="copyEncoded('${encodeURIComponent(t.message)}')">Copy Full Outreach</button><a class="btn mini-btn" href="${t.linkedin.startsWith('http') ? t.linkedin : '#'}" ${t.linkedin.startsWith('http') ? 'target="_blank" rel="noopener"' : ''}>LinkedIn</a></div></div><div class="expand"><div><b>Intel:</b> ${escape(t.intel)}</div><div style="margin-top:8px"><b>Connect Request:</b><div style="margin-top:4px;color:var(--muted)">${escape(t.connectRequest)}</div></div><div style="margin-top:8px"><b>Full Outreach Message:</b><div style="margin-top:4px;color:var(--muted);white-space:pre-wrap">${escape(t.message)}</div></div><div style="margin-top:8px"><b>Stage:</b> click the stage chip to cycle pipeline status.</div></div></div>`;
+}
+function cardTokenGems(t){
+  const key = `${t.category}-${t.name}`; const open = ui.open===key;
+  const links = t.links.split(' / ').map(l => l.trim()).filter(Boolean);
+  return `<div class="card ${open?'open':''}"><div class="row"><div onclick="toggleCard('${escape(key)}')" style="cursor:pointer"><div class="name">${escape(t.name)}</div><div class="meta">${escape(t.platform)} · ${escape(t.followers)}</div><div class="tags"><span class="tag">Tier ${t.tier}</span><span class="tag">${escape(t.category)}</span><span class="tag">${escape(t.platform)}</span></div></div><div class="actions">${t.outreachMessage ? `<button class="btn mini-btn primary" onclick="copyEncoded('${encodeURIComponent(t.outreachMessage)}')">Copy Outreach Message</button>` : ''}${links.map(l=>`<a class="btn mini-btn" href="${l}" target="_blank" rel="noopener">Open Link</a>`).join('')}</div></div><div class="expand"><div><b>Focus Area:</b> ${escape(t.focus)}</div><div style="margin-top:8px"><b>Why they fit:</b><div style="margin-top:4px;color:var(--muted)">${escape(t.whyFit)}</div></div>${t.outreachMessage ? `<div style="margin-top:8px"><b>Suggested outreach:</b><div style="margin-top:4px;color:var(--muted);white-space:pre-wrap">${escape(t.outreachMessage)}</div></div>` : ''}</div></div>`;
+}
+
+function renderTargets(){ const rows = currentRows(); const total = ui.tab==='bitbond' ? appData.length : TG_LEADS.length; document.getElementById('countLabel').textContent = `${rows.length} of ${total}`; document.getElementById('targetList').innerHTML = rows.length ? rows.map(ui.tab==='bitbond' ? cardBitbond : cardTokenGems).join('') : '<div class="empty">No targets match the current filters.</div>'; }
+function toggleCard(id){ ui.open = ui.open===id ? null : id; renderTargets(); }
+function escape(s=''){ return s.replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll("'",'&#39;'); }
+
+function renderTemplates(){ const list = ui.tab==='bitbond' ? templates : TG_TEMPLATES; document.getElementById('templateList').innerHTML = list.map(t => `<div class="template-item"><h4>${t.title}</h4><p>${escape(t.text)}</p><div style="margin-top:8px"><button class="btn mini-btn" onclick='copyText(${JSON.stringify(t.text)})'>Copy</button></div></div>`).join(''); }
+function renderResources(){ const list = ui.tab==='bitbond' ? resources : TG_RESOURCES; document.getElementById('resourceButtons').innerHTML = list.map(r => `<button class="btn mini-btn" onclick="openResource('${r.file}','${escape(r.label)}')">${r.label}</button>`).join(''); }
+async function openResource(file, title){ document.getElementById('resourceModal').classList.add('show'); document.getElementById('resourceTitle').textContent = title; try { const res = await fetch(file); document.getElementById('resourceBody').innerHTML = marked.parse(await res.text()); } catch { document.getElementById('resourceBody').innerHTML = '<p>Could not load resource.</p>'; } }
+
+function initFilters(){
+  if(ui.tab==='bitbond'){
+    document.getElementById('stageFilter').innerHTML = '<option>All Stages</option>' + STAGES.map(s=>`<option>${s}</option>`).join('');
+    document.getElementById('search').placeholder = 'Filter targets...';
+    document.getElementById('brandSubtitle').textContent = 'Daily operating cockpit · Bitbond partnerships · 2026';
+    document.querySelector('.targets .section-head h3').textContent = 'Outreach Targets';
+    document.querySelector('.templates .section-head h3').textContent = 'Message Templates';
+    document.querySelector('.resources .section-head h3').textContent = 'Knowledge Base';
+  } else {
+    const categories = ['Crypto Twitter','YouTube','Traders','Competitors'];
+    document.getElementById('stageFilter').innerHTML = '<option>All Categories</option>' + categories.map(c=>`<option>${c}</option>`).join('');
+    document.getElementById('search').placeholder = 'Filter TokenGems leads...';
+    document.getElementById('brandSubtitle').textContent = 'TokenGems creator & analytics outreach pipeline · 2026';
+    document.querySelector('.targets .section-head h3').textContent = 'TokenGems Outreach Leads';
+    document.querySelector('.templates .section-head h3').textContent = 'TokenGems Outreach Templates';
+    document.querySelector('.resources .section-head h3').textContent = 'TokenGems Source Notes';
+  }
+}
+function applyTheme(theme){ document.documentElement.setAttribute('data-theme', theme); document.getElementById('themeBtn').textContent = theme==='light' ? '☀︎ Light' : '☾ Dark'; localStorage.setItem(THEME_KEY, theme); }
+function setTab(tab){ ui.tab=tab; ui.open=null; ui.search=''; document.getElementById('search').value=''; document.getElementById('globalSearch').value=''; ui.tier='All Tiers'; document.getElementById('tierFilter').value='All Tiers'; ui.stage=tab==='bitbond' ? 'All Stages' : 'All Categories'; document.body.setAttribute('data-project', tab); document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab===tab)); initFilters(); render(); }
+function render(){ renderKPIs(); renderCharts(); renderTargets(); renderTemplates(); renderResources(); }
+
+setTab('bitbond');
+applyTheme(localStorage.getItem(THEME_KEY) || 'dark');
+
+document.getElementById('search').addEventListener('input', e => { ui.search=e.target.value; renderTargets(); });
+document.getElementById('globalSearch').addEventListener('input', e => { ui.search=e.target.value; document.getElementById('search').value=e.target.value; renderTargets(); });
+document.getElementById('tierFilter').addEventListener('change', e => { ui.tier=e.target.value; renderTargets(); });
+document.getElementById('stageFilter').addEventListener('change', e => { ui.stage=e.target.value; renderTargets(); });
+document.getElementById('resourcesBtn').addEventListener('click', ()=>{ const list = ui.tab==='bitbond' ? resources : TG_RESOURCES; openResource(list[0].file, list[0].label); });
+document.getElementById('closeModal').addEventListener('click', ()=>document.getElementById('resourceModal').classList.remove('show'));
+document.getElementById('resourceModal').addEventListener('click', e => { if(e.target.id==='resourceModal') e.currentTarget.classList.remove('show'); });
+document.getElementById('themeBtn').addEventListener('click', ()=>applyTheme((localStorage.getItem(THEME_KEY) || 'dark') === 'dark' ? 'light':'dark'));
+document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', ()=>setTab(btn.dataset.tab)));
+
+document.addEventListener('keydown', e => { if((e.metaKey || e.ctrlKey) && e.key.toLowerCase()==='k'){ e.preventDefault(); document.getElementById('globalSearch').focus(); } if(e.key==='Escape') document.getElementById('resourceModal').classList.remove('show'); });
+</script>
+</body>
+</html>
