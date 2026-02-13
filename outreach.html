@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TokenGems DM Outreach — Rapid Fire Mode</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0e17;
+  --bg2:#111827;
+  --card:rgba(19,26,43,0.95);
+  --border:#1e293b;
+  --text:#e0e7ff;
+  --muted:#8892b0;
+  --accent:#6366f1;
+  --accent2:#818cf8;
+  --success:#34d399;
+  --warning:#fb923c;
+  --danger:#f87171;
+  --radius:20px;
+  --shadow:0 25px 80px rgba(0,0,0,.5);
+}
+* { box-sizing:border-box;margin:0;padding:0 }
+html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);overflow:hidden}
+body{background:radial-gradient(1200px 600px at 50% -10%,rgba(99,102,241,.15),transparent 60%),radial-gradient(800px 400px at 80% 100%,rgba(52,211,153,.08),transparent 50%),var(--bg)}
+
+.container{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;position:relative}
+
+.progress-bar{position:fixed;top:0;left:0;right:0;height:4px;background:var(--border);z-index:100}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s ease}
+.progress-text{position:fixed;top:12px;right:20px;font-size:12px;color:var(--muted);font-weight:600;z-index:100}
+
+.card{width:100%;max-width:680px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:36px;backdrop-filter:blur(20px);box-shadow:var(--shadow);transition:all .3s ease;position:relative}
+.card.slide-out{transform:translateX(-100px);opacity:0}
+.card.slide-in{animation:slideIn .4s ease}
+@keyframes slideIn{from{transform:translateX(100px);opacity:0}to{transform:none;opacity:1}}
+
+.card-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;gap:16px}
+.handle{font-size:28px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,var(--text),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.badge{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;border-radius:999px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;border:1px solid var(--success);color:var(--success);background:rgba(52,211,153,.1)}
+
+.message-section{margin:24px 0}
+.message-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;font-weight:600}
+.message-box{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:22px;position:relative;transition:border-color .2s}
+.message-box.copied{border-color:var(--success)}
+.message-text{font-size:15px;line-height:1.7;color:var(--text);font-weight:500}
+.copy-feedback{position:absolute;top:12px;right:12px;background:var(--success);color:#000;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;opacity:0;transform:translateY(-10px);transition:all .2s}
+.copy-feedback.show{opacity:1;transform:none}
+
+.actions{display:grid;grid-template-columns:1fr 1fr 1.2fr;gap:12px;margin-top:28px}
+.btn{padding:16px 22px;border-radius:14px;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s ease;display:flex;align-items:center;justify-content:center;gap:8px}
+.btn:hover{transform:translateY(-2px)}
+.btn:active{transform:translateY(0)}
+
+.btn-copy{background:var(--bg2);color:var(--text);border:1px solid var(--border)}
+.btn-copy:hover{background:var(--border);border-color:var(--muted)}
+.btn-copy.copied{background:var(--success);color:#000;border-color:var(--success)}
+
+.btn-twitter{background:linear-gradient(135deg,#1da1f2,#0d8ecf);color:#fff}
+.btn-twitter:hover{box-shadow:0 8px 24px rgba(29,161,242,.4)}
+
+.btn-next{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.btn-next:hover{box-shadow:0 8px 30px rgba(99,102,241,.4)}
+
+.shortcuts{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);display:flex;gap:24px;font-size:12px;color:var(--muted)}
+.shortcut{display:flex;align-items:center;gap:6px}
+.key{background:var(--bg2);border:1px solid var(--border);padding:4px 10px;border-radius:6px;font-size:11px;font-weight:700;color:var(--text);font-family:monospace}
+
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--success);color:#000;padding:14px 28px;border-radius:12px;font-weight:700;opacity:0;transition:all .3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="progress-text" id="progressText">DM 1 of 192</div>
+
+<div class="container">
+  <div class="card" id="mainCard">
+    <div class="card-header">
+      <div class="handle" id="handle">@username</div>
+      <div class="badge" id="badge">✓ Previous Participant</div>
+    </div>
+    
+    <div class="message-section">
+      <div class="message-label">💬 DM Message</div>
+      <div class="message-box" id="messageBox">
+        <div class="message-text" id="messageText">Loading...</div>
+        <div class="copy-feedback" id="copyFeedback">✓ Copied!</div>
+      </div>
+    </div>
+    
+    <div class="actions">
+      <button class="btn btn-copy" id="copyBtn" title="Copy message (C)">
+        📋 Copy
+      </button>
+      <button class="btn btn-twitter" id="twitterBtn" title="Open X/Twitter (T)">
+        🐦 X / Twitter
+      </button>
+      <button class="btn btn-next" id="nextBtn" title="Next (Space)">
+        Next →
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="shortcuts">
+  <div class="shortcut"><span class="key">C</span> Copy</div>
+  <div class="shortcut"><span class="key">T</span> Twitter</div>
+  <div class="shortcut"><span class="key">← →</span> Navigate</div>
+  <div class="shortcut"><span class="key">Space</span> Next</div>
+</div>
+
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+// DM Templates - casual, short, punchy
+const DM_TEMPLATES = [
+  "gm 👋\n\nTokenGems Private Beta is live — and we just dropped a $350 USDC Content Bounty.\n\nWe appreciated your great work last time and wanted to personally invite you to join in!\n\nMake a video/thread/meme/demo showcasing the beta + post on X.\n\n7 winners: $150 • $50×2 • $20×3 • $40 Community Pick\nFeb 9–22\n\nTry beta: https://tokengems.ai\nEnter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/\n\nGo find some gems 💎",
+  
+  "yo! 👋\n\nyour work on the last bounty was solid — wanted to personally invite you to the new TokenGems Content Bounty.\n\n$350 USDC pool, 7 winners. just make something cool about the beta and post it.\n\nlinks:\n• beta: tokengems.ai\n• enter: superteam.fun/earn/listing/tokengems-private-beta-content-bounty/\n\ndeadline: feb 22\n\nlmk if you have questions! 💎",
+  
+  "hey! remember you from the last bounty — your content was great 🔥\n\nwe're running a new $350 TokenGems Content Bounty and wanted to invite you personally.\n\njust create something about the beta (video, thread, meme, whatever) and post it.\n\ntokengems.ai for the beta\nsuperteam.fun/earn/listing/tokengems-private-beta-content-bounty/ to enter\n\ngo get it 💎",
+  
+  "gm! 👋\n\nsaw your work last bounty — quality stuff. inviting you personally to the new TokenGems Content Bounty.\n\n$350 pool, make anything about the beta, post it, win. simple.\n\nbeta: tokengems.ai\nenter: superteam.fun/earn/listing/tokengems-private-beta-content-bounty/\n\nfeb 9-22\n\ncheers 💎",
+  
+  "yo! your content last time was fire 🔥\n\nnew TokenGems bounty is live — $350 up for grabs. wanted to invite you personally since you crushed it before.\n\nmake a video, thread, meme about the beta. post. win.\n\ntokengems.ai\nsuperteam.fun/earn/listing/tokengems-private-beta-content-bounty/\n\nends feb 22\n\ngo get it 💎"
+];
+
+// Creator handles from bounty lists - 192 total
+const CREATORS = [
+  // Bitbond Minty Bounty (113) - participated before
+  {handle:'@Iambamidele52',type:'previous',sent:false},
+  {handle:'@Acntone1',type:'previous',sent:false},
+  {handle:'@marvellspace101',type:'previous',sent:false},
+  {handle:'@myticlarry',type:'previous',sent:false},
+  {handle:'@VisualX24',type:'previous',sent:false},
+  {handle:'@Hin_qy',type:'previous',sent:false},
+  {handle:'@0xachiever',type:'previous',sent:false},
+  {handle:'@vec_exchange',type:'previous',sent:false},
+  {handle:'@DJBobbyStarrr',type:'previous',sent:false},
+  {handle:'@sholey_lamil',type:'previous',sent:false},
+  {handle:'@RFyrsenko57563',type:'previous',sent:false},
+  {handle:'@Picknavasieeh',type:'previous',sent:false},
+  {handle:'@thatboygad',type:'previous',sent:false},
+  {handle:'@Euniceapetu13',type:'previous',sent:false},
+  {handle:'@yzzztv_official',type:'previous',sent:false},
+  {handle:'@web3gurlie',type:'previous',sent:false},
+  {handle:'@darhni_tee',type:'previous',sent:false},
+  {handle:'@imnot_clifford',type:'previous',sent:false},
+  {handle:'@Bon_claysama',type:'previous',sent:false},
+  {handle:'@SmartwebOracle',type:'previous',sent:false},
+  {handle:'@Arctic050',type:'previous',sent:false},
+  {handle:'@kingvipesol',type:'previous',sent:false},
+  {handle:'@mjlight001',type:'previous',sent:false},
+  {handle:'@esenyisilas',type:'previous',sent:false},
+  {handle:'@Symposia_21',type:'previous',sent:false},
+  {handle:'@cryptoo_tor',type:'previous',sent:false},
+  {handle:'@kyhin00',type:'previous',sent:false},
+  {handle:'@UP_billions',type:'previous',sent:false},
+  {handle:'@callmeonimi',type:'previous',sent:false},
+  {handle:'@ZarekEsia',type:'previous',sent:false},
+  {handle:'@Justmrwhiteman',type:'previous',sent:false},
+  {handle:'@Charlesweb001',type:'previous',sent:false},
+  {handle:'@Hellerkolaas',type:'previous',sent:false},
+  {handle:'@Iam_kaayy',type:'previous',sent:false},
+  {handle:'@captain_owolabi',type:'previous',sent:false},
+  {handle:'@Mr0xsam',type:'previous',sent:false},
+  {handle:'@AnekweMoses',type:'previous',sent:false},
+  {handle:'@Zajaw93',type:'previous',sent:false},
+  {handle:'@StephensMe6064',type:'previous',sent:false},
+  {handle:'@Reo_kreates',type:'previous',sent:false},
+  {handle:'@ZeusDraco111',type:'previous',sent:false},
+  {handle:'@cebrusky',type:'previous',sent:false},
+  {handle:'@QueenZoe011',type:'previous',sent:false},
+  {handle:'@Trillwalker7',type:'previous',sent:false},
+  {handle:'@mozzigom7585',type:'previous',sent:false},
+  {handle:'@joytoluwami',type:'previous',sent:false},
+  {handle:'@youfound_manie',type:'previous',sent:false},
+  {handle:'@Ibubuprecious',type:'previous',sent:false},
+  {handle:'@LitteWhale_II',type:'previous',sent:false},
+  {handle:'@Zero__sol',type:'previous',sent:false},
+  {handle:'@gordon_3k',type:'previous',sent:false},
+  {handle:'@Defi_GJHAY',type:'previous',sent:false},
+  {handle:'@el_ralfa',type:'previous',sent:false},
+  {handle:'@JupIcoN_NFT',type:'previous',sent:false},
+  {handle:'@_jee_jee1',type:'previous',sent:false},
+  {handle:'@Kasai2504',type:'previous',sent:false},
+  {handle:'@ziko_olatunji',type:'previous',sent:false},
+  {handle:'@King_The_Meme',type:'previous',sent:false},
+  {handle:'@DoaKanMenang',type:'previous',sent:false},
+  {handle:'@ngexwitter',type:'previous',sent:false},
+  {handle:'@BlingtheCreator',type:'previous',sent:false},
+  {handle:'@carteltheman',type:'previous',sent:false},
+  {handle:'@bigsixmints',type:'previous',sent:false},
+  {handle:'@GoldspeedX11842',type:'previous',sent:false},
+  {handle:'@anielultimate__',type:'previous',sent:false},
+  {handle:'@Crypto_striker9',type:'previous',sent:false},
+  {handle:'@Anoopbalan100',type:'previous',sent:false},
+  {handle:'@Epiccryptotv',type:'previous',sent:false},
+  {handle:'@Dexter_on_x',type:'previous',sent:false},
+  {handle:'@believe_andreas',type:'previous',sent:false},
+  {handle:'@iamawonder1111',type:'previous',sent:false},
+  {handle:'@iveilisi',type:'previous',sent:false},
+  {handle:'@BigDaniel334',type:'previous',sent:false},
+  {handle:'@Tomiyama_Coji',type:'previous',sent:false},
+  {handle:'@sunnie1689',type:'previous',sent:false},
+  {handle:'@AB_XXY',type:'previous',sent:false},
+  {handle:'@bozweb3',type:'previous',sent:false},
+  {handle:'@ShuoMikoto19',type:'previous',sent:false},
+  {handle:'@MailPCgaj',type:'previous',sent:false},
+  {handle:'@cryptomj999',type:'previous',sent:false},
+  {handle:'@DucViet73872',type:'previous',sent:false},
+  {handle:'@RealChrisOnChai',type:'previous',sent:false},
+  {handle:'@lessi_okp',type:'previous',sent:false},
+  {handle:'@keranbyge',type:'previous',sent:false},
+  {handle:'@Almightymojo_',type:'previous',sent:false},
+  {handle:'@FatemeTheLady',type:'previous',sent:false},
+  {handle:'@Noirdcreative',type:'previous',sent:false},
+  {handle:'@tamaifromigarra',type:'previous',sent:false},
+  {handle:'@idorenyinA93407',type:'previous',sent:false},
+  {handle:'@ashik_khader',type:'previous',sent:false},
+  {handle:'@Akeeles_',type:'previous',sent:false},
+  {handle:'@KhanaZarsham',type:'previous',sent:false},
+  {handle:'@theking_design',type:'previous',sent:false},
+  {handle:'@SharonLaur80577',type:'previous',sent:false},
+  {handle:'@kairos98htl',type:'previous',sent:false},
+  {handle:'@anastam41',type:'previous',sent:false},
+  {handle:'@iamfrancin',type:'previous',sent:false},
+  {handle:'@ArtOfKaligraph',type:'previous',sent:false},
+  {handle:'@vin_jesus24',type:'previous',sent:false},
+  {handle:'@AjiAlghifa37465',type:'previous',sent:false},
+  {handle:'@Ifyy_lo',type:'previous',sent:false},
+  {handle:'@belugaacaat',type:'previous',sent:false},
+  {handle:'@deomaindrae',type:'previous',sent:false},
+  {handle:'@ThatHappyGuy__',type:'previous',sent:false},
+  {handle:'@noelhuangx',type:'previous',sent:false},
+  {handle:'@tommuj1',type:'previous',sent:false},
+  {handle:'@hanbang618',type:'previous',sent:false},
+  {handle:'@harshdesignsx',type:'previous',sent:false},
+  {handle:'@nolanbitcoiner',type:'previous',sent:false},
+  {handle:'@AOluwatofu90109',type:'previous',sent:false},
+  
+  // TokenGems Dragon Bounty - NEW participants (79) - didn't do Bitbond bounty
+  {handle:'@00xanselliidv',type:'new',sent:false},
+  {handle:'@itslowkeyxp',type:'new',sent:false},
+  {handle:'@sinachyrex',type:'new',sent:false},
+  {handle:'@defiquilll',type:'new',sent:false},
+  {handle:'@golden4444guy',type:'new',sent:false},
+  {handle:'@Chinemerem88644',type:'new',sent:false},
+  {handle:'@bokim261325',type:'new',sent:false},
+  {handle:'@ContentRapper',type:'new',sent:false},
+  {handle:'@henchonly',type:'new',sent:false},
+  {handle:'@Gachoki_007',type:'new',sent:false},
+  {handle:'@ChainDexterity',type:'new',sent:false},
+  {handle:'@AKUJE1218',type:'new',sent:false},
+  {handle:'@kaybee77770',type:'new',sent:false},
+  {handle:'@Muhammerd002',type:'new',sent:false},
+  {handle:'@easyloeyx',type:'new',sent:false},
+  {handle:'@0xTEJIRI',type:'new',sent:false},
+  {handle:'@Elmusazmah',type:'new',sent:false},
+  {handle:'@Kabircryptohub',type:'new',sent:false},
+  {handle:'@Apeteks1',type:'new',sent:false},
+  {handle:'@Yenanskie',type:'new',sent:false},
+  {handle:'@mujtabaIsCool',type:'new',sent:false},
+  {handle:'@mukhtar_ato',type:'new',sent:false},
+  {handle:'@cryptotestnt',type:'new',sent:false},
+  {handle:'@useiscann',type:'new',sent:false},
+  {handle:'@designs_by_dada',type:'new',sent:false},
+  {handle:'@justmicahinweb3',type:'new',sent:false},
+  {handle:'@NOTTVECTOR',type:'new',sent:false},
+  {handle:'@Musafunsho',type:'new',sent:false},
+  {handle:'@JAlaeto22',type:'new',sent:false},
+  {handle:'@smile_boy_vibes',type:'new',sent:false},
+  {handle:'@BullSlayer007',type:'new',sent:false},
+  {handle:'@Inferno_753',type:'new',sent:false},
+  {handle:'@Allison4uall',type:'new',sent:false},
+  {handle:'@Qu1nn_web3',type:'new',sent:false},
+  {handle:'@teemarhh7',type:'new',sent:false},
+  {handle:'@zCase_',type:'new',sent:false},
+  {handle:'@odungrafix',type:'new',sent:false},
+  {handle:'@Tatey_001',type:'new',sent:false},
+  {handle:'@Eihzre',type:'new',sent:false},
+  {handle:'@1809bug',type:'new',sent:false},
+  {handle:'@AhYa_Naija',type:'new',sent:false},
+  {handle:'@apaajadesainin',type:'new',sent:false},
+  {handle:'@mazfulucianazwa',type:'new',sent:false},
+  {handle:'@Deeksha76483314',type:'new',sent:false},
+  {handle:'@Shahin8g',type:'new',sent:false},
+  {handle:'@MansiVe61115132',type:'new',sent:false},
+  {handle:'@Marrionuwaifo',type:'new',sent:false},
+  {handle:'@phoenez_0x',type:'new',sent:false},
+  {handle:'@Chatbotcom',type:'new',sent:false},
+  {handle:'@hari_katob',type:'new',sent:false},
+  {handle:'@antasena_01',type:'new',sent:false},
+  {handle:'@theschoolsaurus',type:'new',sent:false},
+  {handle:'@Iamfrosh_boss',type:'new',sent:false},
+  {handle:'@sachin1637043',type:'new',sent:false},
+  {handle:'@OculiOnion38443',type:'new',sent:false},
+  {handle:'@0xukan',type:'new',sent:false},
+  {handle:'@Akolibobo',type:'new',sent:false},
+  {handle:'@AlishoowXD',type:'new',sent:false},
+  {handle:'@ufotgodspower8',type:'new',sent:false},
+  {handle:'@freya48m',type:'new',sent:false},
+  {handle:'@abzrramdhan',type:'new',sent:false},
+  {handle:'@Prime_vee',type:'new',sent:false},
+  {handle:'@thisbiglady',type:'new',sent:false},
+  {handle:'@carol_sand45854',type:'new',sent:false},
+  {handle:'@Dannysteva',type:'new',sent:false},
+  {handle:'@RAfsoh32562',type:'new',sent:false},
+  {handle:'@Virion_000',type:'new',sent:false},
+  {handle:'@redso419072',type:'new',sent:false},
+  {handle:'@bladerishidden',type:'new',sent:false},
+  {handle:'@ImmaculRichie',type:'new',sent:false},
+  {handle:'@elonmoiste',type:'new',sent:false},
+  {handle:'@kenotoDT',type:'new',sent:false},
+  {handle:'@decentravn',type:'new',sent:false},
+  {handle:'@defichamp_crypt',type:'new',sent:false},
+  {handle:'@shwetabotx',type:'new',sent:false},
+  {handle:'@MuskAlchemy',type:'new',sent:false},
+  {handle:'@vlad_hama9',type:'new',sent:false},
+  {handle:'@potam17',type:'new',sent:false},
+  {handle:'@AlpinMaula',type:'new',sent:false}
+];
+
+// State
+let currentIndex = 0;
+let currentTemplate = 0;
+
+// Get personalized template based on creator type
+function getMessage(creator) {
+  
+  if (creator.type === 'previous') {
+    // Previous participants - reference their past work
+    const templates = [
+      `gm! We loved your work last time and wanted to personally invite you to participate in our new bounty🔥 There's a $350 prize pool, make anything about the beta, post it, win. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ cheers 💎`,
+      
+      `hey! your content from last bounty was fire 🔥 wanted to personally invite you to the new one — $350 prize pool, make something about the beta, post it, win. easy. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ go get it 💎`,
+      
+      `yo! loved what you made last time — wanted to personally invite you to the new bounty 🚀 $350 prize pool. make anything about the beta, post it, win. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ lmk if you have questions 💎`,
+      
+      `gm! your work on the last bounty stood out — wanted to personally invite you to the new one 💎 $350 prize pool, make anything about the beta, post it, win. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ cheers!`,
+      
+      `hey! 👋 remembered your great content from last time — personally inviting you to our new bounty🔥 $350 prize pool, make something about the beta, post it, win. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ go find some gems 💎`
+    ];
+    return templates[Math.floor(Math.random() * templates.length)];
+  } else {
+    // New creators - no reference to past work
+    const templates = [
+      `gm! 👋 We're running a new TokenGems Content Bounty and wanted to personally invite you 🔥 $350 prize pool, make anything about the beta, post it, win. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ cheers 💎`,
+      
+      `hey! 🚀 Wanted to personally invite you to our new bounty — $350 prize pool, make something about the beta, post it, win. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ go get it 💎`,
+      
+      `yo! 👋 TokenGems Content Bounty is live and wanted to personally invite you 💎 $350 prize pool, make anything about the beta, post it, win. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ lmk if you have questions!`,
+      
+      `gm! 🔥 Wanted to personally invite you to participate in our new bounty — $350 prize pool, make something about the beta, post it, win. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ cheers 💎`,
+      
+      `hey! 👋 Inviting you personally to our new TokenGems bounty 🚀 $350 prize pool, make anything about the beta, post it, win. beta: https://tokengems.ai enter: https://superteam.fun/earn/listing/tokengems-private-beta-content-bounty/ go find some gems 💎`
+    ];
+    return templates[Math.floor(Math.random() * templates.length)];
+  }
+}
+
+// Render current
+function render() {
+  const creator = CREATORS[currentIndex];
+  if (!creator) {
+    showEmpty();
+    return;
+  }
+  
+  document.getElementById('handle').textContent = creator.handle;
+  document.getElementById('badge').textContent = creator.type === 'previous' ? '✓ Previous Participant' : '✨ New Creator';
+  document.getElementById('badge').style.borderColor = creator.type === 'previous' ? 'var(--success)' : 'var(--warning)';
+  document.getElementById('badge').style.color = creator.type === 'previous' ? 'var(--success)' : 'var(--warning)';
+  
+  const message = getMessage(creator);
+  document.getElementById('messageText').textContent = message;
+  
+  // Update progress
+  const progress = ((currentIndex + 1) / CREATORS.length) * 100;
+  document.getElementById('progressFill').style.width = `${progress}%`;
+  document.getElementById('progressText').textContent = `DM ${currentIndex + 1} of ${CREATORS.length}`;
+  
+  // Reset copy state
+  document.getElementById('messageBox').classList.remove('copied');
+  document.getElementById('copyBtn').classList.remove('copied');
+  document.getElementById('copyBtn').textContent = '📋 Copy';
+}
+
+function showEmpty() {
+  document.getElementById('mainCard').innerHTML = `
+    <div class="empty">
+      <div class="empty-icon">🎉</div>
+      <h2>All DMs sent!</h2>
+      <p>You've reached all ${CREATORS.length} creators. Great work!</p>
+    </div>
+  `;
+  document.getElementById('progressText').textContent = 'Done!';
+  document.getElementById('progressFill').style.width = '100%';
+}
+
+// Copy with fallback for HTTP
+function copyMessage() {
+  const text = document.getElementById('messageText').textContent;
+  
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(text).then(showCopySuccess).catch(() => fallbackCopy(text));
+  } else {
+    fallbackCopy(text);
+  }
+}
+
+function fallbackCopy(text) {
+  const textarea = document.createElement('textarea');
+  textarea.value = text;
+  textarea.style.cssText = 'position:fixed;left:-9999px;top:0';
+  document.body.appendChild(textarea);
+  textarea.focus();
+  textarea.select();
+  
+  try {
+    document.execCommand('copy');
+    showCopySuccess();
+  } catch (err) {
+    showToast('Copy failed — select and copy manually');
+  }
+  
+  document.body.removeChild(textarea);
+}
+
+function showCopySuccess() {
+  document.getElementById('messageBox').classList.add('copied');
+  document.getElementById('copyBtn').classList.add('copied');
+  document.getElementById('copyBtn').textContent = '✓ Copied!';
+  showToast('Copied to clipboard!');
+  
+  setTimeout(() => {
+    document.getElementById('copyBtn').textContent = '📋 Copy';
+    document.getElementById('copyBtn').classList.remove('copied');
+  }, 2000);
+}
+
+// Open Twitter
+function openTwitter() {
+  const handle = CREATORS[currentIndex]?.handle.replace('@', '') || '';
+  window.open(`https://twitter.com/${handle}`, '_blank');
+}
+
+// Navigate
+function next() {
+  if (currentIndex < CREATORS.length - 1) {
+    const card = document.getElementById('mainCard');
+    card.classList.add('slide-out');
+    setTimeout(() => {
+      currentIndex++;
+      render();
+      card.classList.remove('slide-out');
+      card.classList.add('slide-in');
+      setTimeout(() => card.classList.remove('slide-in'), 400);
+    }, 200);
+  }
+}
+
+function prev() {
+  if (currentIndex > 0) {
+    currentIndex--;
+    render();
+  }
+}
+
+// Toast
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// Button events
+document.getElementById('copyBtn').addEventListener('click', copyMessage);
+document.getElementById('twitterBtn').addEventListener('click', openTwitter);
+document.getElementById('nextBtn').addEventListener('click', next);
+
+// Keyboard shortcuts
+document.addEventListener('keydown', (e) => {
+  if (e.target.tagName === 'INPUT') return;
+  
+  switch(e.key.toLowerCase()) {
+    case 'c':
+      e.preventDefault();
+      copyMessage();
+      break;
+    case 't':
+      e.preventDefault();
+      openTwitter();
+      break;
+    case ' ':
+    case 'arrowright':
+      e.preventDefault();
+      next();
+      break;
+    case 'arrowleft':
+      e.preventDefault();
+      prev();
+      break;
+  }
+});
+
+// Init
+render();
+</script>
+</body>
+</html>

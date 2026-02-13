@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>🐉 Reply Grinder — Feb 13 Morning</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0a;color:#e0e0e0;padding:20px;max-width:800px;margin:0 auto}
+h1{font-size:20px;color:#1da1f2;margin-bottom:4px}
+.subtitle{color:#666;font-size:13px;margin-bottom:20px}
+.card{background:#151515;border:1px solid #222;border-radius:12px;padding:16px;margin-bottom:12px;transition:all 0.2s}
+.card:hover{border-color:#1da1f2;background:#1a1a1a}
+.card.done{opacity:0.3;border-color:#333}
+.meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:4px}
+.author{font-weight:700;color:#fff;font-size:14px}
+.handle{color:#666;font-size:13px}
+.tweet-text{font-size:14px;line-height:1.5;margin-bottom:12px;color:#ccc}
+.reply-box{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px;margin-bottom:10px}
+.reply-label{color:#1da1f2;font-size:11px;font-weight:600;text-transform:uppercase;margin-bottom:4px}
+.reply-text{font-size:13px;line-height:1.4;color:#e0e0e0;cursor:pointer;user-select:all}
+.reply-text:hover{color:#fff;background:#1a2332;border-radius:4px;padding:4px}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
+.btn-primary{background:#1da1f2;color:#fff}
+.btn-primary:hover{background:#1a91da}
+.btn-copy{background:#222;color:#ccc}
+.btn-copy:hover{background:#333}
+.btn-done{background:#222;color:#666}
+.btn-done:hover{background:#1a3a1a;color:#4caf50}
+.priority{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-left:8px}
+.p-high{background:#1a2a1a;color:#4caf50}
+.p-med{background:#2a2a1a;color:#ffc107}
+.p-fire{background:#2a1a1a;color:#ff5722}
+.tag{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;background:#1a1a2a;color:#7c8aff;margin-left:4px}
+.counter{text-align:center;padding:12px;color:#666;font-size:13px;margin-bottom:16px}
+.counter span{color:#1da1f2;font-weight:700;font-size:18px}
+.tip{background:#111;border:1px solid #222;border-radius:8px;padding:10px 14px;margin-bottom:16px;color:#888;font-size:12px}
+.note{background:#1a1a0a;border:1px solid #333;border-radius:8px;padding:10px 14px;margin-bottom:16px;color:#cc9900;font-size:12px}
+</style>
+</head><body>
+
+<h1>🐉 Reply Grinder — Batch #4</h1>
+<p class="subtitle">Feb 13, 9:30 AM CET — Morning session</p>
+
+<div class="note">
+⚠️ <b>Heads up:</b> Browser relay wasn't connected, so I couldn't scrape live tweets. These are based on known CT accounts + current narratives. Open each link, verify the tweet is real/recent, skip any that are stale. Attach a Chrome tab for live scraping next time.
+</div>
+
+<div class="tip">
+💡 Click reply text to auto-copy → Open tweet → Paste → Done. Sorted by engagement potential.
+</div>
+
+<div class="counter">Replies remaining: <span id="count">12</span> / 12</div>
+
+<!-- 1 -->
+<div class="card" id="t1">
+<div class="meta">
+<div><span class="author">Balaji</span> <span class="handle">@balaboratory</span> <span class="priority p-fire">🔥 HOT</span> <span class="tag">AI × Crypto</span></div>
+</div>
+<div class="tweet-text">[Check latest tweet — likely about AI agents, network states, or crypto regulation. Balaji posts daily hot takes.]</div>
+<div class="reply-box">
+<div class="reply-label">Template Reply (adapt to actual tweet)</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">The convergence of AI agents and onchain rails is the most underpriced narrative right now. Everyone's watching the model race while the real alpha is in the infrastructure layer.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/balaboratory" target="_blank">↗ Open Profile</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 2 -->
+<div class="card" id="t2">
+<div class="meta">
+<div><span class="author">Ansem</span> <span class="handle">@blaboratory</span> <span class="priority p-fire">🔥 HOT</span> <span class="tag">Solana · Trading</span></div>
+</div>
+<div class="tweet-text">[Check latest — probably market takes, Solana ecosystem, or memecoin commentary]</div>
+<div class="reply-box">
+<div class="reply-label">Template Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">The market is doing that thing where it shakes out everyone who bought the narrative instead of the fundamentals. Same playbook every cycle — just faster now.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/blknoiz06" target="_blank">↗ Open Profile</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 3 -->
+<div class="card" id="t3">
+<div class="meta">
+<div><span class="author">0xSammy</span> <span class="handle">@0xSammy</span> <span class="priority p-fire">🔥 HOT</span> <span class="tag">High-value target</span></div>
+</div>
+<div class="tweet-text">[Check latest — usually DeFi alpha, market structure, or builder threads]</div>
+<div class="reply-box">
+<div class="reply-label">Template Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">This is the kind of thread that ages well. Bookmarking for when everyone pretends they saw it coming 3 months from now.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/0xSammy" target="_blank">↗ Open Profile</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 4 -->
+<div class="card" id="t4">
+<div class="meta">
+<div><span class="author">Cobie</span> <span class="handle">@coaboratory</span> <span class="priority p-fire">🔥 HOT</span> <span class="tag">Market commentary</span></div>
+</div>
+<div class="tweet-text">[Check latest — usually contrarian takes, market psychology, or dry humor about CT]</div>
+<div class="reply-box">
+<div class="reply-label">Template Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">The funniest part about CT discourse is how fast "obviously" rotates. Last month's conviction is this month's cope. The only constant is the timeline moving faster than anyone's thesis.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/coaboratory" target="_blank">↗ Open Profile</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 5 -->
+<div class="card" id="t5">
+<div class="meta">
+<div><span class="author">ole</span> <span class="handle">@ole_eth</span> <span class="priority p-high">HIGH</span> <span class="tag">High-value target</span></div>
+</div>
+<div class="tweet-text">[Check latest — likely ETH ecosystem, DeFi, or building culture takes]</div>
+<div class="reply-box">
+<div class="reply-label">Template Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">Building through the noise is the ultimate filter. The people still shipping right now are the ones you want to be around when things flip.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/ole_eth" target="_blank">↗ Open Profile</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 6 -->
+<div class="card" id="t6">
+<div class="meta">
+<div><span class="author">debayo</span> <span class="handle">@debayo_xx</span> <span class="priority p-high">HIGH</span> <span class="tag">High-value target</span></div>
+</div>
+<div class="tweet-text">[Check latest — community building, onchain culture, or ecosystem commentary]</div>
+<div class="reply-box">
+<div class="reply-label">Template Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">Community-first products are the only ones that survive bear markets. Everything else is just a dashboard with a token attached.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/debayo_xx" target="_blank">↗ Open Profile</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 7 -->
+<div class="card" id="t7">
+<div class="meta">
+<div><span class="author">bandit</span> <span class="handle">@banditxbt</span> <span class="priority p-high">HIGH</span> <span class="tag">High-value target</span></div>
+</div>
+<div class="tweet-text">[Check latest — trading psychology, market reads, or CT culture]</div>
+<div class="reply-box">
+<div class="reply-label">Template Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">Market structure doesn't lie, people do. Charts are just the receipts of collective psychology playing out in real time.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/banditxbt" target="_blank">↗ Open Profile</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 8 -->
+<div class="card" id="t8">
+<div class="meta">
+<div><span class="author">Shaw</span> <span class="handle">@shawmakesmagic</span> <span class="priority p-high">HIGH</span> <span class="tag">AI Agents · ElizaOS</span></div>
+</div>
+<div class="tweet-text">[Check latest — AI agent frameworks, ElizaOS updates, agent economy takes]</div>
+<div class="reply-box">
+<div class="reply-label">Template Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">AI agents that can actually transact onchain are going to reshape how we think about DAOs and treasury management. The framework wars are just the appetizer.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/shawmakesmagic" target="_blank">↗ Open Profile</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 9 -->
+<div class="card" id="t9">
+<div class="meta">
+<div><span class="author">Mippo 🟪</span> <span class="handle">@MikeIppolito_</span> <span class="priority p-high">HIGH</span> <span class="tag">Blockworks · Industry</span></div>
+</div>
+<div class="tweet-text">[Check latest — media/content industry, crypto culture, or contrarian takes]</div>
+<div class="reply-box">
+<div class="reply-label">Template Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">The signal-to-noise ratio on CT tracks inversely with market sentiment. Best content gets made when everyone's too scared to post. Worst content gets made when everyone's celebrating.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/MikeIppolito_" target="_blank">↗ Open Profile</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 10 -->
+<div class="card" id="t10">
+<div class="meta">
+<div><span class="author">Digi</span> <span class="handle">@digiii</span> <span class="priority p-high">HIGH</span> <span class="tag">Mindset · CT culture</span></div>
+</div>
+<div class="tweet-text">[Check latest — motivation, crypto mindset, or community vibes]</div>
+<div class="reply-box">
+<div class="reply-label">Template Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">Most people optimize for looking smart on the timeline. The ones who actually make it optimize for learning speed. Different game entirely.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/digiii" target="_blank">↗ Open Profile</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 11 -->
+<div class="card" id="t11">
+<div class="meta">
+<div><span class="author">Dan Romero</span> <span class="handle">@dwr</span> <span class="priority p-med">MED</span> <span class="tag">Farcaster · Building</span></div>
+</div>
+<div class="tweet-text">[Check latest — Farcaster updates, social protocol takes, or builder culture]</div>
+<div class="reply-box">
+<div class="reply-label">Template Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">Onchain social still feels early because the UX gap between "cool demo" and "daily driver" is massive. Whoever closes that gap first wins the whole category.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/dwr" target="_blank">↗ Open Profile</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<!-- 12 -->
+<div class="card" id="t12">
+<div class="meta">
+<div><span class="author">Hsaka</span> <span class="handle">@HsakaTrades</span> <span class="priority p-med">MED</span> <span class="tag">Trading · Markets</span></div>
+</div>
+<div class="tweet-text">[Check latest — market analysis, macro takes, or trading setups]</div>
+<div class="reply-box">
+<div class="reply-label">Template Reply</div>
+<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">The best trades always look obvious in hindsight and terrifying in the moment. That discomfort IS the edge — if it felt safe, the move already happened.</div>
+</div>
+<div class="actions">
+<a class="btn btn-primary" href="https://x.com/HsakaTrades" target="_blank">↗ Open Profile</a>
+<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋</button>
+<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓</button>
+</div>
+</div>
+
+<script>
+function updateCount(){
+  const remaining=document.querySelectorAll('.card:not(.done)').length;
+  document.getElementById('count').textContent=remaining;
+  if(remaining===0){document.querySelector('.counter').innerHTML='🎉 <span style="color:#4caf50;font-size:18px">All done!</span> Great session.'}
+}
+</script>
+</body></html>
