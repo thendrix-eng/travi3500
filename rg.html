@@ -1,252 +1,260 @@
 <!DOCTYPE html>
-<html><head><meta charset="utf-8"><title>🐉 Reply Grinder LIVE — Feb 13</title>
+<html lang="en"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>🐉 Reply Grinder</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
+:root{--bg:#0a0e17;--card:rgba(19,26,43,0.95);--border:#1e293b;--text:#e0e7ff;--muted:#8892b0;--accent:#1da1f2;--success:#34d399;--warning:#fb923c;--danger:#f87171;--radius:20px}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,sans-serif;background:#0a0a0a;color:#e0e0e0;padding:20px;max-width:800px;margin:0 auto}
-h1{font-size:20px;color:#1da1f2;margin-bottom:4px}
-.subtitle{color:#666;font-size:13px;margin-bottom:20px}
-.card{background:#151515;border:1px solid #222;border-radius:12px;padding:16px;margin-bottom:12px;transition:all 0.2s}
-.card:hover{border-color:#1da1f2;background:#1a1a1a}
-.card.done{opacity:0.3;border-color:#333}
-.meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;flex-wrap:wrap;gap:4px}
-.author{font-weight:700;color:#fff;font-size:14px}
-.handle{color:#666;font-size:13px}
-.time{color:#555;font-size:12px}
-.tweet-text{font-size:14px;line-height:1.5;margin-bottom:12px;color:#ccc}
-.stats{display:flex;gap:12px;margin-bottom:10px;font-size:11px;color:#555}
-.stats span{display:flex;align-items:center;gap:3px}
-.reply-box{background:#0d1117;border:1px solid #30363d;border-radius:8px;padding:12px;margin-bottom:10px}
-.reply-label{color:#1da1f2;font-size:11px;font-weight:600;text-transform:uppercase;margin-bottom:4px}
-.reply-text{font-size:13px;line-height:1.4;color:#e0e0e0;cursor:pointer;user-select:all}
-.reply-text:hover{color:#fff;background:#1a2332;border-radius:4px;padding:4px}
-.actions{display:flex;gap:8px;flex-wrap:wrap}
-.btn{padding:6px 14px;border-radius:6px;border:none;cursor:pointer;font-size:12px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:4px}
-.btn-primary{background:#1da1f2;color:#fff}
-.btn-primary:hover{background:#1a91da}
-.btn-copy{background:#222;color:#ccc}
-.btn-copy:hover{background:#333}
-.btn-done{background:#222;color:#666}
-.btn-done:hover{background:#1a3a1a;color:#4caf50}
-.priority{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700;margin-left:8px}
-.p-high{background:#1a2a1a;color:#4caf50}
-.p-med{background:#2a2a1a;color:#ffc107}
-.p-fire{background:#2a1a1a;color:#ff5722}
-.tag{display:inline-block;padding:1px 6px;border-radius:4px;font-size:10px;background:#1a1a2a;color:#7c8aff;margin-left:4px}
-.counter{text-align:center;padding:12px;color:#666;font-size:13px;margin-bottom:16px}
-.counter span{color:#1da1f2;font-weight:700;font-size:18px}
-.tip{background:#111;border:1px solid #222;border-radius:8px;padding:10px 14px;margin-bottom:16px;color:#888;font-size:12px}
-.live-badge{background:#4caf50;color:#fff;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:700;margin-left:8px}
+html,body{height:100%;font-family:Inter,system-ui,sans-serif;background:var(--bg);color:var(--text);overflow:hidden;touch-action:pan-y}
+body{background:radial-gradient(800px 400px at 50% -10%,rgba(29,161,242,.12),transparent 60%),var(--bg)}
+
+.progress-bar{position:fixed;top:0;left:0;right:0;height:4px;background:var(--border);z-index:100}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),#6366f1);transition:width .3s}
+.progress-text{position:fixed;top:12px;right:20px;font-size:12px;color:var(--muted);font-weight:600;z-index:100}
+.progress-text span{color:var(--accent)}
+
+.container{height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;position:relative}
+
+.card{width:100%;max-width:600px;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:28px 24px;backdrop-filter:blur(20px);box-shadow:0 25px 80px rgba(0,0,0,.5);transition:all .3s ease;position:relative;max-height:85vh;overflow-y:auto}
+.card.slide-out{transform:translateX(-100px);opacity:0}
+.card.slide-in{animation:slideIn .4s ease}
+@keyframes slideIn{from{transform:translateX(100px);opacity:0}to{transform:none;opacity:1}}
+
+.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px}
+.author-section{flex:1}
+.author-name{font-size:24px;font-weight:800;letter-spacing:-.5px;background:linear-gradient(135deg,var(--text),var(--accent));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.handle{font-size:14px;color:var(--muted);margin-top:2px}
+.time-badge{font-size:11px;color:var(--muted);background:rgba(136,146,176,.1);padding:6px 12px;border-radius:999px;font-weight:600;white-space:nowrap}
+.tag{display:inline-block;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:700;background:rgba(29,161,242,.15);color:var(--accent);margin-top:8px}
+
+.tweet-section{margin:20px 0;padding:20px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:16px}
+.tweet-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:600}
+.tweet-text{font-size:15px;line-height:1.6;color:var(--text)}
+.tweet-stats{display:flex;gap:16px;margin-top:12px;font-size:12px;color:var(--muted)}
+.tweet-stats span{display:flex;align-items:center;gap:4px}
+
+.reply-section{margin:20px 0}
+.reply-label{font-size:10px;color:var(--accent);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;font-weight:600}
+.reply-box{background:rgba(29,161,242,.08);border:1px solid rgba(29,161,242,.2);border-radius:16px;padding:20px;position:relative;transition:border-color .2s}
+.reply-box.copied{border-color:var(--success)}
+.reply-text{font-size:15px;line-height:1.7;color:var(--text);font-weight:500}
+.copy-feedback{position:absolute;top:12px;right:12px;background:var(--success);color:#000;padding:6px 12px;border-radius:8px;font-size:11px;font-weight:700;opacity:0;transform:translateY(-10px);transition:all .2s}
+.copy-feedback.show{opacity:1;transform:none}
+
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:24px}
+.actions.three{grid-template-columns:1fr 1fr 1fr}
+.btn{padding:16px;border-radius:14px;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;gap:6px}
+.btn:active{transform:scale(.96)}
+.btn-copy{background:var(--accent);color:#fff}
+.btn-open{background:rgba(29,161,242,.15);color:var(--accent);border:1px solid rgba(29,161,242,.3)}
+.btn-skip{background:rgba(136,146,176,.1);color:var(--muted);border:1px solid var(--border)}
+.btn-done{background:rgba(52,211,153,.15);color:var(--success);border:1px solid rgba(52,211,153,.3)}
+
+.nav-hint{text-align:center;margin-top:16px;font-size:12px;color:var(--muted)}
+.nav-dots{display:flex;justify-content:center;gap:6px;margin-top:12px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--border);transition:all .2s}
+.dot.active{background:var(--accent);width:20px;border-radius:4px}
+.dot.done{background:var(--success)}
+
+.done-screen{text-align:center;padding:60px 20px}
+.done-screen h2{font-size:28px;margin-bottom:12px}
+.done-screen p{color:var(--muted);font-size:16px}
 </style>
 </head><body>
 
-<h1>🐉 Reply Grinder LIVE — Batch #5 <span class="live-badge">🔴 LIVE DATA</span></h1>
-<p class="subtitle">Feb 13, 9:54 AM CET — Scraped via browser relay</p>
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+<div class="progress-text"><span id="currentNum">1</span> / <span id="totalNum">10</span></div>
 
-<div class="tip">
-💡 Click reply text to auto-copy → Open tweet → Paste → Done. All tweets verified live.
-</div>
-
-<div class="counter">Replies remaining: <span id="count">10</span> / 10</div>
-
-<!-- 1 - Balaji -->
-<div class="card" id="t1">
-<div class="meta">
-<div><span class="author">Balaji</span> <span class="handle">@balajis</span> <span class="priority p-fire">🔥 HOT</span> <span class="tag">Geopolitics</span></div>
-<span class="time">22h ago</span>
-</div>
-<div class="tweet-text">Singapore is now the #1 passport in the world.</div>
-<div class="stats"><span>💬 115</span><span>🔁 109</span><span>❤️ 1.3K</span><span>👁 128K</span></div>
-<div class="reply-box">
-<div class="reply-label">Suggested Reply</div>
-<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">Makes sense — Singapore has been quietly optimizing for global optionality for decades. Same energy in crypto right now: the jurisdictions and platforms that make discovery frictionless win. Been using TokenGems to track which ecosystems are actually attracting builders vs tourists.</div>
-</div>
-<div class="actions">
-<a class="btn btn-primary" href="https://x.com/balajis/status/2021888086037475607" target="_blank">↗ Open Tweet</a>
-<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋 Copy</button>
-<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓ Done</button>
-</div>
-</div>
-
-<!-- 2 - Ansem -->
-<div class="card" id="t2">
-<div class="meta">
-<div><span class="author">Ansem</span> <span class="handle">@blknoiz06</span> <span class="priority p-fire">🔥 HOT</span> <span class="tag">Markets</span></div>
-<span class="time">11h ago</span>
-</div>
-<div class="tweet-text">jeez louise<br><small style="color:#555">QT: @fejau_inc — "Every fundamental positive headline gets sold into. Broken market. Sad days"</small></div>
-<div class="stats"><span>💬 34</span><span>🔁 10</span><span>❤️ 133</span><span>👁 23K</span></div>
-<div class="reply-box">
-<div class="reply-label">Suggested Reply</div>
-<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">Market structure is completely detached from fundamentals rn. Every positive catalyst gets front-run and dumped. The only edge left is finding things early before the headline drops — been catching some of these moves on TokenGems before CT even picks them up.</div>
-</div>
-<div class="actions">
-<a class="btn btn-primary" href="https://x.com/blknoiz06/status/2022052185618756042" target="_blank">↗ Open Tweet</a>
-<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋 Copy</button>
-<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓ Done</button>
-</div>
-</div>
-
-<!-- 3 - Cobie -->
-<div class="card" id="t3">
-<div class="meta">
-<div><span class="author">Cobie</span> <span class="handle">@cobie</span> <span class="priority p-fire">🔥 HOT</span> <span class="tag">CT Culture</span></div>
-<span class="time">Jan 30</span>
-</div>
-<div class="tweet-text">[Image post — meme/commentary]<br><small style="color:#555">355 replies, massive engagement. Last tweet 2 weeks ago.</small></div>
-<div class="stats"><span>💬 355</span><span>🔁 169</span><span>❤️ 3.7K</span><span>👁 206K</span></div>
-<div class="reply-box">
-<div class="reply-label">Suggested Reply</div>
-<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">The fact that you post once every two weeks and still get more engagement than most daily posters says everything about CT's signal problem. We need better filters for what actually matters — that's literally why I've been building with token discovery tools.</div>
-</div>
-<div class="actions">
-<a class="btn btn-primary" href="https://x.com/cobie/status/2017089325083574667" target="_blank">↗ Open Tweet</a>
-<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋 Copy</button>
-<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓ Done</button>
-</div>
-</div>
-
-<!-- 4 - Shaw -->
-<div class="card" id="t4">
-<div class="meta">
-<div><span class="author">Shaw (eth/acc)</span> <span class="handle">@shawmakesmagic</span> <span class="priority p-fire">🔥 HOT</span> <span class="tag">AI Agents · ElizaOS</span></div>
-<span class="time">29m ago</span>
-</div>
-<div class="tweet-text">You like rust? You want agents in rust? Okay! Here you go! Eliza in Rust! Alpha now, beta next month<br><small style="color:#555">crates.io/crates/elizaos</small></div>
-<div class="stats"><span>💬 4</span><span>🔁 3</span><span>❤️ 12</span><span>👁 1K</span></div>
-<div class="reply-box">
-<div class="reply-label">Suggested Reply</div>
-<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">Rust + agents is the performance play everyone's been waiting for. Memory safety + speed = agents that can actually handle real-time token analytics at scale. Would love to see elizaos integrations for onchain data feeds — TokenGems already surfaces a lot of the raw signal agents need.</div>
-</div>
-<div class="actions">
-<a class="btn btn-primary" href="https://x.com/shawmakesmagic/status/2022225980329525383" target="_blank">↗ Open Tweet</a>
-<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋 Copy</button>
-<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓ Done</button>
-</div>
-</div>
-
-<!-- 5 - 0xSammy -->
-<div class="card" id="t5">
-<div class="meta">
-<div><span class="author">0xSammy</span> <span class="handle">@0xSammy</span> <span class="priority p-high">HIGH</span> <span class="tag">AI · OpenClaw</span></div>
-<span class="time">17h ago</span>
-</div>
-<div class="tweet-text">The OpenClaw ecosystem has a discoverability problem. ClawHub is great for finding agentic skills, but there's a tonne of high-quality adjacent apps that fly under the radar. We aim to fix this with ClawIndex. Submit legitimate projects for free and we'll add them to the portal.</div>
-<div class="stats"><span>💬 ~20</span><span>🔁 ~15</span><span>❤️ ~100</span><span>👁 ~15K</span></div>
-<div class="reply-box">
-<div class="reply-label">Suggested Reply</div>
-<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">Discoverability is the biggest unsolved problem across the entire crypto stack tbh. Same issue exists for tokens — thousands launch daily but finding the ones worth paying attention to is a full-time job. That's exactly the gap TokenGems fills on the token side. Would be cool to see ClawIndex for agents + TokenGems for tokens as complementary discovery layers.</div>
-</div>
-<div class="actions">
-<a class="btn btn-primary" href="https://x.com/0xSammy" target="_blank">↗ Open Profile</a>
-<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋 Copy</button>
-<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓ Done</button>
-</div>
-</div>
-
-<!-- 6 - Digi -->
-<div class="card" id="t6">
-<div class="meta">
-<div><span class="author">Artchick (Digi)</span> <span class="handle">@digitalartchick</span> <span class="priority p-high">HIGH</span> <span class="tag">Crypto Culture</span></div>
-<span class="time">10h ago</span>
-</div>
-<div class="tweet-text">State of crypto Q1 2026<br><small style="color:#555">QT: @WatcherGuru — "JUST IN: Polymarket launches 5-Minute Bitcoin Price markets."</small></div>
-<div class="stats"><span>💬 14</span><span>🔁 1</span><span>❤️ 42</span><span>👁 3.6K</span></div>
-<div class="reply-box">
-<div class="reply-label">Suggested Reply</div>
-<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">5-minute BTC prediction markets is peak 2026 lmao. We've gone from "institutional adoption" to "speedrunning degenerate infrastructure." At this point the only sane move is having good analytics before you ape — TokenGems has been solid for cutting through the noise.</div>
-</div>
-<div class="actions">
-<a class="btn btn-primary" href="https://x.com/digitalartchick/status/2022071910130233712" target="_blank">↗ Open Tweet</a>
-<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋 Copy</button>
-<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓ Done</button>
-</div>
-</div>
-
-<!-- 7 - Mippo -->
-<div class="card" id="t7">
-<div class="meta">
-<div><span class="author">Mippo 🟪</span> <span class="handle">@MikeIppolito_</span> <span class="priority p-high">HIGH</span> <span class="tag">AI · SaaS</span></div>
-<span class="time">8h ago</span>
-</div>
-<div class="tweet-text">CT is AIT now</div>
-<div class="stats"><span>💬 4</span><span>🔁 1</span><span>❤️ 20</span><span>👁 1.5K</span></div>
-<div class="reply-box">
-<div class="reply-label">Suggested Reply</div>
-<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">Facts. The overlap between crypto twitter and AI twitter is basically a circle now. Every token thesis has an AI component and every AI project needs onchain rails. The alpha is in finding where those two narratives intersect early — that's what I use TokenGems for.</div>
-</div>
-<div class="actions">
-<a class="btn btn-primary" href="https://x.com/MikeIppolito_/status/2022097766068236596" target="_blank">↗ Open Tweet</a>
-<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋 Copy</button>
-<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓ Done</button>
-</div>
-</div>
-
-<!-- 8 - Dan Romero -->
-<div class="card" id="t8">
-<div class="meta">
-<div><span class="author">Dan Romero</span> <span class="handle">@dwr</span> <span class="priority p-high">HIGH</span> <span class="tag">Agents · Web3</span></div>
-<span class="time">12h ago</span>
-</div>
-<div class="tweet-text">Cool experiment<br><small style="color:#555">QT: @adamludwin — "Introducing askmyclaw.com 🤌 Chat directly with OpenClaws for hire."</small></div>
-<div class="stats"><span>💬 7</span><span>🔁 2</span><span>❤️ 45</span><span>👁 12K</span></div>
-<div class="reply-box">
-<div class="reply-label">Suggested Reply</div>
-<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">The "marketplace of agents" model is going to be huge. Once agents can discover and pay each other, you get emergent economies. Similar to how token discovery needs to be agent-readable too — working on making TokenGems data accessible for exactly these kinds of agent-first workflows.</div>
-</div>
-<div class="actions">
-<a class="btn btn-primary" href="https://x.com/dwr/status/2022040368968347880" target="_blank">↗ Open Tweet</a>
-<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋 Copy</button>
-<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓ Done</button>
-</div>
-</div>
-
-<!-- 9 - banditxbt -->
-<div class="card" id="t9">
-<div class="meta">
-<div><span class="author">banditxbt</span> <span class="handle">@banditxbt</span> <span class="priority p-med">MED</span> <span class="tag">CT Culture</span></div>
-<span class="time">16h ago</span>
-</div>
-<div class="tweet-text">[Twitter Space link — hosting/joining a live Space]</div>
-<div class="stats"><span>💬 27</span><span>🔁 2</span><span>❤️ 29</span><span>👁 831</span></div>
-<div class="reply-box">
-<div class="reply-label">Suggested Reply</div>
-<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">Spaces are underrated for getting the real vibe check on markets. The best alpha still comes from live conversations before it hits the timeline. Would be cool to see a space focused on token discovery tools — there's a lot of alpha being missed in the current tooling gap.</div>
-</div>
-<div class="actions">
-<a class="btn btn-primary" href="https://x.com/banditxbt/status/2021982247134675096" target="_blank">↗ Open Tweet</a>
-<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋 Copy</button>
-<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓ Done</button>
-</div>
-</div>
-
-<!-- 10 - Hsaka -->
-<div class="card" id="t10">
-<div class="meta">
-<div><span class="author">Hsaka</span> <span class="handle">@HsakaTrades</span> <span class="priority p-med">MED</span> <span class="tag">Trading · Markets</span></div>
-<span class="time">Dec 25, 2025</span>
-</div>
-<div class="tweet-text">Merry Christmas ya filthy animals. [Image]</div>
-<div class="stats"><span>💬 284</span><span>🔁 75</span><span>❤️ 1.9K</span><span>👁 97K</span></div>
-<div class="reply-box">
-<div class="reply-label">Suggested Reply</div>
-<div class="reply-text" onclick="navigator.clipboard.writeText(this.innerText)">The man posts once every two months and still gets 97K views. Hsaka's timing is as good offline as it is on charts. Miss your market reads — the current structure is crying for a thread. 🫡</div>
-</div>
-<div class="actions">
-<a class="btn btn-primary" href="https://x.com/HsakaTrades/status/2004252217667395741" target="_blank">↗ Open Tweet</a>
-<button class="btn btn-copy" onclick="navigator.clipboard.writeText(this.closest('.card').querySelector('.reply-text').innerText)">📋 Copy</button>
-<button class="btn btn-done" onclick="this.closest('.card').classList.add('done');updateCount()">✓ Done</button>
-</div>
-</div>
-
-<div style="background:#111;border:1px solid #222;border-radius:8px;padding:10px 14px;margin-top:16px;color:#555;font-size:11px">
-⚠️ <b>Skipped:</b> @debayo (handle not found), @olesborism / @ole (handle not found), @MippoMM (wrong account — protected Japanese user). Used @MikeIppolito_ for Mippo instead. Cobie's latest is from Jan 30 (posts infrequently). Hsaka hasn't posted since Dec 25.
+<div class="container">
+<div class="card" id="mainCard"></div>
+<div class="nav-dots" id="navDots"></div>
 </div>
 
 <script>
-function updateCount(){
-  const remaining=document.querySelectorAll('.card:not(.done)').length;
-  document.getElementById('count').textContent=remaining;
-  if(remaining===0){document.querySelector('.counter').innerHTML='🎉 <span style="color:#4caf50;font-size:18px">All done!</span> Great session.'}
+const tweets = [
+  {
+    author: "Shaw (eth/acc)", handle: "@shawmakesmagic", time: "29m ago", tag: "AI Agents · ElizaOS",
+    tweet: "You like rust? You want agents in rust? Okay! Here you go! Eliza in Rust! Alpha now, beta next month\n\ncrates.io/crates/elizaos",
+    stats: {replies:4,reposts:3,likes:12,views:"1K"},
+    reply: "Rust + agents is the performance play everyone's been waiting for. Memory safety + speed = agents that can actually handle real-time token analytics at scale. Would love to see elizaos integrations for onchain data feeds — TokenGems already surfaces a lot of the raw signal agents need.",
+    url: "https://x.com/shawmakesmagic/status/2022225980329525383"
+  },
+  {
+    author: "Ansem", handle: "@blknoiz06", time: "11h ago", tag: "Markets",
+    tweet: "jeez louise\n\nQT: @fejau_inc — \"Every fundamental positive headline gets sold into. Broken market. Sad days\"",
+    stats: {replies:34,reposts:10,likes:133,views:"23K"},
+    reply: "Market structure is completely detached from fundamentals rn. Every positive catalyst gets front-run and dumped. The only edge left is finding things early before the headline drops — been catching some of these moves on TokenGems before CT even picks them up.",
+    url: "https://x.com/blknoiz06/status/2022052185618756042"
+  },
+  {
+    author: "Mippo 🟪", handle: "@MikeIppolito_", time: "8h ago", tag: "AI · CT Culture",
+    tweet: "CT is AIT now",
+    stats: {replies:4,reposts:1,likes:20,views:"1.5K"},
+    reply: "Facts. The overlap between crypto twitter and AI twitter is basically a circle now. Every token thesis has an AI component and every AI project needs onchain rails. The alpha is in finding where those two narratives intersect early — that's what I use TokenGems for.",
+    url: "https://x.com/MikeIppolito_/status/2022097766068236596"
+  },
+  {
+    author: "Dan Romero", handle: "@dwr", time: "12h ago", tag: "Agents · Web3",
+    tweet: "Cool experiment\n\nQT: @adamludwin — \"Introducing askmyclaw.com 🤌 Chat directly with OpenClaws for hire.\"",
+    stats: {replies:7,reposts:2,likes:45,views:"12K"},
+    reply: "The \"marketplace of agents\" model is going to be huge. Once agents can discover and pay each other, you get emergent economies. Similar to how token discovery needs to be agent-readable too — working on making TokenGems data accessible for exactly these kinds of agent-first workflows.",
+    url: "https://x.com/dwr/status/2022040368968347880"
+  },
+  {
+    author: "Balaji", handle: "@balajis", time: "22h ago", tag: "Geopolitics",
+    tweet: "Singapore is now the #1 passport in the world.",
+    stats: {replies:115,reposts:109,likes:"1.3K",views:"128K"},
+    reply: "Makes sense — Singapore has been quietly optimizing for global optionality for decades. Same energy in crypto right now: the jurisdictions and platforms that make discovery frictionless win. Been using TokenGems to track which ecosystems are actually attracting builders vs tourists.",
+    url: "https://x.com/balajis/status/2021888086037475607"
+  },
+  {
+    author: "Artchick (Digi)", handle: "@digitalartchick", time: "10h ago", tag: "Crypto Culture",
+    tweet: "State of crypto Q1 2026\n\nQT: @WatcherGuru — \"JUST IN: Polymarket launches 5-Minute Bitcoin Price markets.\"",
+    stats: {replies:14,reposts:1,likes:42,views:"3.6K"},
+    reply: "5-minute BTC prediction markets is peak 2026 lmao. We've gone from \"institutional adoption\" to \"speedrunning degenerate infrastructure.\" At this point the only sane move is having good analytics before you ape — TokenGems has been solid for cutting through the noise.",
+    url: "https://x.com/digitalartchick/status/2022071910130233712"
+  },
+  {
+    author: "0xSammy", handle: "@0xSammy", time: "17h ago", tag: "AI · Discovery",
+    tweet: "The OpenClaw ecosystem has a discoverability problem. ClawHub is great for finding agentic skills, but there's a tonne of high-quality adjacent apps that fly under the radar. We aim to fix this with ClawIndex.",
+    stats: {replies:20,reposts:15,likes:100,views:"15K"},
+    reply: "Discoverability is the biggest unsolved problem across the entire crypto stack tbh. Same issue exists for tokens — thousands launch daily but finding the ones worth paying attention to is a full-time job. That's exactly the gap TokenGems fills on the token side. Would be cool to see ClawIndex for agents + TokenGems for tokens as complementary discovery layers.",
+    url: "https://x.com/0xSammy"
+  },
+  {
+    author: "Cobie", handle: "@cobie", time: "Jan 30", tag: "CT Culture",
+    tweet: "[Image post — meme/commentary]\n355 replies, massive engagement. Last tweet 2 weeks ago.",
+    stats: {replies:355,reposts:169,likes:"3.7K",views:"206K"},
+    reply: "The fact that you post once every two weeks and still get more engagement than most daily posters says everything about CT's signal problem. We need better filters for what actually matters — that's literally why I've been building with token discovery tools.",
+    url: "https://x.com/cobie/status/2017089325083574667"
+  },
+  {
+    author: "banditxbt", handle: "@banditxbt", time: "16h ago", tag: "CT Culture",
+    tweet: "[Twitter Space — hosting/joining a live Space]",
+    stats: {replies:27,reposts:2,likes:29,views:"831"},
+    reply: "Spaces are underrated for getting the real vibe check on markets. The best alpha still comes from live conversations before it hits the timeline. Would be cool to see a space focused on token discovery tools — there's a lot of alpha being missed in the current tooling gap.",
+    url: "https://x.com/banditxbt/status/2021982247134675096"
+  },
+  {
+    author: "Hsaka", handle: "@HsakaTrades", time: "Dec 25, 2025", tag: "Trading",
+    tweet: "Merry Christmas ya filthy animals.",
+    stats: {replies:284,reposts:75,likes:"1.9K",views:"97K"},
+    reply: "The man posts once every two months and still gets 97K views. Hsaka's timing is as good offline as it is on charts. Miss your market reads — the current structure is crying for a thread. 🫡",
+    url: "https://x.com/HsakaTrades/status/2004252217667395741"
+  }
+];
+
+let current = 0;
+const card = document.getElementById('mainCard');
+const totalNum = document.getElementById('totalNum');
+const currentNum = document.getElementById('currentNum');
+const progressFill = document.getElementById('progressFill');
+const navDots = document.getElementById('navDots');
+const completed = new Set();
+
+totalNum.textContent = tweets.length;
+
+// Build dots
+tweets.forEach((_, i) => {
+  const dot = document.createElement('div');
+  dot.className = 'dot' + (i === 0 ? ' active' : '');
+  dot.onclick = () => goTo(i);
+  navDots.appendChild(dot);
+});
+
+function updateProgress() {
+  currentNum.textContent = current + 1;
+  progressFill.style.width = ((completed.size) / tweets.length * 100) + '%';
+  document.querySelectorAll('.dot').forEach((d, i) => {
+    d.className = 'dot' + (i === current ? ' active' : '') + (completed.has(i) ? ' done' : '');
+  });
 }
+
+function render(direction) {
+  if (current >= tweets.length) {
+    card.innerHTML = '<div class="done-screen"><h2>🎉 All Done!</h2><p>' + completed.size + '/' + tweets.length + ' replies sent</p></div>';
+    updateProgress();
+    return;
+  }
+  const t = tweets[current];
+  card.className = 'card slide-out';
+  setTimeout(() => {
+    card.innerHTML = `
+      <div class="header">
+        <div class="author-section">
+          <div class="author-name">${t.author}</div>
+          <div class="handle">${t.handle}</div>
+          <div class="tag">${t.tag}</div>
+        </div>
+        <div class="time-badge">${t.time}</div>
+      </div>
+      <div class="tweet-section">
+        <div class="tweet-label">Their Tweet</div>
+        <div class="tweet-text">${t.tweet.replace(/\n/g,'<br>')}</div>
+        <div class="tweet-stats">
+          <span>💬 ${t.stats.replies}</span>
+          <span>🔁 ${t.stats.reposts}</span>
+          <span>❤️ ${t.stats.likes}</span>
+          <span>👁 ${t.stats.views}</span>
+        </div>
+      </div>
+      <div class="reply-section">
+        <div class="reply-label">Your Reply</div>
+        <div class="reply-box" id="replyBox">
+          <div class="reply-text" id="replyText">${t.reply}</div>
+          <div class="copy-feedback" id="copyFeedback">✓ Copied!</div>
+        </div>
+      </div>
+      <div class="actions three">
+        <button class="btn btn-copy" onclick="copyReply()">📋 Copy</button>
+        <a class="btn btn-open" href="${t.url}" target="_blank">↗ Tweet</a>
+        <button class="btn btn-done" onclick="markDone()">✓ Next</button>
+      </div>
+      <div class="actions" style="margin-top:8px">
+        <button class="btn btn-skip" onclick="skip(-1)" ${current===0?'disabled style="opacity:.3"':''}>← Back</button>
+        <button class="btn btn-skip" onclick="skip(1)">Skip →</button>
+      </div>
+    `;
+    card.className = 'card slide-in';
+    updateProgress();
+  }, 150);
+}
+
+function copyReply() {
+  const text = document.getElementById('replyText').innerText;
+  navigator.clipboard.writeText(text);
+  const box = document.getElementById('replyBox');
+  const fb = document.getElementById('copyFeedback');
+  box.classList.add('copied');
+  fb.classList.add('show');
+  setTimeout(() => { box.classList.remove('copied'); fb.classList.remove('show'); }, 1500);
+}
+
+function markDone() {
+  completed.add(current);
+  current++;
+  render(1);
+}
+
+function skip(dir) {
+  current = Math.max(0, Math.min(tweets.length - 1, current + dir));
+  render(dir);
+}
+
+function goTo(i) { current = i; render(1); }
+
+// Swipe support
+let touchStartX = 0;
+document.addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  const diff = touchStartX - e.changedTouches[0].clientX;
+  if (Math.abs(diff) > 60) {
+    if (diff > 0) { skip(1); } else { skip(-1); }
+  }
+});
+
+render(1);
 </script>
 </body></html>
