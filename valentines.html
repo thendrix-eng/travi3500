@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💝 For Maggie 💝</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Pacifico&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(180deg, #ffb6c1, #ff69b4, #ff1493, #ffb6c1);
+    background-size: 400% 400%;
+    animation: gradientShift 8s ease infinite;
+    font-family: 'Comic Neue', cursive;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+  }
+
+  @keyframes gradientShift {
+    0% { background-position: 50% 0% }
+    50% { background-position: 50% 100% }
+    100% { background-position: 50% 0% }
+  }
+
+  /* Sparkle cursor trail */
+  .sparkle {
+    position: fixed;
+    pointer-events: none;
+    font-size: 20px;
+    animation: sparkleFloat 1s ease-out forwards;
+    z-index: 1000;
+  }
+
+  @keyframes sparkleFloat {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-40px) scale(0.3); }
+  }
+
+  /* Floating cat gifs */
+  .cat-container {
+    position: fixed;
+    z-index: 5;
+  }
+
+  .cat-gif {
+    width: 80px;
+    height: 80px;
+    image-rendering: pixelated;
+  }
+
+  @keyframes catBounce {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+
+  /* Star decorations */
+  .stars {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .star {
+    position: absolute;
+    font-size: 14px;
+    animation: twinkle 1.5s ease-in-out infinite alternate;
+  }
+
+  @keyframes twinkle {
+    0% { opacity: 0.3; transform: scale(0.8); }
+    100% { opacity: 1; transform: scale(1.2); }
+  }
+
+  /* Main card */
+  .card {
+    background: rgba(255, 255, 255, 0.85);
+    border: 4px dashed #ff69b4;
+    border-radius: 20px;
+    padding: 30px 25px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    z-index: 10;
+    box-shadow: 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 20, 147, 0.2);
+  }
+
+  .card::before {
+    content: '💖✨💖✨💖✨💖';
+    display: block;
+    font-size: 18px;
+    letter-spacing: 5px;
+    margin-bottom: 15px;
+    animation: marquee 4s linear infinite;
+  }
+
+  @keyframes marquee {
+    0% { opacity: 1; }
+    50% { opacity: 0.6; }
+    100% { opacity: 1; }
+  }
+
+  .title {
+    font-family: 'Pacifico', cursive;
+    font-size: 28px;
+    color: #ff1493;
+    text-shadow: 2px 2px 0 #ffb6c1, -1px -1px 0 #fff;
+    margin-bottom: 10px;
+    animation: titlePulse 2s ease-in-out infinite;
+  }
+
+  @keyframes titlePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  .subtitle {
+    font-size: 16px;
+    color: #c71585;
+    margin-bottom: 20px;
+    font-weight: 700;
+  }
+
+  .heart-divider {
+    font-size: 24px;
+    letter-spacing: 8px;
+    margin: 15px 0;
+    animation: heartBeat 1s ease-in-out infinite;
+  }
+
+  @keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    15% { transform: scale(1.15); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.1); }
+  }
+
+  .message {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #333;
+    margin: 15px 0;
+  }
+
+  .bot-link {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff69b4, #ff1493);
+    color: white;
+    text-decoration: none;
+    padding: 14px 28px;
+    border-radius: 50px;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: 'Comic Neue', cursive;
+    margin: 15px 0;
+    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4);
+    animation: buttonGlow 2s ease-in-out infinite alternate;
+    border: 2px solid white;
+  }
+
+  .bot-link:hover, .bot-link:active {
+    transform: scale(1.05);
+    box-shadow: 0 6px 25px rgba(255, 20, 147, 0.6);
+  }
+
+  @keyframes buttonGlow {
+    0% { box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4); }
+    100% { box-shadow: 0 4px 25px rgba(255, 20, 147, 0.7), 0 0 40px rgba(255, 105, 180, 0.3); }
+  }
+
+  .footer {
+    margin-top: 20px;
+    font-size: 13px;
+    color: #c71585;
+    font-style: italic;
+  }
+
+  .footer .chump {
+    font-weight: 700;
+    font-size: 15px;
+    display: block;
+    margin-top: 8px;
+  }
+
+  /* Visitor counter (fake Y2K vibes) */
+  .counter {
+    margin-top: 15px;
+    font-size: 11px;
+    color: #999;
+    font-family: 'Courier New', monospace;
+  }
+
+  .counter img {
+    vertical-align: middle;
+  }
+
+  .under-construction {
+    font-size: 11px;
+    color: #ff69b4;
+    margin-top: 10px;
+    letter-spacing: 2px;
+  }
+
+  /* Scrolling marquee at bottom */
+  .marquee-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #ff1493;
+    color: white;
+    padding: 6px 0;
+    font-size: 13px;
+    font-weight: 700;
+    z-index: 100;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .marquee-text {
+    display: inline-block;
+    animation: scroll 15s linear infinite;
+  }
+
+  @keyframes scroll {
+    0% { transform: translateX(100vw); }
+    100% { transform: translateX(-100%); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Stars background -->
+<div class="stars" id="stars"></div>
+
+<!-- Main Card -->
+<div class="card">
+  <div class="title">Happy Valentine's Day 💝</div>
+  <div class="subtitle">~ a gift for Maggie ~</div>
+
+  <div class="heart-divider">💗 💗 💗</div>
+
+  <div class="message">
+    I built you your very own AI assistant.<br><br>
+    It knows about Customlytics, speaks your languages, helps with German, tracks your workouts, finds cool stuff in Berlin, and is always there when you need it. 🤖✨<br><br>
+    Say hi. Give it a name. It's yours.
+  </div>
+
+  <a href="https://t.me/BOT_USERNAME_HERE" class="bot-link">
+    💬 Meet Your Robot
+  </a>
+
+  <div class="heart-divider">💗 💗 💗</div>
+
+  <div class="footer">
+    this robot was made with love<br>
+    <span class="chump">by your chunk 💋</span>
+  </div>
+
+  <div class="counter">
+    🔢 visitor #000001 &nbsp;|&nbsp; est. feb 14 2026
+  </div>
+
+  <div class="under-construction">
+    🚧 UNDER CONSTRUCTION 🚧
+  </div>
+</div>
+
+<!-- Scrolling marquee -->
+<div class="marquee-bar">
+  <span class="marquee-text">
+    💖 HAPPY VALENTINE'S DAY MAGGIE 💖 &nbsp;&nbsp; TE QUIERO MUCHO &nbsp;&nbsp; 💖 FELIZ DÍA DE SAN VALENTÍN 💖 &nbsp;&nbsp; YOU DESERVE THE WORLD &nbsp;&nbsp; 💖
+  </span>
+</div>
+
+<script>
+  // Create twinkling stars
+  const starsEl = document.getElementById('stars');
+  const sparkles = ['✨', '⭐', '💫', '🌟', '✦', '★'];
+  for (let i = 0; i < 40; i++) {
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
+    star.style.left = Math.random() * 100 + '%';
+    star.style.top = Math.random() * 100 + '%';
+    star.style.animationDelay = Math.random() * 3 + 's';
+    star.style.animationDuration = (1 + Math.random() * 2) + 's';
+    starsEl.appendChild(star);
+  }
+
+  // Cat GIFs (using placeholder pixel cats)
+  const catUrls = [
+    'https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif',
+    'https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif',
+    'https://media.giphy.com/media/ICOgUNjpvO0PC/giphy.gif',
+    'https://media.giphy.com/media/VbnUQpnihPSIgIXuZv/giphy.gif',
+    'https://media.giphy.com/media/cfuL5gqFDreXxkWQ4o/giphy.gif',
+  ];
+
+  const positions = [
+    { top: '8%', left: '5%' },
+    { top: '15%', right: '5%' },
+    { bottom: '18%', left: '8%' },
+    { bottom: '25%', right: '3%' },
+    { top: '45%', left: '2%' },
+  ];
+
+  catUrls.forEach((url, i) => {
+    const container = document.createElement('div');
+    container.className = 'cat-container';
+    Object.entries(positions[i]).forEach(([k, v]) => container.style[k] = v);
+
+    const img = document.createElement('img');
+    img.className = 'cat-gif';
+    img.src = url;
+    img.alt = 'sparkle cat';
+    img.style.animation = `catBounce ${1.5 + Math.random()}s ease-in-out infinite`;
+    img.style.animationDelay = Math.random() * 2 + 's';
+
+    container.appendChild(img);
+    document.body.appendChild(container);
+  });
+
+  // Sparkle cursor trail
+  document.addEventListener('touchmove', addSparkle);
+  document.addEventListener('mousemove', addSparkle);
+
+  function addSparkle(e) {
+    if (Math.random() > 0.3) return;
+    const sparkle = document.createElement('div');
+    sparkle.className = 'sparkle';
+    sparkle.textContent = ['✨', '💖', '⭐', '💕', '🌸'][Math.floor(Math.random() * 5)];
+    const x = e.touches ? e.touches[0].clientX : e.clientX;
+    const y = e.touches ? e.touches[0].clientY : e.clientY;
+    sparkle.style.left = x + 'px';
+    sparkle.style.top = y + 'px';
+    document.body.appendChild(sparkle);
+    setTimeout(() => sparkle.remove(), 1000);
+  }
+</script>
+
+</body>
+</html>
