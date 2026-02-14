@@ -11,23 +11,17 @@
 
   body {
     min-height: 100vh;
-    background: linear-gradient(180deg, #ffb6c1, #ff69b4, #ff1493, #ffb6c1);
-    background-size: 400% 400%;
-    animation: gradientShift 8s ease infinite;
+    background: #ff69b4;
+    background-image:
+      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff1493' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
     font-family: 'Comic Neue', cursive;
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
     padding: 20px;
+    padding-bottom: 50px;
     position: relative;
-  }
-
-  @keyframes gradientShift {
-    0% { background-position: 50% 0% }
-    50% { background-position: 50% 100% }
-    100% { background-position: 50% 0% }
   }
 
   /* Sparkle cursor trail */
@@ -40,28 +34,30 @@
   }
 
   @keyframes sparkleFloat {
-    0% { opacity: 1; transform: translateY(0) scale(1); }
-    100% { opacity: 0; transform: translateY(-40px) scale(0.3); }
+    0% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(-50px) scale(0.2) rotate(180deg); }
   }
 
-  /* Floating cat gifs */
-  .cat-container {
-    position: fixed;
-    z-index: 5;
+  /* Cat gifs — NO overlay, raw and visible */
+  .cat-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 10px 0;
+    z-index: 10;
+    position: relative;
   }
 
   .cat-gif {
-    width: 80px;
-    height: 80px;
-    image-rendering: pixelated;
+    width: 90px;
+    height: 90px;
+    border: 3px solid #fff;
+    box-shadow: 2px 2px 0 #ff1493;
+    background: #fff;
   }
 
-  @keyframes catBounce {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
-  }
-
-  /* Star decorations */
+  /* Twinkling stars */
   .stars {
     position: fixed;
     top: 0; left: 0;
@@ -72,274 +68,396 @@
 
   .star {
     position: absolute;
-    font-size: 14px;
     animation: twinkle 1.5s ease-in-out infinite alternate;
   }
 
   @keyframes twinkle {
-    0% { opacity: 0.3; transform: scale(0.8); }
-    100% { opacity: 1; transform: scale(1.2); }
+    0% { opacity: 0.2; transform: scale(0.7); }
+    100% { opacity: 1; transform: scale(1.3); }
   }
 
-  /* Main card */
+  /* Marquee top banner */
+  .top-marquee {
+    width: 100%;
+    background: #c71585;
+    color: #ffff00;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 4px 0;
+    overflow: hidden;
+    white-space: nowrap;
+    margin-bottom: 10px;
+    border: 2px solid #ff1493;
+    position: relative;
+    z-index: 10;
+  }
+
+  .top-marquee .scroll-text {
+    display: inline-block;
+    animation: scrollLeft 12s linear infinite;
+  }
+
+  @keyframes scrollLeft {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+  }
+
+  /* MySpace-style card */
   .card {
-    background: rgba(255, 255, 255, 0.85);
-    border: 4px dashed #ff69b4;
-    border-radius: 20px;
-    padding: 30px 25px;
-    max-width: 380px;
+    background: #fff;
+    border: 3px solid #ff1493;
+    padding: 0;
+    max-width: 400px;
     width: 100%;
     text-align: center;
     position: relative;
     z-index: 10;
-    box-shadow: 0 0 30px rgba(255, 105, 180, 0.5), 0 0 60px rgba(255, 20, 147, 0.2);
+    box-shadow: 5px 5px 0 #c71585;
   }
 
-  .card::before {
-    content: '💖✨💖✨💖✨💖';
-    display: block;
-    font-size: 18px;
-    letter-spacing: 5px;
-    margin-bottom: 15px;
-    animation: marquee 4s linear infinite;
+  .card-header {
+    background: linear-gradient(90deg, #ff1493, #ff69b4, #ff1493);
+    padding: 10px;
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    border-bottom: 2px solid #c71585;
   }
 
-  @keyframes marquee {
-    0% { opacity: 1; }
-    50% { opacity: 0.6; }
-    100% { opacity: 1; }
+  .card-body {
+    padding: 25px 20px;
   }
 
   .title {
     font-family: 'Pacifico', cursive;
-    font-size: 28px;
+    font-size: 30px;
     color: #ff1493;
-    text-shadow: 2px 2px 0 #ffb6c1, -1px -1px 0 #fff;
-    margin-bottom: 10px;
-    animation: titlePulse 2s ease-in-out infinite;
-  }
-
-  @keyframes titlePulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.05); }
+    text-shadow: 2px 2px 0 #ffb6c1, 3px 3px 0 #c71585;
+    margin-bottom: 5px;
   }
 
   .subtitle {
     font-size: 16px;
     color: #c71585;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     font-weight: 700;
   }
 
   .heart-divider {
-    font-size: 24px;
-    letter-spacing: 8px;
-    margin: 15px 0;
+    font-size: 20px;
+    letter-spacing: 4px;
+    margin: 12px 0;
     animation: heartBeat 1s ease-in-out infinite;
   }
 
   @keyframes heartBeat {
     0%, 100% { transform: scale(1); }
-    15% { transform: scale(1.15); }
+    15% { transform: scale(1.2); }
     30% { transform: scale(1); }
-    45% { transform: scale(1.1); }
+    45% { transform: scale(1.15); }
   }
 
   .message {
     font-size: 15px;
-    line-height: 1.6;
+    line-height: 1.7;
     color: #333;
-    margin: 15px 0;
+    margin: 12px 0;
+    text-align: left;
+    padding: 0 5px;
   }
 
+  /* Big glowing CTA button */
   .bot-link {
     display: inline-block;
-    background: linear-gradient(135deg, #ff69b4, #ff1493);
-    color: white;
+    background: #ff1493;
+    color: #fff;
     text-decoration: none;
-    padding: 14px 28px;
-    border-radius: 50px;
+    padding: 14px 30px;
     font-size: 18px;
     font-weight: 700;
     font-family: 'Comic Neue', cursive;
     margin: 15px 0;
-    box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4);
-    animation: buttonGlow 2s ease-in-out infinite alternate;
-    border: 2px solid white;
+    border: 3px solid #c71585;
+    box-shadow: 3px 3px 0 #c71585;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
   }
 
   .bot-link:hover, .bot-link:active {
-    transform: scale(1.05);
-    box-shadow: 0 6px 25px rgba(255, 20, 147, 0.6);
-  }
-
-  @keyframes buttonGlow {
-    0% { box-shadow: 0 4px 15px rgba(255, 20, 147, 0.4); }
-    100% { box-shadow: 0 4px 25px rgba(255, 20, 147, 0.7), 0 0 40px rgba(255, 105, 180, 0.3); }
+    background: #c71585;
+    transform: translate(2px, 2px);
+    box-shadow: 1px 1px 0 #c71585;
   }
 
   .footer {
-    margin-top: 20px;
+    margin-top: 15px;
     font-size: 13px;
     color: #c71585;
     font-style: italic;
   }
 
-  .footer .chump {
+  .footer .chunk {
     font-weight: 700;
-    font-size: 15px;
+    font-size: 16px;
     display: block;
     margin-top: 8px;
   }
 
-  /* Visitor counter (fake Y2K vibes) */
   .counter {
-    margin-top: 15px;
-    font-size: 11px;
+    margin-top: 12px;
+    font-size: 10px;
     color: #999;
     font-family: 'Courier New', monospace;
+    border-top: 1px dashed #ffb6c1;
+    padding-top: 10px;
   }
 
-  .counter img {
-    vertical-align: middle;
-  }
-
-  .under-construction {
+  .guestbook {
     font-size: 11px;
     color: #ff69b4;
-    margin-top: 10px;
-    letter-spacing: 2px;
+    margin-top: 5px;
   }
 
-  /* Scrolling marquee at bottom */
+  .guestbook a {
+    color: #ff1493;
+    text-decoration: underline;
+  }
+
+  .blink {
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  /* Side cat columns */
+  .side-cats {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .side-cats.left { left: 5px; }
+  .side-cats.right { right: 5px; }
+
+  .side-cat {
+    width: 60px;
+    height: 60px;
+    border: 2px solid #fff;
+  }
+
+  @media (max-width: 500px) {
+    .side-cats { display: none; }
+  }
+
+  /* Bottom marquee */
   .marquee-bar {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    background: #ff1493;
-    color: white;
-    padding: 6px 0;
+    background: #c71585;
+    color: #ffff00;
+    padding: 5px 0;
     font-size: 13px;
     font-weight: 700;
     z-index: 100;
     overflow: hidden;
     white-space: nowrap;
+    border-top: 2px solid #ff1493;
   }
 
-  .marquee-text {
+  .marquee-bar .scroll-text {
     display: inline-block;
-    animation: scroll 15s linear infinite;
+    animation: scrollLeft 18s linear infinite;
   }
 
-  @keyframes scroll {
-    0% { transform: translateX(100vw); }
-    100% { transform: translateX(-100%); }
+  /* Webring */
+  .webring {
+    margin-top: 15px;
+    font-size: 10px;
+    color: #c71585;
+    z-index: 10;
+    position: relative;
+  }
+
+  .webring a { color: #ff1493; }
+
+  /* Badge row */
+  .badges {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 12px;
+    font-size: 9px;
+    z-index: 10;
+    position: relative;
+  }
+
+  .badge {
+    background: #333;
+    color: #0f0;
+    padding: 3px 8px;
+    font-family: 'Courier New', monospace;
+    border: 1px solid #0f0;
+  }
+
+  .badge.pink {
+    color: #ff69b4;
+    border-color: #ff69b4;
   }
 </style>
 </head>
 <body>
 
-<!-- Stars background -->
 <div class="stars" id="stars"></div>
+
+<!-- Side cats (desktop) -->
+<div class="side-cats left" id="side-cats-left"></div>
+<div class="side-cats right" id="side-cats-right"></div>
+
+<!-- Top marquee -->
+<div class="top-marquee">
+  <span class="scroll-text">
+    ★ ★ ★ WELCOME TO MAGGIE'S CORNER OF THE INTERNET ★ ★ ★ BEST VIEWED WITH NETSCAPE NAVIGATOR ★ ★ ★ 800x600 ★ ★ ★
+  </span>
+</div>
+
+<!-- Cat row top -->
+<div class="cat-row" id="cat-row-top"></div>
 
 <!-- Main Card -->
 <div class="card">
-  <div class="title">Happy Valentine's Day 💝</div>
-  <div class="subtitle">~ a gift for Maggie ~</div>
+  <div class="card-header">✧ maggie's valentine ✧ last updated: feb 14 2026 ✧</div>
+  <div class="card-body">
+    <div class="title">Happy Valentine's Day 💝</div>
+    <div class="subtitle">~ a gift for Maggie ~</div>
 
-  <div class="heart-divider">💗 💗 💗</div>
+    <div class="heart-divider">💗 💗 💗</div>
 
-  <div class="message">
-    I built you your very own AI assistant.<br><br>
-    It knows about Customlytics, speaks your languages, helps with German, tracks your workouts, finds cool stuff in Berlin, and is always there when you need it. 🤖✨<br><br>
-    Say hi. Give it a name. It's yours.
-  </div>
+    <div class="message">
+      I built you your very own AI assistant.<br><br>
+      It knows about Customlytics, speaks your languages, helps with German, tracks your workouts, finds cool stuff in Berlin, and is always there when you need it. 🤖✨<br><br>
+      Say hi. Give it a name. It's yours.
+    </div>
 
-  <a href="https://t.me/BOT_USERNAME_HERE" class="bot-link">
-    💬 Meet Your Robot
-  </a>
+    <a href="https://t.me/BOT_USERNAME_HERE" class="bot-link">
+      💬 Meet Your Robot
+    </a>
 
-  <div class="heart-divider">💗 💗 💗</div>
+    <div class="heart-divider">💗 💗 💗</div>
 
-  <div class="footer">
-    this robot was made with love<br>
-    <span class="chump">by your chunk 💋</span>
-  </div>
+    <div class="footer">
+      this robot was made with love<br>
+      <span class="chunk">by your chunk 💋</span>
+    </div>
 
-  <div class="counter">
-    🔢 visitor #000001 &nbsp;|&nbsp; est. feb 14 2026
-  </div>
+    <div class="counter">
+      🔢 visitor #000001 &nbsp;|&nbsp; est. feb 14 2026<br>
+      <span class="blink">🚧 UNDER CONSTRUCTION 🚧</span>
+    </div>
 
-  <div class="under-construction">
-    🚧 UNDER CONSTRUCTION 🚧
+    <div class="guestbook">
+      <a href="#">sign my guestbook!</a> | <a href="#">view guestbook (1)</a>
+    </div>
   </div>
 </div>
 
-<!-- Scrolling marquee -->
+<!-- Cat row bottom -->
+<div class="cat-row" id="cat-row-bottom"></div>
+
+<!-- Badges -->
+<div class="badges">
+  <span class="badge">MADE WITH 💖</span>
+  <span class="badge pink">HTML ONLY</span>
+  <span class="badge">Y2K CERTIFIED</span>
+</div>
+
+<!-- Webring -->
+<div class="webring">
+  ← <a href="#">prev</a> | 🌐 the valentine webring | <a href="#">next</a> →
+</div>
+
+<!-- Bottom marquee -->
 <div class="marquee-bar">
-  <span class="marquee-text">
-    💖 HAPPY VALENTINE'S DAY MAGGIE 💖 &nbsp;&nbsp; TE QUIERO MUCHO &nbsp;&nbsp; 💖 FELIZ DÍA DE SAN VALENTÍN 💖 &nbsp;&nbsp; YOU DESERVE THE WORLD &nbsp;&nbsp; 💖
+  <span class="scroll-text">
+    💖 HAPPY VALENTINE'S DAY MAGGIE 💖 &nbsp;&nbsp; TE QUIERO MUCHO &nbsp;&nbsp; 💖 FELIZ DÍA DE SAN VALENTÍN 💖 &nbsp;&nbsp; YOU DESERVE THE WORLD &nbsp;&nbsp; 💖 YOUR CHUNK LOVES YOU 💖
   </span>
 </div>
 
 <script>
-  // Create twinkling stars
+  // Stars
   const starsEl = document.getElementById('stars');
-  const sparkles = ['✨', '⭐', '💫', '🌟', '✦', '★'];
-  for (let i = 0; i < 40; i++) {
+  const sparkleEmoji = ['✨', '⭐', '💫', '🌟', '✦', '★', '💖'];
+  for (let i = 0; i < 50; i++) {
     const star = document.createElement('div');
     star.className = 'star';
-    star.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
+    star.textContent = sparkleEmoji[Math.floor(Math.random() * sparkleEmoji.length)];
     star.style.left = Math.random() * 100 + '%';
     star.style.top = Math.random() * 100 + '%';
+    star.style.fontSize = (10 + Math.random() * 16) + 'px';
     star.style.animationDelay = Math.random() * 3 + 's';
     star.style.animationDuration = (1 + Math.random() * 2) + 's';
     starsEl.appendChild(star);
   }
 
-  // Cat GIFs (using placeholder pixel cats)
-  const catUrls = [
+  // Cat GIFs — sparkly/cute cats, fully visible, no overlay
+  const catGifs = [
     'https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif',
     'https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif',
     'https://media.giphy.com/media/ICOgUNjpvO0PC/giphy.gif',
     'https://media.giphy.com/media/VbnUQpnihPSIgIXuZv/giphy.gif',
     'https://media.giphy.com/media/cfuL5gqFDreXxkWQ4o/giphy.gif',
+    'https://media.giphy.com/media/3oriO0OEd9QIDdllqo/giphy.gif',
   ];
 
-  const positions = [
-    { top: '8%', left: '5%' },
-    { top: '15%', right: '5%' },
-    { bottom: '18%', left: '8%' },
-    { bottom: '25%', right: '3%' },
-    { top: '45%', left: '2%' },
-  ];
+  function addCats(containerId, count, startIdx) {
+    const el = document.getElementById(containerId);
+    for (let i = 0; i < count; i++) {
+      const img = document.createElement('img');
+      img.className = 'cat-gif';
+      img.src = catGifs[(startIdx + i) % catGifs.length];
+      img.alt = '🐱';
+      el.appendChild(img);
+    }
+  }
 
-  catUrls.forEach((url, i) => {
-    const container = document.createElement('div');
-    container.className = 'cat-container';
-    Object.entries(positions[i]).forEach(([k, v]) => container.style[k] = v);
+  addCats('cat-row-top', 3, 0);
+  addCats('cat-row-bottom', 3, 3);
 
-    const img = document.createElement('img');
-    img.className = 'cat-gif';
-    img.src = url;
-    img.alt = 'sparkle cat';
-    img.style.animation = `catBounce ${1.5 + Math.random()}s ease-in-out infinite`;
-    img.style.animationDelay = Math.random() * 2 + 's';
+  // Side cats (desktop)
+  function addSideCats(containerId, startIdx) {
+    const el = document.getElementById(containerId);
+    for (let i = 0; i < 3; i++) {
+      const img = document.createElement('img');
+      img.className = 'side-cat';
+      img.src = catGifs[(startIdx + i) % catGifs.length];
+      img.alt = '🐱';
+      el.appendChild(img);
+    }
+  }
 
-    container.appendChild(img);
-    document.body.appendChild(container);
-  });
+  addSideCats('side-cats-left', 0);
+  addSideCats('side-cats-right', 3);
 
-  // Sparkle cursor trail
-  document.addEventListener('touchmove', addSparkle);
-  document.addEventListener('mousemove', addSparkle);
-
+  // Sparkle trail
+  let lastSparkle = 0;
   function addSparkle(e) {
-    if (Math.random() > 0.3) return;
+    const now = Date.now();
+    if (now - lastSparkle < 80) return;
+    lastSparkle = now;
     const sparkle = document.createElement('div');
     sparkle.className = 'sparkle';
-    sparkle.textContent = ['✨', '💖', '⭐', '💕', '🌸'][Math.floor(Math.random() * 5)];
+    sparkle.textContent = ['✨', '💖', '⭐', '💕', '🌸', '💗'][Math.floor(Math.random() * 6)];
     const x = e.touches ? e.touches[0].clientX : e.clientX;
     const y = e.touches ? e.touches[0].clientY : e.clientY;
     sparkle.style.left = x + 'px';
@@ -347,6 +465,9 @@
     document.body.appendChild(sparkle);
     setTimeout(() => sparkle.remove(), 1000);
   }
+
+  document.addEventListener('touchmove', addSparkle);
+  document.addEventListener('mousemove', addSparkle);
 </script>
 
 </body>
