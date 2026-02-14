@@ -104,15 +104,19 @@
 
   /* MySpace-style card */
   .card {
-    background: #fff;
-    border: 3px solid #ff1493;
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 3px solid rgba(255, 20, 147, 0.6);
     padding: 0;
     max-width: 400px;
     width: 100%;
     text-align: center;
     position: relative;
     z-index: 10;
-    box-shadow: 5px 5px 0 #c71585;
+    box-shadow: 0 8px 32px rgba(199, 21, 133, 0.3), 0 0 60px rgba(255, 105, 180, 0.15);
+    border-radius: 8px;
+    overflow: hidden;
   }
 
   .card-header {
@@ -346,7 +350,7 @@
 
     <div class="message">
       I built you your very own AI assistant.<br><br>
-      It knows about Customlytics, speaks your languages, helps with German, tracks your workouts, finds cool stuff in Berlin, and is always there when you need it. 🤖✨<br><br>
+      It knows about Customlytics, speaks your languages, helps you practice German and Portuguese, tracks your workouts, finds cool stuff in Berlin, and is always there when you need it. 🤖✨<br><br>
       Say hi. Give it a name. It's yours.
     </div>
 
@@ -468,6 +472,38 @@
 
   document.addEventListener('touchmove', addSparkle);
   document.addEventListener('mousemove', addSparkle);
+
+  // Floating sparkle particles (ambient)
+  function createFloatingSparkle() {
+    const s = document.createElement('div');
+    s.style.cssText = `
+      position: fixed;
+      pointer-events: none;
+      z-index: 2;
+      font-size: ${12 + Math.random() * 18}px;
+      left: ${Math.random() * 100}%;
+      bottom: -30px;
+      opacity: 0;
+      animation: floatUp ${4 + Math.random() * 6}s ease-in forwards;
+    `;
+    s.textContent = ['✨', '💖', '⭐', '🌸', '💕', '✦', '💗', '🌟'][Math.floor(Math.random() * 8)];
+    document.body.appendChild(s);
+    setTimeout(() => s.remove(), 10000);
+  }
+
+  // Add float animation
+  const floatStyle = document.createElement('style');
+  floatStyle.textContent = `
+    @keyframes floatUp {
+      0% { opacity: 0; transform: translateY(0) rotate(0deg) scale(0.5); }
+      15% { opacity: 0.8; }
+      85% { opacity: 0.6; }
+      100% { opacity: 0; transform: translateY(-100vh) rotate(360deg) scale(1.2); }
+    }
+  `;
+  document.head.appendChild(floatStyle);
+
+  setInterval(createFloatingSparkle, 400);
 </script>
 
 </body>
