@@ -5,23 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>💝 For Maggie 💝</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Pacifico&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&family=Pacifico&family=Press+Start+2P&display=swap');
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
     min-height: 100vh;
-    background: #ff69b4;
-    background-image:
-      url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ff1493' fill-opacity='0.15'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    background: #1a0a1e;
     font-family: 'Comic Neue', cursive;
     overflow-x: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
     padding: 20px;
-    padding-bottom: 50px;
+    padding-bottom: 60px;
     position: relative;
+  }
+
+  /* Animated starfield background */
+  canvas#starfield {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
   }
 
   /* Sparkle cursor trail */
@@ -29,16 +35,17 @@
     position: fixed;
     pointer-events: none;
     font-size: 20px;
-    animation: sparkleFloat 1s ease-out forwards;
+    animation: sparkleFloat 1.2s ease-out forwards;
     z-index: 1000;
   }
 
   @keyframes sparkleFloat {
     0% { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
-    100% { opacity: 0; transform: translateY(-50px) scale(0.2) rotate(180deg); }
+    50% { opacity: 0.8; transform: translateY(-25px) scale(1.2) rotate(90deg); }
+    100% { opacity: 0; transform: translateY(-60px) scale(0.1) rotate(200deg); }
   }
 
-  /* Cat gifs — NO overlay, raw and visible */
+  /* Cat gifs */
   .cat-row {
     display: flex;
     justify-content: center;
@@ -50,14 +57,18 @@
   }
 
   .cat-gif {
-    width: 90px;
-    height: 90px;
-    border: 3px solid #fff;
-    box-shadow: 2px 2px 0 #ff1493;
-    background: #fff;
+    width: 85px;
+    height: 85px;
+    border: 3px solid #ff69b4;
+    box-shadow: 0 0 12px rgba(255, 105, 180, 0.6), 0 0 30px rgba(255, 20, 147, 0.2);
+    background: #1a0a1e;
+    border-radius: 6px;
+    transition: transform 0.2s;
   }
 
-  /* Twinkling stars */
+  .cat-gif:hover { transform: scale(1.15) rotate(3deg); }
+
+  /* Twinkling stars (emoji layer) */
   .stars {
     position: fixed;
     top: 0; left: 0;
@@ -72,29 +83,31 @@
   }
 
   @keyframes twinkle {
-    0% { opacity: 0.2; transform: scale(0.7); }
-    100% { opacity: 1; transform: scale(1.3); }
+    0% { opacity: 0.15; transform: scale(0.6); }
+    100% { opacity: 1; transform: scale(1.4); }
   }
 
-  /* Marquee top banner */
+  /* Top marquee */
   .top-marquee {
     width: 100%;
-    background: #c71585;
+    background: linear-gradient(90deg, #ff1493, #8b00ff, #ff1493);
     color: #ffff00;
-    font-size: 14px;
+    font-size: 11px;
     font-weight: 700;
-    padding: 4px 0;
+    font-family: 'Press Start 2P', monospace;
+    padding: 6px 0;
     overflow: hidden;
     white-space: nowrap;
-    margin-bottom: 10px;
-    border: 2px solid #ff1493;
+    margin-bottom: 12px;
+    border: 2px solid #ff69b4;
     position: relative;
     z-index: 10;
+    box-shadow: 0 0 20px rgba(255, 20, 147, 0.4);
   }
 
   .top-marquee .scroll-text {
     display: inline-block;
-    animation: scrollLeft 12s linear infinite;
+    animation: scrollLeft 14s linear infinite;
   }
 
   @keyframes scrollLeft {
@@ -102,131 +115,154 @@
     100% { transform: translateX(-100%); }
   }
 
-  /* MySpace-style card */
+  /* Glassmorphism card */
   .card {
-    background: rgba(255, 255, 255, 0.75);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 3px solid rgba(255, 20, 147, 0.6);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 2px solid rgba(255, 105, 180, 0.4);
     padding: 0;
     max-width: 400px;
     width: 100%;
     text-align: center;
     position: relative;
     z-index: 10;
-    box-shadow: 0 8px 32px rgba(199, 21, 133, 0.3), 0 0 60px rgba(255, 105, 180, 0.15);
-    border-radius: 8px;
+    box-shadow: 0 8px 40px rgba(255, 20, 147, 0.25), 0 0 80px rgba(139, 0, 255, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
     overflow: hidden;
   }
 
   .card-header {
-    background: linear-gradient(90deg, #ff1493, #ff69b4, #ff1493);
+    background: linear-gradient(90deg, rgba(255, 20, 147, 0.8), rgba(139, 0, 255, 0.6), rgba(255, 20, 147, 0.8));
     padding: 10px;
     color: white;
-    font-size: 12px;
+    font-size: 9px;
     font-weight: 700;
+    font-family: 'Press Start 2P', monospace;
     text-transform: uppercase;
-    letter-spacing: 3px;
-    border-bottom: 2px solid #c71585;
+    letter-spacing: 2px;
+    border-bottom: 1px solid rgba(255, 105, 180, 0.4);
   }
 
   .card-body {
-    padding: 25px 20px;
+    padding: 28px 22px;
   }
 
   .title {
     font-family: 'Pacifico', cursive;
-    font-size: 30px;
-    color: #ff1493;
-    text-shadow: 2px 2px 0 #ffb6c1, 3px 3px 0 #c71585;
+    font-size: 32px;
+    background: linear-gradient(135deg, #ff69b4, #ffb6c1, #ff1493, #ff69b4);
+    background-size: 300% 300%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientText 4s ease infinite;
     margin-bottom: 5px;
+    filter: drop-shadow(0 2px 8px rgba(255, 20, 147, 0.4));
+  }
+
+  @keyframes gradientText {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
   }
 
   .subtitle {
-    font-size: 16px;
-    color: #c71585;
+    font-size: 15px;
+    color: rgba(255, 182, 193, 0.9);
     margin-bottom: 15px;
     font-weight: 700;
+    letter-spacing: 1px;
   }
 
   .heart-divider {
     font-size: 20px;
     letter-spacing: 4px;
-    margin: 12px 0;
+    margin: 14px 0;
     animation: heartBeat 1s ease-in-out infinite;
   }
 
   @keyframes heartBeat {
     0%, 100% { transform: scale(1); }
-    15% { transform: scale(1.2); }
+    15% { transform: scale(1.25); }
     30% { transform: scale(1); }
     45% { transform: scale(1.15); }
   }
 
   .message {
     font-size: 15px;
-    line-height: 1.7;
-    color: #333;
-    margin: 12px 0;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.9);
+    margin: 14px 0;
     text-align: left;
     padding: 0 5px;
   }
 
-  /* Big glowing CTA button */
+  /* Neon CTA button */
   .bot-link {
     display: inline-block;
-    background: #ff1493;
+    background: transparent;
     color: #fff;
     text-decoration: none;
-    padding: 14px 30px;
-    font-size: 18px;
+    padding: 16px 34px;
+    font-size: 16px;
     font-weight: 700;
     font-family: 'Comic Neue', cursive;
-    margin: 15px 0;
-    border: 3px solid #c71585;
-    box-shadow: 3px 3px 0 #c71585;
+    margin: 18px 0;
+    border: 2px solid #ff69b4;
+    border-radius: 50px;
     cursor: pointer;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 2px;
+    position: relative;
+    box-shadow: 0 0 15px rgba(255, 105, 180, 0.4), inset 0 0 15px rgba(255, 105, 180, 0.1);
+    animation: neonPulse 2s ease-in-out infinite alternate;
+    transition: all 0.3s;
   }
 
   .bot-link:hover, .bot-link:active {
-    background: #c71585;
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 #c71585;
+    background: rgba(255, 20, 147, 0.2);
+    box-shadow: 0 0 30px rgba(255, 105, 180, 0.7), inset 0 0 20px rgba(255, 105, 180, 0.2);
+    transform: scale(1.05);
+  }
+
+  @keyframes neonPulse {
+    0% { box-shadow: 0 0 10px rgba(255, 105, 180, 0.3), inset 0 0 10px rgba(255, 105, 180, 0.05); }
+    100% { box-shadow: 0 0 25px rgba(255, 105, 180, 0.6), 0 0 50px rgba(139, 0, 255, 0.15), inset 0 0 15px rgba(255, 105, 180, 0.1); }
   }
 
   .footer {
-    margin-top: 15px;
+    margin-top: 18px;
     font-size: 13px;
-    color: #c71585;
+    color: rgba(255, 182, 193, 0.7);
     font-style: italic;
   }
 
   .footer .chunk {
     font-weight: 700;
-    font-size: 16px;
+    font-size: 17px;
     display: block;
     margin-top: 8px;
+    color: #ff69b4;
   }
 
   .counter {
-    margin-top: 12px;
-    font-size: 10px;
-    color: #999;
-    font-family: 'Courier New', monospace;
-    border-top: 1px dashed #ffb6c1;
-    padding-top: 10px;
+    margin-top: 14px;
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.3);
+    font-family: 'Press Start 2P', monospace;
+    border-top: 1px solid rgba(255, 105, 180, 0.15);
+    padding-top: 12px;
   }
 
   .guestbook {
     font-size: 11px;
-    color: #ff69b4;
-    margin-top: 5px;
+    color: rgba(255, 105, 180, 0.5);
+    margin-top: 6px;
   }
 
   .guestbook a {
-    color: #ff1493;
+    color: rgba(255, 105, 180, 0.7);
     text-decoration: underline;
   }
 
@@ -239,7 +275,7 @@
     50% { opacity: 0; }
   }
 
-  /* Side cat columns */
+  /* Side cat columns (desktop) */
   .side-cats {
     position: fixed;
     top: 50%;
@@ -250,16 +286,18 @@
     gap: 15px;
   }
 
-  .side-cats.left { left: 5px; }
-  .side-cats.right { right: 5px; }
+  .side-cats.left { left: 8px; }
+  .side-cats.right { right: 8px; }
 
   .side-cat {
     width: 60px;
     height: 60px;
-    border: 2px solid #fff;
+    border: 2px solid rgba(255, 105, 180, 0.5);
+    border-radius: 6px;
+    box-shadow: 0 0 10px rgba(255, 20, 147, 0.3);
   }
 
-  @media (max-width: 500px) {
+  @media (max-width: 540px) {
     .side-cats { display: none; }
   }
 
@@ -269,60 +307,95 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    background: #c71585;
-    color: #ffff00;
-    padding: 5px 0;
-    font-size: 13px;
+    background: linear-gradient(90deg, #8b00ff, #ff1493, #8b00ff);
+    color: #fff;
+    padding: 6px 0;
+    font-size: 12px;
     font-weight: 700;
     z-index: 100;
     overflow: hidden;
     white-space: nowrap;
-    border-top: 2px solid #ff1493;
+    border-top: 1px solid rgba(255, 105, 180, 0.5);
+    box-shadow: 0 -4px 20px rgba(139, 0, 255, 0.3);
   }
 
   .marquee-bar .scroll-text {
     display: inline-block;
-    animation: scrollLeft 18s linear infinite;
+    animation: scrollLeft 20s linear infinite;
   }
 
   /* Webring */
   .webring {
     margin-top: 15px;
-    font-size: 10px;
-    color: #c71585;
+    font-size: 9px;
+    color: rgba(255, 255, 255, 0.3);
     z-index: 10;
     position: relative;
+    font-family: 'Press Start 2P', monospace;
   }
 
-  .webring a { color: #ff1493; }
+  .webring a { color: rgba(255, 105, 180, 0.6); }
 
   /* Badge row */
   .badges {
     display: flex;
     justify-content: center;
     gap: 8px;
-    margin-top: 12px;
-    font-size: 9px;
+    margin-top: 14px;
+    font-size: 8px;
     z-index: 10;
     position: relative;
+    font-family: 'Press Start 2P', monospace;
   }
 
   .badge {
-    background: #333;
+    background: rgba(0, 0, 0, 0.5);
     color: #0f0;
-    padding: 3px 8px;
-    font-family: 'Courier New', monospace;
-    border: 1px solid #0f0;
+    padding: 4px 10px;
+    border: 1px solid rgba(0, 255, 0, 0.3);
+    border-radius: 3px;
+    box-shadow: 0 0 8px rgba(0, 255, 0, 0.1);
   }
 
   .badge.pink {
     color: #ff69b4;
-    border-color: #ff69b4;
+    border-color: rgba(255, 105, 180, 0.4);
+    box-shadow: 0 0 8px rgba(255, 105, 180, 0.1);
+  }
+
+  .badge.purple {
+    color: #bf7fff;
+    border-color: rgba(139, 0, 255, 0.4);
+    box-shadow: 0 0 8px rgba(139, 0, 255, 0.1);
+  }
+
+  /* Sparkle gif dividers */
+  .sparkle-divider {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin: 6px 0;
+    z-index: 10;
+    position: relative;
+  }
+
+  .sparkle-divider img {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Floating hearts layer */
+  .floating-heart {
+    position: fixed;
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0;
   }
 </style>
 </head>
 <body>
 
+<canvas id="starfield"></canvas>
 <div class="stars" id="stars"></div>
 
 <!-- Side cats (desktop) -->
@@ -332,8 +405,15 @@
 <!-- Top marquee -->
 <div class="top-marquee">
   <span class="scroll-text">
-    ★ ★ ★ WELCOME TO MAGGIE'S CORNER OF THE INTERNET ★ ★ ★ BEST VIEWED WITH NETSCAPE NAVIGATOR ★ ★ ★ 800x600 ★ ★ ★
+    ★ WELCOME TO MAGGIE'S CORNER OF THE INTERNET ★ BEST VIEWED WITH NETSCAPE NAVIGATOR 4.0 ★ 800x600 ★ OPTIMIZED FOR LOVE ★
   </span>
+</div>
+
+<!-- Sparkle divider -->
+<div class="sparkle-divider">
+  <img src="https://web.archive.org/web/2009/http://www.geocities.com/sparkle_star7.gif" alt="✨" onerror="this.textContent='✨';this.style.fontSize='16px'">
+  <img src="https://web.archive.org/web/2009/http://www.geocities.com/sparkle_star7.gif" alt="✨" onerror="this.textContent='✨';this.style.fontSize='16px'">
+  <img src="https://web.archive.org/web/2009/http://www.geocities.com/sparkle_star7.gif" alt="✨" onerror="this.textContent='✨';this.style.fontSize='16px'">
 </div>
 
 <!-- Cat row top -->
@@ -366,8 +446,8 @@
     </div>
 
     <div class="counter">
-      🔢 visitor #000001 &nbsp;|&nbsp; est. feb 14 2026<br>
-      <span class="blink">🚧 UNDER CONSTRUCTION 🚧</span>
+      visitor #000001 | est. feb 14 2026<br>
+      <span class="blink">// UNDER CONSTRUCTION //</span>
     </div>
 
     <div class="guestbook">
@@ -383,38 +463,90 @@
 <div class="badges">
   <span class="badge">MADE WITH 💖</span>
   <span class="badge pink">HTML ONLY</span>
-  <span class="badge">Y2K CERTIFIED</span>
+  <span class="badge purple">Y2K CERTIFIED</span>
+  <span class="badge">NO COOKIES</span>
 </div>
 
 <!-- Webring -->
 <div class="webring">
-  ← <a href="#">prev</a> | 🌐 the valentine webring | <a href="#">next</a> →
+  &lt; <a href="#">prev</a> | the valentine webring | <a href="#">next</a> &gt;
 </div>
 
 <!-- Bottom marquee -->
 <div class="marquee-bar">
   <span class="scroll-text">
-    💖 HAPPY VALENTINE'S DAY MAGGIE 💖 &nbsp;&nbsp; TE QUIERO MUCHO &nbsp;&nbsp; 💖 FELIZ DÍA DE SAN VALENTÍN 💖 &nbsp;&nbsp; YOU DESERVE THE WORLD &nbsp;&nbsp; 💖 YOUR CHUNK LOVES YOU 💖
+    💖 HAPPY VALENTINE'S DAY MAGGIE 💖 &nbsp; TE QUIERO MUCHO &nbsp; 💜 FELIZ DÍA DE SAN VALENTÍN 💜 &nbsp; YOU DESERVE THE WORLD &nbsp; 💖 YOUR CHUNK LOVES YOU 💖 &nbsp; MEOW &nbsp; 🐱
   </span>
 </div>
 
 <script>
-  // Stars
+  // === STARFIELD CANVAS ===
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  let W, H;
+  const stars = [];
+  const STAR_COUNT = 150;
+
+  function resize() {
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  for (let i = 0; i < STAR_COUNT; i++) {
+    stars.push({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      r: Math.random() * 2 + 0.5,
+      speed: Math.random() * 0.5 + 0.1,
+      opacity: Math.random(),
+      hue: Math.random() > 0.7 ? 330 : (Math.random() > 0.5 ? 270 : 0),
+    });
+  }
+
+  function drawStars() {
+    ctx.clearRect(0, 0, W, H);
+    stars.forEach(s => {
+      s.opacity += (Math.random() - 0.5) * 0.05;
+      s.opacity = Math.max(0.1, Math.min(1, s.opacity));
+      s.y -= s.speed;
+      if (s.y < -5) { s.y = H + 5; s.x = Math.random() * W; }
+
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      const sat = s.hue === 0 ? '0%' : '80%';
+      ctx.fillStyle = `hsla(${s.hue}, ${sat}, 80%, ${s.opacity})`;
+      ctx.fill();
+
+      // Glow
+      if (s.r > 1.5) {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r * 3, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${s.hue}, 80%, 70%, ${s.opacity * 0.15})`;
+        ctx.fill();
+      }
+    });
+    requestAnimationFrame(drawStars);
+  }
+  drawStars();
+
+  // === EMOJI STARS ===
   const starsEl = document.getElementById('stars');
-  const sparkleEmoji = ['✨', '⭐', '💫', '🌟', '✦', '★', '💖'];
-  for (let i = 0; i < 50; i++) {
+  const sparkleEmoji = ['✨', '💫', '🌟', '💖'];
+  for (let i = 0; i < 30; i++) {
     const star = document.createElement('div');
     star.className = 'star';
     star.textContent = sparkleEmoji[Math.floor(Math.random() * sparkleEmoji.length)];
     star.style.left = Math.random() * 100 + '%';
     star.style.top = Math.random() * 100 + '%';
-    star.style.fontSize = (10 + Math.random() * 16) + 'px';
+    star.style.fontSize = (10 + Math.random() * 14) + 'px';
     star.style.animationDelay = Math.random() * 3 + 's';
     star.style.animationDuration = (1 + Math.random() * 2) + 's';
     starsEl.appendChild(star);
   }
 
-  // Cat GIFs — sparkly/cute cats, fully visible, no overlay
+  // === CAT GIFS ===
   const catGifs = [
     'https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif',
     'https://media.giphy.com/media/mlvseq9yvZhba/giphy.gif',
@@ -438,7 +570,6 @@
   addCats('cat-row-top', 3, 0);
   addCats('cat-row-bottom', 3, 3);
 
-  // Side cats (desktop)
   function addSideCats(containerId, startIdx) {
     const el = document.getElementById(containerId);
     for (let i = 0; i < 3; i++) {
@@ -453,57 +584,68 @@
   addSideCats('side-cats-left', 0);
   addSideCats('side-cats-right', 3);
 
-  // Sparkle trail
+  // === SPARKLE TRAIL ===
   let lastSparkle = 0;
   function addSparkle(e) {
     const now = Date.now();
-    if (now - lastSparkle < 80) return;
+    if (now - lastSparkle < 60) return;
     lastSparkle = now;
     const sparkle = document.createElement('div');
     sparkle.className = 'sparkle';
-    sparkle.textContent = ['✨', '💖', '⭐', '💕', '🌸', '💗'][Math.floor(Math.random() * 6)];
+    sparkle.textContent = ['✨', '💖', '⭐', '💕', '🌸', '💗', '💜'][Math.floor(Math.random() * 7)];
     const x = e.touches ? e.touches[0].clientX : e.clientX;
     const y = e.touches ? e.touches[0].clientY : e.clientY;
     sparkle.style.left = x + 'px';
     sparkle.style.top = y + 'px';
     document.body.appendChild(sparkle);
-    setTimeout(() => sparkle.remove(), 1000);
+    setTimeout(() => sparkle.remove(), 1200);
   }
 
   document.addEventListener('touchmove', addSparkle);
   document.addEventListener('mousemove', addSparkle);
 
-  // Floating sparkle particles (ambient)
-  function createFloatingSparkle() {
-    const s = document.createElement('div');
-    s.style.cssText = `
-      position: fixed;
-      pointer-events: none;
-      z-index: 2;
-      font-size: ${12 + Math.random() * 18}px;
-      left: ${Math.random() * 100}%;
-      bottom: -30px;
-      opacity: 0;
-      animation: floatUp ${4 + Math.random() * 6}s ease-in forwards;
+  // === FLOATING HEARTS ===
+  function createFloatingHeart() {
+    const h = document.createElement('div');
+    h.className = 'floating-heart';
+    const size = 14 + Math.random() * 22;
+    const startX = Math.random() * window.innerWidth;
+    const drift = (Math.random() - 0.5) * 100;
+    const duration = 5 + Math.random() * 7;
+    h.textContent = ['💖', '💗', '💕', '💜', '🩷', '✨'][Math.floor(Math.random() * 6)];
+    h.style.cssText = `
+      font-size: ${size}px;
+      left: ${startX}px;
+      bottom: -40px;
+      animation: floatHeart ${duration}s ease-in forwards;
+      --drift: ${drift}px;
     `;
-    s.textContent = ['✨', '💖', '⭐', '🌸', '💕', '✦', '💗', '🌟'][Math.floor(Math.random() * 8)];
-    document.body.appendChild(s);
-    setTimeout(() => s.remove(), 10000);
+    document.body.appendChild(h);
+    setTimeout(() => h.remove(), duration * 1000);
   }
 
-  // Add float animation
   const floatStyle = document.createElement('style');
   floatStyle.textContent = `
-    @keyframes floatUp {
-      0% { opacity: 0; transform: translateY(0) rotate(0deg) scale(0.5); }
-      15% { opacity: 0.8; }
-      85% { opacity: 0.6; }
-      100% { opacity: 0; transform: translateY(-100vh) rotate(360deg) scale(1.2); }
+    @keyframes floatHeart {
+      0% { opacity: 0; transform: translateY(0) translateX(0) rotate(0deg) scale(0.5); }
+      10% { opacity: 0.7; }
+      50% { opacity: 0.5; transform: translateY(-50vh) translateX(var(--drift)) rotate(180deg) scale(1); }
+      100% { opacity: 0; transform: translateY(-105vh) translateX(calc(var(--drift) * 1.5)) rotate(360deg) scale(0.8); }
     }
   `;
   document.head.appendChild(floatStyle);
 
-  setInterval(createFloatingSparkle, 400);
+  setInterval(createFloatingHeart, 350);
+
+  // === ENTRANCE ANIMATION ===
+  const card = document.querySelector('.card');
+  card.style.opacity = '0';
+  card.style.transform = 'translateY(30px) scale(0.95)';
+  card.style.transition = 'all 1s cubic-bezier(0.16, 1, 0.3, 1)';
+  setTimeout(() => {
+    card.style.opacity = '1';
+    card.style.transform = 'translateY(0) scale(1)';
+  }, 300);
 </script>
 
 </body>
