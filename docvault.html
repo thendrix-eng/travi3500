@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DocVault</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#f9fafb;--card:#fff;--border:#e5e7eb;--text:#111827;--muted:#6b7280;--accent:#4f46e5;--tag-bg:#eef2ff;--tag-text:#4338ca;--hover:#f3f4f6;--radius:8px}
+html{font-family:'Inter',system-ui,sans-serif;font-size:14px;color:var(--text);background:var(--bg)}
+body{max-width:860px;margin:0 auto;padding:16px}
+
+/* Header */
+.header{display:flex;align-items:center;gap:12px;margin-bottom:16px;flex-wrap:wrap}
+.header h1{font-size:18px;font-weight:700;white-space:nowrap}
+.header h1 span{margin-right:4px}
+.search{flex:1;min-width:200px;padding:9px 14px;border:1px solid var(--border);border-radius:var(--radius);font-size:14px;outline:none;background:#fff}
+.search:focus{border-color:var(--accent)}
+.sort-group{display:flex;gap:4px}
+.sort-btn{padding:6px 12px;border:1px solid var(--border);border-radius:var(--radius);background:#fff;color:var(--muted);cursor:pointer;font-size:12px;font-weight:500}
+.sort-btn:hover{color:var(--text)}
+.sort-btn.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.count{font-size:12px;color:var(--muted);margin-bottom:12px}
+
+/* Cards */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:8px;overflow:hidden;transition:border-color .15s}
+.card:hover{border-color:#c7d2fe}
+.card.expanded{border-color:var(--accent)}
+.card-head{padding:12px 16px;cursor:pointer;display:flex;align-items:baseline;gap:8px}
+.card-title{font-weight:600;font-size:14px;flex:1}
+.card-meta{font-size:12px;color:var(--muted);display:flex;gap:8px;flex-shrink:0}
+.tag{background:var(--tag-bg);color:var(--tag-text);padding:1px 6px;border-radius:4px;font-size:11px;font-weight:500}
+.card-body{display:none;padding:0 16px 16px;border-top:1px solid var(--border)}
+.card.expanded .card-body{display:block}
+.rendered{padding-top:12px;font-size:14px;line-height:1.7}
+.rendered h1{font-size:20px;font-weight:700;margin:20px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.rendered h2{font-size:16px;font-weight:600;margin:16px 0 6px;color:var(--accent)}
+.rendered h3{font-size:14px;font-weight:600;margin:12px 0 4px}
+.rendered p{margin:6px 0}
+.rendered ul,ol{margin:6px 0;padding-left:20px}
+.rendered code{background:#f3f4f6;padding:1px 4px;border-radius:3px;font-size:13px}
+.rendered pre{background:#f3f4f6;padding:12px;border-radius:6px;overflow-x:auto;margin:8px 0}
+.rendered pre code{background:none;padding:0}
+.rendered table{width:100%;border-collapse:collapse;margin:8px 0;font-size:13px}
+.rendered th,.rendered td{padding:6px 10px;border:1px solid var(--border);text-align:left}
+.rendered th{background:var(--bg);font-weight:600}
+.rendered blockquote{border-left:3px solid var(--accent);padding-left:12px;margin:8px 0;color:var(--muted)}
+.rendered a{color:var(--accent)}
+.rendered strong{font-weight:600}
+.rendered img{max-width:100%}
+.empty{text-align:center;padding:60px 20px;color:var(--muted);font-size:15px}
+@media(max-width:600px){
+  .header{gap:8px}
+  .card-meta{display:none}
+  body{padding:12px}
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1><span>📚</span>DocVault</h1>
+  <input class="search" id="search" placeholder="Search docs... ( / )" autocomplete="off">
+  <div class="sort-group">
+    <button class="sort-btn active" data-sort="newest">Newest</button>
+    <button class="sort-btn" data-sort="oldest">Oldest</button>
+    <button class="sort-btn" data-sort="az">A–Z</button>
+    <button class="sort-btn" data-sort="size">Size</button>
+  </div>
+</div>
+<div class="count" id="count"></div>
+<div id="list"><div class="empty">Loading...</div></div>
+
+<script>
+(function(){
+let docs=[],fuse,sort='newest',query='',expanded=null;
+const $list=document.getElementById('list'),$search=document.getElementById('search'),$count=document.getElementById('count');
+
+async function init(){
+  const r=await fetch('./docs.json');
+  docs=await r.json();
+  fuse=new Fuse(docs,{keys:[{name:'title',weight:3},{name:'keyPoints',weight:2},{name:'content',weight:1},{name:'project',weight:1}],threshold:0.35,includeMatches:true,ignoreLocation:true,minMatchCharLength:2});
+  if(location.hash.startsWith('#doc/'))expanded=location.hash.slice(5);
+  render();
+}
+
+function getList(){
+  let d=query.length>=2?fuse.search(query).map(r=>r.item):[...docs];
+  switch(sort){
+    case'newest':d.sort((a,b)=>b.modified.localeCompare(a.modified));break;
+    case'oldest':d.sort((a,b)=>a.modified.localeCompare(b.modified));break;
+    case'az':d.sort((a,b)=>a.title.localeCompare(b.title));break;
+    case'size':d.sort((a,b)=>b.size-a.size);break;
+  }
+  return d;
+}
+
+function relDate(iso){
+  const ms=Date.now()-new Date(iso).getTime();
+  const m=Math.floor(ms/60000),h=Math.floor(ms/3600000),d=Math.floor(ms/86400000);
+  if(m<1)return'now';if(m<60)return m+'m';if(h<24)return h+'h';if(d<30)return d+'d';
+  return new Date(iso).toLocaleDateString('en',{month:'short',day:'numeric'});
+}
+
+function esc(s){return s?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'):''}
+
+function render(){
+  const d=getList();
+  $count.textContent=d.length+' of '+docs.length+' docs';
+  if(!d.length){$list.innerHTML='<div class="empty">No documents found</div>';return}
+  $list.innerHTML=d.map(doc=>{
+    const exp=expanded===doc.id;
+    return`<div class="card${exp?' expanded':''}" data-id="${doc.id}">
+      <div class="card-head" data-id="${doc.id}">
+        <span class="card-title">${esc(doc.title)}</span>
+        <div class="card-meta">
+          <span class="tag">${doc.project}</span>
+          <span>${doc.size}KB</span>
+          <span>${relDate(doc.modified)}</span>
+        </div>
+      </div>
+      <div class="card-body">${exp?'<div class="rendered">'+marked.parse(doc.content||'',{breaks:true,gfm:true})+'</div>':''}</div>
+    </div>`}).join('');
+
+  $list.querySelectorAll('.card-head').forEach(h=>h.addEventListener('click',()=>{
+    const id=h.dataset.id;
+    expanded=expanded===id?null:id;
+    location.hash=expanded?'doc/'+expanded:'';
+    render();
+    if(expanded){const el=$list.querySelector('.card[data-id="'+expanded+'"]');if(el)setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),50)}
+  }));
+}
+
+let t;
+$search.addEventListener('input',()=>{clearTimeout(t);t=setTimeout(()=>{query=$search.value.trim();render()},150)});
+
+document.querySelectorAll('.sort-btn').forEach(b=>b.addEventListener('click',()=>{
+  document.querySelectorAll('.sort-btn').forEach(x=>x.classList.remove('active'));
+  b.classList.add('active');sort=b.dataset.sort;render();
+}));
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='/'&&document.activeElement!==$search){e.preventDefault();$search.focus()}
+  if(e.key==='Escape'){if(document.activeElement===$search){$search.blur();$search.value='';query='';render()}else if(expanded){expanded=null;location.hash='';render()}}
+});
+
+window.addEventListener('hashchange',()=>{
+  if(location.hash.startsWith('#doc/')){expanded=location.hash.slice(5);render()}
+  else{expanded=null;render()}
+});
+
+document.addEventListener('click',e=>{if(e.target.tagName==='A'&&e.target.closest('.rendered'))e.target.target='_blank'});
+
+init();
+})();
+</script>
+</body>
+</html>
