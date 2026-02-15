@@ -445,6 +445,10 @@
       <span class="chunk">by your chunk 💋</span>
     </div>
 
+    <div style="margin-top:12px;">
+      <span id="sound-btn" style="font-size:11px;color:rgba(255,182,193,0.6);cursor:pointer;font-family:'Press Start 2P',monospace;">🔇 tap for meows</span>
+    </div>
+
     <div class="counter">
       visitor #000001 | est. feb 14 2026<br>
       <span class="blink">// UNDER CONSTRUCTION //</span>
@@ -636,6 +640,92 @@
   document.head.appendChild(floatStyle);
 
   setInterval(createFloatingHeart, 350);
+
+  // === CAT SOUNDS (Web Audio API) ===
+  let audioStarted = false;
+  let audioCtx;
+
+  function meow() {
+    if (!audioCtx) return;
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    const now = audioCtx.currentTime;
+
+    // Random meow frequency (cute, high pitched)
+    const baseFreq = 600 + Math.random() * 500;
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(baseFreq, now);
+    osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.4, now + 0.08);
+    osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.7, now + 0.25);
+    osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.3, now + 0.4);
+
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.06, now + 0.03);
+    gain.gain.linearRampToValueAtTime(0.04, now + 0.15);
+    gain.gain.linearRampToValueAtTime(0, now + 0.4);
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+    osc.start(now);
+    osc.stop(now + 0.45);
+  }
+
+  function purr() {
+    if (!audioCtx) return;
+    const now = audioCtx.currentTime;
+    const bufferSize = audioCtx.sampleRate * 2;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+
+    // Generate purr-like rumble
+    for (let i = 0; i < bufferSize; i++) {
+      const t = i / audioCtx.sampleRate;
+      data[i] = Math.sin(2 * Math.PI * 25 * t) * 0.015 * // low rumble
+                (1 + 0.5 * Math.sin(2 * Math.PI * 3 * t)); // amplitude modulation
+    }
+
+    const source = audioCtx.createBufferSource();
+    const gain = audioCtx.createGain();
+    source.buffer = buffer;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(0.3, now + 0.5);
+    gain.gain.setValueAtTime(0.3, now + 1.5);
+    gain.gain.linearRampToValueAtTime(0, now + 2);
+    source.connect(gain);
+    gain.connect(audioCtx.destination);
+    source.start(now);
+  }
+
+  function scheduleCatSounds() {
+    if (!audioStarted) return;
+    // Random meow every 4-10 seconds
+    meow();
+    setTimeout(scheduleCatSounds, 4000 + Math.random() * 6000);
+  }
+
+  function schedulePurr() {
+    if (!audioStarted) return;
+    purr();
+    setTimeout(schedulePurr, 8000 + Math.random() * 12000);
+  }
+
+  // Start on first interaction (browser autoplay policy)
+  function startAudio() {
+    if (audioStarted) return;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    audioStarted = true;
+    // First meow after short delay
+    setTimeout(() => { meow(); scheduleCatSounds(); }, 500);
+    setTimeout(schedulePurr, 2000);
+    // Update button
+    const btn = document.getElementById('sound-btn');
+    if (btn) btn.textContent = '🔊 meow~';
+    document.removeEventListener('click', startAudio);
+    document.removeEventListener('touchstart', startAudio);
+  }
+
+  document.addEventListener('click', startAudio);
+  document.addEventListener('touchstart', startAudio);
 
   // === ENTRANCE ANIMATION ===
   const card = document.querySelector('.card');
