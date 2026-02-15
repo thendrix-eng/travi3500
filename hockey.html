@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🏒 GER vs USA — 2026 Olympics</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0a0e1a;
+    color: #fff;
+    min-height: 100vh;
+    padding: 12px;
+    padding-bottom: 80px;
+  }
+
+  /* Team toggle */
+  .toggle {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    margin-bottom: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #0a0e1a;
+    padding: 10px 0;
+  }
+  .toggle-btn {
+    padding: 12px 28px;
+    font-size: 15px;
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .toggle-btn.ger {
+    background: #333;
+    color: #ccc;
+    border-radius: 8px 0 0 8px;
+  }
+  .toggle-btn.usa {
+    background: #333;
+    color: #ccc;
+    border-radius: 0 8px 8px 0;
+  }
+  .toggle-btn.active.ger {
+    background: linear-gradient(135deg, #000, #dd0000);
+    color: #ffcc00;
+    box-shadow: 0 0 20px rgba(221, 0, 0, 0.4);
+  }
+  .toggle-btn.active.usa {
+    background: linear-gradient(135deg, #002868, #bf0a30);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(0, 40, 104, 0.4);
+  }
+
+  /* Section headers */
+  .section-header {
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: #666;
+    margin: 20px 0 10px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #1a1e2e;
+  }
+
+  /* Player cards */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+  }
+
+  .card {
+    background: linear-gradient(145deg, #141828, #1a1e32);
+    border: 1px solid #2a2e42;
+    border-radius: 12px;
+    padding: 14px 12px;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:active { transform: scale(0.97); }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 12px 12px 0 0;
+  }
+  .ger-team .card::before { background: linear-gradient(90deg, #000, #dd0000, #ffcc00); }
+  .usa-team .card::before { background: linear-gradient(90deg, #002868, #fff, #bf0a30); }
+
+  .card .number {
+    font-size: 28px;
+    font-weight: 900;
+    opacity: 0.15;
+    position: absolute;
+    top: 8px;
+    right: 10px;
+  }
+  .card .name {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .card .pos {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: #888;
+    margin-bottom: 6px;
+  }
+  .card .club {
+    font-size: 11px;
+    color: #aaa;
+    margin-bottom: 2px;
+  }
+  .card .city {
+    font-size: 10px;
+    color: #666;
+  }
+  .card .flag {
+    font-size: 16px;
+    margin-bottom: 4px;
+  }
+
+  /* Map section */
+  .map-section {
+    margin: 20px 0;
+    text-align: center;
+  }
+  .map-container {
+    position: relative;
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    background: #141828;
+    border-radius: 16px;
+    border: 1px solid #2a2e42;
+    padding: 10px;
+    overflow: hidden;
+  }
+  .map-container svg {
+    width: 100%;
+    height: auto;
+  }
+  .map-dot {
+    fill: #ff4444;
+    filter: drop-shadow(0 0 4px rgba(255, 68, 68, 0.6));
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { r: 4; opacity: 0.8; }
+    50% { r: 6; opacity: 1; }
+  }
+  .map-label {
+    font-size: 7px;
+    fill: #aaa;
+    text-anchor: middle;
+  }
+  .map-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #888;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 10px;
+    font-size: 10px;
+    color: #888;
+  }
+  .legend-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+  .legend-dot.nhl { background: #ff4444; }
+  .legend-dot.del { background: #ffcc00; }
+  .legend-dot.shl { background: #00aaff; }
+
+  .hidden { display: none; }
+
+  /* Score bar */
+  .score-bar {
+    text-align: center;
+    padding: 8px;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, #dd0000, #1a1e2e, #002868);
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    opacity: 0.8;
+  }
+</style>
+</head>
+<body>
+
+<div class="score-bar">🏒 2026 WINTER OLYMPICS — MEN'S ICE HOCKEY — MILAN 🇮🇹</div>
+
+<div class="toggle">
+  <button class="toggle-btn ger active" onclick="showTeam('ger')">🇩🇪 Germany</button>
+  <button class="toggle-btn usa" onclick="showTeam('usa')">🇺🇸 USA</button>
+</div>
+
+<!-- GERMANY -->
+<div id="ger-roster" class="ger-team">
+
+  <div class="section-header">🥅 Goaltenders</div>
+  <div class="cards" id="ger-goalies"></div>
+
+  <div class="section-header">🛡️ Defensemen</div>
+  <div class="cards" id="ger-defense"></div>
+
+  <div class="section-header">⚡ Forwards</div>
+  <div class="cards" id="ger-forwards"></div>
+
+  <div class="map-section">
+    <div class="map-title">🌍 Where They Play</div>
+    <div class="map-container" id="ger-map"></div>
+    <div class="legend">
+      <span><span class="legend-dot nhl"></span> NHL</span>
+      <span><span class="legend-dot del"></span> DEL</span>
+      <span><span class="legend-dot shl"></span> SHL / Other</span>
+    </div>
+  </div>
+</div>
+
+<!-- USA -->
+<div id="usa-roster" class="usa-team hidden">
+
+  <div class="section-header">🥅 Goaltenders</div>
+  <div class="cards" id="usa-goalies"></div>
+
+  <div class="section-header">🛡️ Defensemen</div>
+  <div class="cards" id="usa-defense"></div>
+
+  <div class="section-header">⚡ Forwards</div>
+  <div class="cards" id="usa-forwards"></div>
+
+  <div class="map-section">
+    <div class="map-title">🌍 Where They Play</div>
+    <div class="map-container" id="usa-map"></div>
+  </div>
+</div>
+
+<script>
+const gerRoster = {
+  goalies: [
+    { num: 35, name: "Philipp Grubauer", pos: "G", club: "Seattle Kraken", city: "Seattle, WA", country: "🇺🇸", league: "NHL", mapX: 72, mapY: 160 },
+    { num: 30, name: "Mathias Niederberger", pos: "G", club: "EHC Red Bull München", city: "Munich", country: "🇩🇪", league: "DEL", mapX: 365, mapY: 175 },
+    { num: 29, name: "Dustin Wolf", pos: "G", club: "Calgary Flames", city: "Calgary, AB", country: "🇨🇦", league: "NHL", mapX: 120, mapY: 145 },
+  ],
+  defense: [
+    { num: 53, name: "Moritz Seider", pos: "D", club: "Detroit Red Wings", city: "Detroit, MI", country: "🇺🇸", league: "NHL", mapX: 240, mapY: 175 },
+    { num: 6, name: "John-Jason Peterka", pos: "D", club: "Buffalo Sabres", city: "Buffalo, NY", country: "🇺🇸", league: "NHL", mapX: 260, mapY: 172 },
+    { num: 27, name: "Lukas Reichel", pos: "D", club: "Chicago Blackhawks", city: "Chicago, IL", country: "🇺🇸", league: "NHL", mapX: 225, mapY: 178 },
+    { num: 4, name: "Dennis Seidenberg", pos: "D", club: "Adler Mannheim", city: "Mannheim", country: "🇩🇪", league: "DEL", mapX: 355, mapY: 178 },
+    { num: 77, name: "Kai Wissmann", pos: "D", club: "Eisbären Berlin", city: "Berlin", country: "🇩🇪", league: "DEL", mapX: 375, mapY: 168 },
+    { num: 5, name: "Korbinian Holzer", pos: "D", club: "EHC Red Bull München", city: "Munich", country: "🇩🇪", league: "DEL", mapX: 365, mapY: 175 },
+    { num: 44, name: "Leon Gawanke", pos: "D", club: "Winnipeg Jets", city: "Winnipeg, MB", country: "🇨🇦", league: "NHL", mapX: 185, mapY: 155 },
+  ],
+  forwards: [
+    { num: 29, name: "Leon Draisaitl", pos: "C", club: "Edmonton Oilers", city: "Edmonton, AB", country: "🇨🇦", league: "NHL", mapX: 125, mapY: 140, captain: true },
+    { num: 18, name: "Tim Stützle", pos: "C", club: "Ottawa Senators", city: "Ottawa, ON", country: "🇨🇦", league: "NHL", mapX: 275, mapY: 165 },
+    { num: 12, name: "Nico Sturm", pos: "C", club: "San Jose Sharks", city: "San Jose, CA", country: "🇺🇸", league: "NHL", mapX: 65, mapY: 185 },
+    { num: 97, name: "Marco Rossi", pos: "C", club: "Minnesota Wild", city: "St. Paul, MN", country: "🇺🇸", league: "NHL", mapX: 200, mapY: 165 },
+    { num: 19, name: "Markus Eisenschmid", pos: "LW", club: "Adler Mannheim", city: "Mannheim", country: "🇩🇪", league: "DEL", mapX: 355, mapY: 178 },
+    { num: 10, name: "Tom Kühnhackl", pos: "LW", club: "EHC Red Bull München", city: "Munich", country: "🇩🇪", league: "DEL", mapX: 365, mapY: 175 },
+    { num: 42, name: "Yasin Ehliz", pos: "RW", club: "EHC Red Bull München", city: "Munich", country: "🇩🇪", league: "DEL", mapX: 365, mapY: 175 },
+    { num: 92, name: "Marcel Noebels", pos: "C", club: "Eisbären Berlin", city: "Berlin", country: "🇩🇪", league: "DEL", mapX: 375, mapY: 168 },
+    { num: 86, name: "Daniel Fischbuch", pos: "RW", club: "Düsseldorfer EG", city: "Düsseldorf", country: "🇩🇪", league: "DEL", mapX: 350, mapY: 172 },
+    { num: 17, name: "Frederik Tiffels", pos: "LW", club: "Kölner Haie", city: "Cologne", country: "🇩🇪", league: "DEL", mapX: 348, mapY: 172 },
+    { num: 93, name: "Lean Bergmann", pos: "C", club: "Adler Mannheim", city: "Mannheim", country: "🇩🇪", league: "DEL", mapX: 355, mapY: 178 },
+    { num: 15, name: "Justin Schütz", pos: "RW", club: "Eisbären Berlin", city: "Berlin", country: "🇩🇪", league: "DEL", mapX: 375, mapY: 168 },
+  ]
+};
+
+const usaRoster = {
+  goalies: [
+    { num: 37, name: "Connor Hellebuyck", pos: "G", club: "Winnipeg Jets", city: "Winnipeg, MB", country: "🇨🇦", league: "NHL", mapX: 185, mapY: 155 },
+    { num: 35, name: "Thatcher Demko", pos: "G", club: "Vancouver Canucks", city: "Vancouver, BC", country: "🇨🇦", league: "NHL", mapX: 80, mapY: 148 },
+    { num: 30, name: "Jake Oettinger", pos: "G", club: "Dallas Stars", city: "Dallas, TX", country: "🇺🇸", league: "NHL", mapX: 175, mapY: 208 },
+  ],
+  defense: [
+    { num: 8, name: "Cale Makar", pos: "D", club: "Colorado Avalanche", city: "Denver, CO", country: "🇺🇸", league: "NHL", mapX: 145, mapY: 185 },
+    { num: 25, name: "Charlie McAvoy", pos: "D", club: "Boston Bruins", city: "Boston, MA", country: "🇺🇸", league: "NHL", mapX: 285, mapY: 172 },
+    { num: 73, name: "Adam Fox", pos: "D", club: "New York Rangers", city: "New York, NY", country: "🇺🇸", league: "NHL", mapX: 275, mapY: 178 },
+    { num: 3, name: "Seth Jones", pos: "D", club: "Chicago Blackhawks", city: "Chicago, IL", country: "🇺🇸", league: "NHL", mapX: 225, mapY: 178 },
+    { num: 55, name: "Nate Schmidt", pos: "D", club: "Winnipeg Jets", city: "Winnipeg, MB", country: "🇨🇦", league: "NHL", mapX: 185, mapY: 155 },
+    { num: 2, name: "Luke Hughes", pos: "D", club: "New Jersey Devils", city: "Newark, NJ", country: "🇺🇸", league: "NHL", mapX: 275, mapY: 178 },
+    { num: 44, name: "Jaccob Slavin", pos: "D", club: "Carolina Hurricanes", city: "Raleigh, NC", country: "🇺🇸", league: "NHL", mapX: 265, mapY: 195 },
+  ],
+  forwards: [
+    { num: 34, name: "Auston Matthews", pos: "C", club: "Toronto Maple Leafs", city: "Toronto, ON", country: "🇨🇦", league: "NHL", mapX: 258, mapY: 170 },
+    { num: 71, name: "Dylan Larkin", pos: "C", club: "Detroit Red Wings", city: "Detroit, MI", country: "🇺🇸", league: "NHL", mapX: 240, mapY: 175 },
+    { num: 21, name: "Jack Eichel", pos: "C", club: "Vegas Golden Knights", city: "Las Vegas, NV", country: "🇺🇸", league: "NHL", mapX: 100, mapY: 192 },
+    { num: 13, name: "Matthew Tkachuk", pos: "LW", club: "Florida Panthers", city: "Sunrise, FL", country: "🇺🇸", league: "NHL", mapX: 260, mapY: 218 },
+    { num: 77, name: "Frank Vatrano", pos: "LW", club: "Anaheim Ducks", city: "Anaheim, CA", country: "🇺🇸", league: "NHL", mapX: 70, mapY: 192 },
+    { num: 20, name: "Chris Kreider", pos: "LW", club: "New York Rangers", city: "New York, NY", country: "🇺🇸", league: "NHL", mapX: 275, mapY: 178 },
+    { num: 28, name: "Jake Guentzel", pos: "LW", club: "Tampa Bay Lightning", city: "Tampa, FL", country: "🇺🇸", league: "NHL", mapX: 255, mapY: 220 },
+    { num: 9, name: "Tage Thompson", pos: "C", club: "Buffalo Sabres", city: "Buffalo, NY", country: "🇺🇸", league: "NHL", mapX: 260, mapY: 172 },
+    { num: 23, name: "Alex Tuch", pos: "RW", club: "Buffalo Sabres", city: "Buffalo, NY", country: "🇺🇸", league: "NHL", mapX: 260, mapY: 172 },
+    { num: 10, name: "Matt Boldy", pos: "LW", club: "Minnesota Wild", city: "St. Paul, MN", country: "🇺🇸", league: "NHL", mapX: 200, mapY: 165 },
+    { num: 17, name: "J.T. Miller", pos: "C", club: "Vancouver Canucks", city: "Vancouver, BC", country: "🇨🇦", league: "NHL", mapX: 80, mapY: 148 },
+    { num: 19, name: "Troy Terry", pos: "RW", club: "Anaheim Ducks", city: "Anaheim, CA", country: "🇺🇸", league: "NHL", mapX: 70, mapY: 192 },
+    { num: 88, name: "Patrick Kane", pos: "RW", club: "Detroit Red Wings", city: "Detroit, MI", country: "🇺🇸", league: "NHL", mapX: 240, mapY: 175 },
+  ]
+};
+
+function makeCard(p) {
+  const captainBadge = p.captain ? '<span style="color:#ffcc00;font-size:10px;font-weight:900;">C</span> ' : '';
+  const leagueColor = p.league === 'NHL' ? '#ff4444' : p.league === 'DEL' ? '#ffcc00' : '#00aaff';
+  return `
+    <div class="card">
+      <div class="number">${p.num}</div>
+      <div class="flag">${p.country}</div>
+      <div class="name">${captainBadge}${p.name}</div>
+      <div class="pos">${p.pos}</div>
+      <div class="club" style="border-left: 2px solid ${leagueColor}; padding-left: 6px;">${p.club}</div>
+      <div class="city">${p.city}</div>
+    </div>
+  `;
+}
+
+function renderRoster(team, prefix) {
+  document.getElementById(`${prefix}-goalies`).innerHTML = team.goalies.map(makeCard).join('');
+  document.getElementById(`${prefix}-defense`).innerHTML = team.defense.map(makeCard).join('');
+  document.getElementById(`${prefix}-forwards`).innerHTML = team.forwards.map(makeCard).join('');
+}
+
+// Simple world map (North America + Europe focus) using SVG
+function renderMap(team, containerId) {
+  const allPlayers = [...team.goalies, ...team.defense, ...team.forwards];
+  // Aggregate by city
+  const cities = {};
+  allPlayers.forEach(p => {
+    const key = p.city;
+    if (!cities[key]) cities[key] = { ...p, count: 0 };
+    cities[key].count++;
+  });
+
+  let dots = '';
+  Object.values(cities).forEach(c => {
+    const r = 3 + c.count * 1.5;
+    const leagueColor = c.league === 'NHL' ? '#ff4444' : c.league === 'DEL' ? '#ffcc00' : '#00aaff';
+    dots += `<circle cx="${c.mapX}" cy="${c.mapY}" r="${r}" fill="${leagueColor}" opacity="0.8">
+      <animate attributeName="r" values="${r};${r+2};${r}" dur="2s" repeatCount="indefinite"/>
+    </circle>`;
+    dots += `<text x="${c.mapX}" y="${c.mapY - r - 3}" class="map-label">${c.city.split(',')[0]} (${c.count})</text>`;
+  });
+
+  document.getElementById(containerId).innerHTML = `
+    <svg viewBox="0 0 500 280" xmlns="http://www.w3.org/2000/svg">
+      <!-- Simplified continents -->
+      <!-- North America -->
+      <path d="M40,100 Q60,80 100,85 L140,90 Q180,85 200,100 L250,110 Q280,120 300,130 L310,150 Q300,170 280,190 L260,220 Q240,240 220,250 L180,240 Q140,230 120,220 L80,200 Q50,180 40,160 Z" 
+        fill="#1a2035" stroke="#2a3050" stroke-width="0.5"/>
+      <!-- Europe -->
+      <path d="M320,120 Q340,110 360,115 L380,120 Q400,115 420,120 L430,130 Q440,140 435,155 L425,170 Q420,185 400,190 L380,188 Q360,185 345,180 L335,170 Q325,160 320,145 Z"
+        fill="#1a2035" stroke="#2a3050" stroke-width="0.5"/>
+      <!-- Labels -->
+      <text x="170" y="95" fill="#333" font-size="10" font-weight="700" text-anchor="middle">NORTH AMERICA</text>
+      <text x="375" y="138" fill="#333" font-size="10" font-weight="700" text-anchor="middle">EUROPE</text>
+      <!-- Player dots -->
+      ${dots}
+    </svg>
+  `;
+}
+
+function showTeam(team) {
+  document.getElementById('ger-roster').classList.toggle('hidden', team !== 'ger');
+  document.getElementById('usa-roster').classList.toggle('hidden', team !== 'usa');
+  document.querySelector('.toggle-btn.ger').classList.toggle('active', team === 'ger');
+  document.querySelector('.toggle-btn.usa').classList.toggle('active', team === 'usa');
+}
+
+renderRoster(gerRoster, 'ger');
+renderRoster(usaRoster, 'usa');
+renderMap(gerRoster, 'ger-map');
+renderMap(usaRoster, 'usa-map');
+</script>
+
+</body>
+</html>
